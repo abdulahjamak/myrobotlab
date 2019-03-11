@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.myrobotlab.framework.Service;
 import org.myrobotlab.framework.ServiceType;
 import org.myrobotlab.logging.Level;
@@ -1569,7 +1570,7 @@ public static void main(String[] args) throws InterruptedException {
 			// TODO write nice message
 			throw new Exception("Gestrue not found. Please bla bla");
 		}
-		// trimming line list
+		// trimming lines before startedGesture
 		scriptLines = scriptLines.subList(counter, scriptLines.size());
 		// at this point the first gesture is starting
 		List<String> frameLines = new ArrayList<String>();
@@ -1594,25 +1595,351 @@ public static void main(String[] args) throws InterruptedException {
 			}
 			if(singleScriptLine.contains("sleep")) {
 				// sleep means the end of the frame
-				fihList.add(parseScriptFragmentIntoSingleFrame(frameLines, singleScriptLine));
+				fihList.add(parseScriptFragmentIntoSingleFrame(frameLines)); // parse the frame and add it
+				fihList.add(parseScriptSleepToFrameSleep(singleScriptLine)); // finish it with a sleep
 			}
 			frameLines.add(singleScriptLine);
 		}
 		return fihList;
 	}
 	
-	private FrameItemHolder parseScriptFragmentIntoSingleFrame(List<String> frameLines, String sleepLine) {
-		FrameItemHolder fih = new FrameItemHolder();
-
-	    fih.setSleep(3);
-	    fih.setSpeech(null);
-	    fih.setName("Abe");
+	private FrameItemHolder parseScriptFragmentIntoSingleFrame(List<String> frameLines) throws Exception{
 		
-		frameitemholder.add(fih);
-		framelistact(frameListGlobal);
+		FrameItemHolder fih = new FrameItemHolder();
+		
+		for(String singleScriptLine : frameLines) {
+			if(singleScriptLine.contains("setHeadVelocity")) { //Head Velocity i01.setHeadVelocity(Double rothead, Double neck)
+				if(StringUtils.countMatches(singleScriptLine, ",") == 1) {
+					//good parameters
+					fih.setRotheadspeed(Double.parseDouble(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')))); // Integer.parseInt(
+					fih.setNeckspeed(Double.parseDouble(singleScriptLine.substring(singleScriptLine.indexOf(','),singleScriptLine.indexOf(')'))));
+				}
+				else {
+					throw new Exception("Number of parameters for setHeadVelocity is inapropriate!");
+				}
+			}
+			else if(singleScriptLine.contains("setArmVelocity")) { // setArmVelocity(String which, Double bicep, Double rotate, Double shoulder, Double omoplate)
+				if(StringUtils.countMatches(singleScriptLine, ",") == 4) {
+					//good parameters
+					int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+					if(singleScriptLine.substring(singleScriptLine.indexOf('('),commaPosition) == "left") {
+						//here we set the attributes for the left arm
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLbicepspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//bicep is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLrotatespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//rotate is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLshoulderspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//shoulder is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setLomoplatespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//omoplate is the third argument
+					}
+					else if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "right") {
+						//here we set the attributes for the right arm
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRbicepspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//bicep is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRrotatespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//rotate is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRshoulderspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//shoulder is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setRomoplatespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//omoplate is the third argument
+						
+					}
+					else {
+						throw new Exception("Which arm atribute for setArmVelocity is inapropriate!"); // not left or right
+					}
+				}
+				else {
+					throw new Exception("Number of parameters for setArmVelocity is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("setHandVelocity")) { // i01.setHandVelocity(String which, Double thumb, Double index, Double majeure, Double ringFinger, Double pinky, Double wrist) 
+				if(StringUtils.countMatches(singleScriptLine, ",") == 6) {
+					//good parameters
+					int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+					if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "left") {
+						//here we set the attributes for the left hand
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLthumbspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//thumb is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLindexspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//index is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLmajeurespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//majeure is the fourth argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setLringfingerspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//ring is the fifth argument	
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setLpinkyspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//pinky is the sixth argument		
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setLwristspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//wrist is the seventh argument	
+					}
+					else if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "right") {
+						//here we set the attributes for the right hand
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRthumbspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//thumb is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRindexspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//index is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRmajeurespeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//majeure is the fourth argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setRringfingerspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//ring is the fifth argument	
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setRpinkyspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//pinky is the sixth argument		
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setRwristspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//wrist is the seventh argument	
+					}
+					else {
+						throw new Exception("Which arm atribute for setHandVelocity is inapropriate!"); // not left or right
+					}
+				}
+				else {
+					throw new Exception("Number of parameters for setHandVelocity is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("setTorsoVelocity")) { // i01.setTorsoVelocity(Double topStom, Double midStom, Double lowStom) 
+				int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+				if(StringUtils.countMatches(singleScriptLine, ",") == 2) {
+					//good parameters
+					//here we set the attributes for the torso
+					fih.setTopStomspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//topstom is the first argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setMidStomspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//midstom is the second argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setLowStomspeed(Double.parseDouble(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//lowstom is the fourth argument
+				}
+				else {
+					throw new Exception("Number of parameters for setTorsoVelocity is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("moveHead")) { //  i01.moveHead(double neck, double rothead, double eyeX, double eyeY, double jaw)
+				int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+				if(StringUtils.countMatches(singleScriptLine, ",") == 4) {
+					//good parameters
+					//here we set the attributes for thehead 
+					fih.setNeck(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//neck is the first argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setRothead(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//rothead is the second argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setEyeX(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//eyex is the fourth argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setEyeY(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//eyeY is the fifth argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setJaw(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//jawa is the sixth
+				}
+				else {
+					throw new Exception("Number of parameters for moveHead is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("moveArm")) { // i01.moveArm(String which, double bicep, double rotate, double shoulder, double omoplate)
+				if(StringUtils.countMatches(singleScriptLine, ",") == 4) {
+					//good parameters
+					int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+					if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "left") {
+						//here we set the attributes for the left arm
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLbicep(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//bicep is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLrotate(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//rotate is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLshoulder(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//shoulder is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setLomoplate(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//omoplate is the third argument
+					}
+					else if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "right") {
+						//here we set the attributes for the right arm 
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRbicep(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//bicep is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRrotate(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//rotate is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRshoulder(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//shoulder is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setRomoplate(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//omoplate is the third argument
+					}
+					else {
+						throw new Exception("Which arm atribute for moveArm is inapropriate!"); // not left or right
+					}
+				}
+				else {
+					throw new Exception("Number of parameters for moveArm is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("moveHand")) { // i01.moveHand(String which, double thumb, double index, double majeure, double ringFinger, double pinky, Double wrist)
+				if(StringUtils.countMatches(singleScriptLine, ",") == 6) {
+					//good parameters
+					int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+					if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "left") {
+						//here we set the attributes for the left hand
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLthumb(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//thumb is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLindex(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//index is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setLmajeure(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//majeure is the fourth argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setLringfinger(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//ring is the fifth argument	
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setLpinky(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//pinky is the sixth argument		
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setLwrist(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//wrist is the seventh argument	
+					}
+					else if(singleScriptLine.substring(singleScriptLine.indexOf('('),singleScriptLine.indexOf(',')) == "right") {
+						//here we set the attributes for the right hand
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRthumb(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//thumb is the first argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRindex(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//index is the third argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+						fih.setRmajeure(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//majeure is the fourth argument
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setRringfinger(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//ring is the fifth argument	
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of )
+						fih.setRpinky(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//pinky is the sixth argument		
+						lastCommaPosition = commaPosition;
+						commaPosition = singleScriptLine.indexOf(')',lastCommaPosition); // we need the position of )
+						fih.setRwrist(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+						//wrist is the seventh argument	
+					}
+					else {
+						throw new Exception("Which arm atribute for moveHand is inapropriate!"); // not left or right
+					}
+				}
+				else {
+					throw new Exception("Number of parameters for moveHand is inapropriate!");
+				}				
+			}
+			else if(singleScriptLine.contains("moveTorso")) { // i01.moveTorso(double topStom, double midStom, double lowStom)
+				int lastCommaPosition = 0, commaPosition = singleScriptLine.indexOf(',');
+				if(StringUtils.countMatches(singleScriptLine, ",") == 2) {
+					//good parameters
+					//here we set the attributes for the torso
+					fih.setTopStom(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//topstom is the first argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setMidStom(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//midstom is the second argument
+					lastCommaPosition = commaPosition;
+					commaPosition = singleScriptLine.indexOf(',',lastCommaPosition); // we need the position of the next comma!
+					fih.setLowStom(Integer.parseInt(singleScriptLine.substring(lastCommaPosition, commaPosition)));
+					//lowstom is the fourth argument
+				}
+				else {
+					throw new Exception("Number of parameters for moveTorso is inapropriate!");
+				}				
+			}
+			//if line has a command that is not covered by these cases, just skip it!
+		}
+				
+//		frameitemholder.add(fih);
+//		framelistact(frameListGlobal);
+		return fih;
+	}
+	
+	private FrameItemHolder parseScriptSleepToFrameSleep(String sleepLine) {
+		//sleep line:
+		//  sleep(3) !!note the 2 spaces at the beginning
+		int sleepTime = Integer.parseInt(sleepLine.substring(sleepLine.indexOf('('), sleepLine.indexOf(')')));
+		FrameItemHolder fih = new FrameItemHolder();
+		fih.resetValues();
+		
+		fih.setName(null); //sleep frame has Name and Speech as null and Sleep as int
+		fih.setSpeech(null);
+		fih.setSleep(sleepTime);
 		
 		return fih;
- } 
+	}
  
   public void parse_frame_to_script() {
 	  String code = "def " + /*ime_funkcije*/"test" + "():\n  i01.startedGesture()\n  "; //def + ime plus () + enter i dva spejsa + i01.
@@ -1621,30 +1948,30 @@ public static void main(String[] args) throws InterruptedException {
 	      FrameItemHolder fih = frameitemholder.get(i);
 	      
 	      if(fih.getName() == null && fih.getSleep() == -1) {
-	    	  String brzine[] = {"","","","","",""};
-	    	  if(tabs_main_checkbox_states[0])	brzine[0] = "i01.setHeadVelocity(" + fih.getRotheadspeed() + "," + fih.getNeckspeed() + ")";
-	    	  if(tabs_main_checkbox_states[1])	brzine[1] = "i01.setArmVelocity(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")";
-	    	  if(tabs_main_checkbox_states[2])	brzine[2] = "i01.setArmVelocity(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")";
-	    	  if(tabs_main_checkbox_states[3])	brzine[3] = "i01.setHandVelocity(\"left\"," + fih.getLthumbspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLwristspeed() +")";
-	    	  if(tabs_main_checkbox_states[4])	brzine[4] = "i01.setHandVelocity(\"right\"," + fih.getRthumbspeed() + "," + fih.getRpinkyspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + "," + fih.getRpinky() + "," + fih.getRwristspeed() +")";
-	    	  if(tabs_main_checkbox_states[5])	brzine[5] = "i01.setTorsoVelocity(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")";
+	    	  String speeds[] = {"","","","","",""};
+	    	  if(tabs_main_checkbox_states[0])	speeds[0] = "i01.setHeadVelocity(" + fih.getRotheadspeed() + "," + fih.getNeckspeed() + ")";
+	    	  if(tabs_main_checkbox_states[1])	speeds[1] = "i01.setArmVelocity(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")";
+	    	  if(tabs_main_checkbox_states[2])	speeds[2] = "i01.setArmVelocity(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")";
+	    	  if(tabs_main_checkbox_states[3])	speeds[3] = "i01.setHandVelocity(\"left\"," + fih.getLthumbspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLwristspeed() +")";
+	    	  if(tabs_main_checkbox_states[4])	speeds[4] = "i01.setHandVelocity(\"right\"," + fih.getRthumbspeed() + "," + fih.getRpinkyspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + "," + fih.getRpinky() + "," + fih.getRwristspeed() +")";
+	    	  if(tabs_main_checkbox_states[5])	speeds[5] = "i01.setTorsoVelocity(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")";
 	    	  for(int j = 0; j <= 5; j++) {
     			  if(tabs_main_checkbox_states[j]) 
-    				  code += (brzine[j] + "\n  ");
+    				  code += (speeds[j] + "\n  ");
 	    	  }
 	      }else if(fih.getName() == null && fih.getSleep() != -1){
 	    	  code += "sleep(" + fih.getSleep() + ")\n  ";
 	      }else {
-	    	  String pomjeranja[] = {"","","","","",""};
-	    	  if(tabs_main_checkbox_states[0])	pomjeranja[0] = "i01.moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")";
-	    	  if(tabs_main_checkbox_states[1])	pomjeranja[1] = "i01.moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")";
-	    	  if(tabs_main_checkbox_states[2])	pomjeranja[2] = "i01.moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")";
-	    	  if(tabs_main_checkbox_states[3])	pomjeranja[3] = "i01.moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLpinky() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + "," + fih.getLwrist() +")";
-	    	  if(tabs_main_checkbox_states[4])	pomjeranja[4] = "i01.moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRpinky() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + "," + fih.getRwrist() +")";
-	    	  if(tabs_main_checkbox_states[5])	pomjeranja[5] = "i01.moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")";
+	    	  String movements[] = {"","","","","",""};
+	    	  if(tabs_main_checkbox_states[0])	movements[0] = "i01.moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")";
+	    	  if(tabs_main_checkbox_states[1])	movements[1] = "i01.moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")";
+	    	  if(tabs_main_checkbox_states[2])	movements[2] = "i01.moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")";
+	    	  if(tabs_main_checkbox_states[3])	movements[3] = "i01.moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLpinky() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + "," + fih.getLwrist() +")";
+	    	  if(tabs_main_checkbox_states[4])	movements[4] = "i01.moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRpinky() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + "," + fih.getRwrist() +")";
+	    	  if(tabs_main_checkbox_states[5])	movements[5] = "i01.moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")";
 	    	  for(int j = 0; j <= 5; j++) {
     			  if(tabs_main_checkbox_states[j]) 
-    				  code += (pomjeranja[j] + "\n  ");
+    				  code += (movements[j] + "\n  ");
 	    	  }	    	 
 	      }
 	  }
