@@ -19,39 +19,39 @@ public class FrameItemHolder {
 	private String name;
 
 	public void resetValues() {
-		this.rthumb = 0;
-	    this.rindex = 0;
-	    this.rmajeure = 0;
-	    this.rringfinger = 0;
-	    this.rpinky = 0;
-	    this.rwrist = 0;
+		this.rthumb = 90;
+	    this.rindex = 90;
+	    this.rmajeure = 90;
+	    this.rringfinger = 90;
+	    this.rpinky = 90;
+	    this.rwrist = 90;
 
-	    this.rbicep = 0;
-	    this.rrotate = 0;
-	    this.rshoulder = 0;
-	    this.romoplate = 0;
+	    this.rbicep = 90;
+	    this.rrotate = 90;
+	    this.rshoulder = 90;
+	    this.romoplate = 90;
 
-	    this.lthumb = 0;
-	    this.lindex = 0;
-	    this.lmajeure = 0;
-	    this.lringfinger = 0;
-	    this.lpinky = 0;
-	    this.lwrist = 0;
+	    this.lthumb = 90;
+	    this.lindex = 90;
+	    this.lmajeure = 90;
+	    this.lringfinger = 90;
+	    this.lpinky = 90;
+	    this.lwrist = 90;
 
-	    this.lbicep = 0;
-	    this.lrotate = 0;
-	    this.lshoulder = 0;
-	    this.lomoplate = 0;
+	    this.lbicep = 90;
+	    this.lrotate = 90;
+	    this.lshoulder = 90;
+	    this.lomoplate = 90;
 
-	    this.neck = 0;
-	    this.rothead = 0;
-	    this.eyeX = 0;
-	    this.eyeY = 0;
-	    this.jaw = 0;
+	    this.neck = 90;
+	    this.rothead = 90;
+	    this.eyeX = 90;
+	    this.eyeY = 90;
+	    this.jaw = 90;
 
-	    this.topStom = 0;
-	    this.midStom = 0;
-	    this.lowStom = 0;
+	    this.topStom = 90;
+	    this.midStom = 90;
+	    this.lowStom = 90;
 	}
 
 	public int getRthumb() {

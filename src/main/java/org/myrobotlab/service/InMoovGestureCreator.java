@@ -1541,10 +1541,14 @@ public static void main(String[] args) throws InterruptedException {
 		
 //		pythonscript = stringBuffer.toString();
 		//parsescript(control_list);
-		parseScriptToFrame(control_list, scriptLines);		
+		try {
+			parseScriptToFrame(control_list, scriptLines);
+		} catch (Exception e) {
+			// TODO
+		}		
   }
 
-	private String parseScriptToFrame(JList list, List<String> scriptLines) {
+	private List<FrameItemHolder> parseScriptToFrame(JList list, List<String> scriptLines) throws Exception {
 		// TODO add complete file list from folder
 		pythonitemholder.clear();
 		PythonItemHolder pythonItem = new PythonItemHolder();
@@ -1563,11 +1567,13 @@ public static void main(String[] args) throws InterruptedException {
 		}
 		if(!gestureStartFound) {
 			// TODO write nice message
-			return "Gestrue not found. Please bla bla";
+			throw new Exception("Gestrue not found. Please bla bla");
 		}
 		// trimming line list
 		scriptLines = scriptLines.subList(counter, scriptLines.size());
 		// at this point the first gesture is starting
+		List<String> frameLines = new ArrayList<String>();
+		List<FrameItemHolder> fihList = ArrayList<FrameItemHolder>();
 		for(String singleScriptLine : scriptLines) {
 			if(!singleScriptLine.contains("setHeadVelocity") 
 					&& !singleScriptLine.contains("setArmVelocity") 
@@ -1584,27 +1590,28 @@ public static void main(String[] args) throws InterruptedException {
 			/// at this point we have frame command
 			if(singleScriptLine.contains("finishedGesture")) {
 				// we are finished
-				// TODO
-				return "Done";
+				return fihList;
 			}
 			if(singleScriptLine.contains("sleep")) {
 				// sleep means the end of the frame
-				// TODO 
+				fihList.add(parseScriptFragmentIntoSingleFrame(frameLines, singleScriptLine));
 			}
+			frameLines.add(singleScriptLine);
 		}
-		// TODO
-		return null;
+		return fihList;
 	}
 	
-	private void parseScriptFragmentIntoSingleFrame(List<String> gestureLines) {
+	private FrameItemHolder parseScriptFragmentIntoSingleFrame(List<String> frameLines, String sleepLine) {
 		FrameItemHolder fih = new FrameItemHolder();
 
 	    fih.setSleep(3);
 	    fih.setSpeech(null);
-	    fih.s etName("Abe");
+	    fih.setName("Abe");
 		
 		frameitemholder.add(fih);
 		framelistact(frameListGlobal);
+		
+		return fih;
  } 
  
   public void parse_frame_to_script() {
