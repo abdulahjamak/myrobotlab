@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,9 +31,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.myrobotlab.logging.LoggerFactory;
+import org.myrobotlab.service.InMoovGestureCreator;
 import org.myrobotlab.service.InMoovGestureCreator.ServoItemHolder;
 import org.myrobotlab.service.SwingGui;
-import org.myrobotlab.service._TemplateService;
 import org.slf4j.Logger;
 
 /**
@@ -125,6 +127,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
     // |----------|
 
     // predefined min- / res- / max- positions
+    
     int[][][] minresmaxpos = { { { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
         { { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } }, { { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
         { { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } }, { { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
@@ -356,9 +359,20 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
     control_testgest.addActionListener(this);
 
     bottom1.add(BorderLayout.EAST, bottom1right);
-
-    String[] te1 = { "                                                  ", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10" };
-
+    //ovdje umjesto T1 .. imena svih fileova iz foldera
+    File folder = new File("/home/abe/ws-fx/inmoov/InMoov/gestures");
+    File[] listOfFiles = folder.listFiles();
+    ArrayList<String> lista = new ArrayList<String>();
+    for (int i = 0; i < listOfFiles.length; i++) { //moze se isfiltrirati samo na .py filove
+    	  if (listOfFiles[i].isFile()) {
+    	    lista.add(listOfFiles[i].getName());
+    	  } else if (listOfFiles[i].isDirectory()) {
+    	    continue;
+    	  }
+    }
+    //String[] te1 = { "                                                  ", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10" };
+    String[] te1 = new String[lista.size()];
+    te1 = lista.toArray(te1);
     control_list = new JList(te1);
     control_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -450,7 +464,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
     String[] te2 = {
         "                                                                                                                                                                                                        ",
-        "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10" };
+        "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10" }; // zasto je ovo hardkodirano?  
+   //ja msm da ovdje treba da pokazuje ono sto se nalazi u control_list iz creatora
 
     framelist = new JList(te2);
     framelist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -562,7 +577,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
     // unsubscribe("publishState", "onState", _TemplateService.class);
   }
 
-  public void onState(_TemplateService template) {
+  public void onState(final InMoovGestureCreator inMoovGestureCreator) {
+	  log.info("Abe je, dosao sam do poziva onState()");
     // I think I should do something with this ...
     SwingUtilities.invokeLater(new Runnable() {
       @Override

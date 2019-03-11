@@ -1,6 +1,12 @@
 package org.myrobotlab.service;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -20,6 +26,8 @@ import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.logging.Logging;
 import org.myrobotlab.logging.LoggingFactory;
 import org.slf4j.Logger;
+
+import com.carrotsearch.ant.tasks.junit4.dependencies.com.google.common.io.Files;
 
 /**
  * InMoovGestureCreator - This is a helper service to create gestures for the
@@ -85,6 +93,14 @@ public class InMoovGestureCreator extends Service {
   String pythonname;
 
   String referencename;
+  
+  String parsirani_kod;
+  
+  String ime_funkcije = null;
+  
+  String ime_gest = null;
+  
+  JList frame_list_global = null;
 
   public static void main(String[] args) throws InterruptedException {
 
@@ -110,10 +126,11 @@ public class InMoovGestureCreator extends Service {
     tabs_main_checkbox_states = new boolean[6];
   }
 
+
   public void control_addgest(JList control_list, JTextField control_gestname, JTextField control_funcname) {
     // Add the current gesture to the script (button bottom-left)
-    String defname = control_funcname.getText();
-    String gestname = control_gestname.getText();
+    String defname = ime_funkcije = control_funcname.getText();
+    String gestname = ime_gest = control_gestname.getText();
 
     String code = "";
     for (FrameItemHolder fih : frameitemholder) {
@@ -208,7 +225,7 @@ public class InMoovGestureCreator extends Service {
     }
   }
 
-  public void control_loadgest(JList control_list, JList framelist, JTextField control_gestname, JTextField control_funcname) {
+  public void control_loadgest(JList control_list, JList framelist, JTextField control_gestname, JTextField control_funcname){
     // Load the current gesture from the script (button bottom-left)
     int posl = control_list.getSelectedIndex();
 
@@ -698,15 +715,6 @@ public class InMoovGestureCreator extends Service {
     }
   }
 
-  public void control_loadscri(JList control_list) {
-    // Load the Python-Script (out Python-Service) (button bottom-left)
-    // Python python = (Python) Runtime.getService("python");
-    // Script script = python.getScript();
-    pythonscript = "not supported";// script.getCode();
-
-    parsescript(control_list);
-  }
-
   public void control_removegest(JList control_list) {
     // Remove the selected gesture from the script (button bottom-left)
     int posl = control_list.getSelectedIndex();
@@ -740,7 +748,8 @@ public class InMoovGestureCreator extends Service {
     // Save the Python-Script (in Python-Service) (button bottom-left)
     JFrame frame = new JFrame();
     JTextArea textarea = new JTextArea();
-    textarea.setText(pythonscript);
+    parse_frame_to_script();
+    textarea.setText(parsirani_kod);
     textarea.setEditable(false);
     textarea.setLineWrap(true);
     JScrollPane scrollpane = new JScrollPane(textarea);
@@ -749,6 +758,16 @@ public class InMoovGestureCreator extends Service {
     frame.add(scrollpane);
     frame.pack();
     frame.setVisible(true);
+    
+    FileWriter fileWriter;
+	try {
+		/*"/home/abe/ws-fx/inmoov/InMoov/gestures/abetova.py"*/
+		fileWriter = new FileWriter("/home/abe/ws-fx/inmoov/InMoov/gestures/" + parsirani_kod.substring(4,parsirani_kod.indexOf('(')) + "_abetovo" + ".py");
+	    fileWriter.write(parsirani_kod);
+	    fileWriter.close();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
   }
 
   public void control_testgest() {
@@ -868,6 +887,7 @@ public class InMoovGestureCreator extends Service {
             if (tabs_main_checkbox_states[1]) {
               code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.lbicepspeed + "," + fih.lrotatespeed + "," + fih.lshoulderspeed + "," + fih.lomoplatespeed + ")\n";
             }
+
             if (tabs_main_checkbox_states[2]) {
               code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.rbicepspeed + "," + fih.rrotatespeed + "," + fih.rshoulderspeed + "," + fih.romoplatespeed + ")\n";
             }
@@ -907,77 +927,7 @@ public class InMoovGestureCreator extends Service {
     }
   }
 
-  public void controllistact(JList control_list) {
-    String[] listdata = new String[pythonitemholder.size()];
-    for (int i = 0; i < pythonitemholder.size(); i++) {
-      PythonItemHolder pih = pythonitemholder.get(i);
-
-      String pre;
-      if (!(pih.modifyable)) {
-        pre = "X    ";
-      } else {
-        pre = "     ";
-      }
-
-      int he = 21;
-      if (pih.code.length() < he) {
-        he = pih.code.length();
-      }
-
-      String des = pih.code.substring(0, he);
-
-      String displaytext = pre + des;
-      listdata[i] = displaytext;
-    }
-    control_list.setListData(listdata);
-  }
-
-  public void frame_add(JList framelist, JTextField frame_add_textfield) {
-    // Add a servo movement frame to the framelist (button bottom-right)
-    FrameItemHolder fih = new FrameItemHolder();
-
-    fih.rthumb = servoitemholder[0][0].sli.getValue();
-    fih.rindex = servoitemholder[0][1].sli.getValue();
-    fih.rmajeure = servoitemholder[0][2].sli.getValue();
-    fih.rringfinger = servoitemholder[0][3].sli.getValue();
-    fih.rpinky = servoitemholder[0][4].sli.getValue();
-    fih.rwrist = servoitemholder[0][5].sli.getValue();
-
-    fih.rbicep = servoitemholder[1][0].sli.getValue();
-    fih.rrotate = servoitemholder[1][1].sli.getValue();
-    fih.rshoulder = servoitemholder[1][2].sli.getValue();
-    fih.romoplate = servoitemholder[1][3].sli.getValue();
-
-    fih.lthumb = servoitemholder[2][0].sli.getValue();
-    fih.lindex = servoitemholder[2][1].sli.getValue();
-    fih.lmajeure = servoitemholder[2][2].sli.getValue();
-    fih.lringfinger = servoitemholder[2][3].sli.getValue();
-    fih.lpinky = servoitemholder[2][4].sli.getValue();
-    fih.lwrist = servoitemholder[2][5].sli.getValue();
-
-    fih.lbicep = servoitemholder[3][0].sli.getValue();
-    fih.lrotate = servoitemholder[3][1].sli.getValue();
-    fih.lshoulder = servoitemholder[3][2].sli.getValue();
-    fih.lomoplate = servoitemholder[3][3].sli.getValue();
-
-    fih.neck = servoitemholder[4][0].sli.getValue();
-    fih.rothead = servoitemholder[4][1].sli.getValue();
-    fih.eyeX = servoitemholder[4][2].sli.getValue();
-    fih.eyeY = servoitemholder[4][3].sli.getValue();
-    fih.jaw = servoitemholder[4][4].sli.getValue();
-
-    fih.topStom = servoitemholder[5][0].sli.getValue();
-    fih.midStom = servoitemholder[5][1].sli.getValue();
-    fih.lowStom = servoitemholder[5][2].sli.getValue();
-
-    fih.sleep = -1;
-    fih.speech = null;
-    fih.name = frame_add_textfield.getText();
-
-    frameitemholder.add(fih);
-
-    framelistact(framelist);
-  }
+  
 
   public void frame_addsleep(JList framelist, JTextField frame_addsleep_textfield) {
     // Add a sleep frame to the framelist (button bottom-right)
@@ -1261,12 +1211,12 @@ public class InMoovGestureCreator extends Service {
     }
   }
 
-  public void frame_test(JList framelist) {
+ /* public void frame_test(JList framelist) {
     // Test this frame (execute)
     int pos = framelist.getSelectedIndex();
     if (i01 != null && pos != -1) {
       FrameItemHolder fih = frameitemholder.get(pos);
-
+      
       // sleep || speech || servo movement || speed setting
       if (fih.sleep != -1) {
         sleep(fih.sleep);
@@ -1317,7 +1267,67 @@ public class InMoovGestureCreator extends Service {
       }
     }
   }
-
+*/
+  public void frame_test(JList framelist) {
+	    // Test this frame (execute)
+	    int pos = framelist.getSelectedIndex();
+	    log.info("indeks je: " + framelist.getSelectedIndex() + "a i01 = "  + (i01 == null ? "null" : "nije_ null"));
+	    if (i01 != null && pos != -1) {
+		    for (int i = 0; i < frameitemholder.size(); i++) {
+		  	  FrameItemHolder fih = frameitemholder.get(i);
+		    //  FrameItemHolder fih = frameitemholder.get(pos);
+		      log.info("Trenutno se testira: " + fih.name + "\n");
+		      // sleep || speech || servo movement || speed setting
+		      if (fih.sleep != -1) {
+		        sleep(fih.sleep);
+		      } else if (fih.speech != null) {
+		        try {
+		          i01.mouth.speakBlocking(fih.speech);
+		        } catch (Exception e) {
+		          Logging.logError(e);
+		        }
+		      } else if (fih.name != null) {
+		        if (tabs_main_checkbox_states[0]) {
+		          i01.moveHead(fih.neck, fih.rothead, fih.eyeX, fih.eyeY, fih.jaw);
+		        }
+		        if (tabs_main_checkbox_states[1]) {
+		          i01.moveArm("left", fih.lbicep, fih.lrotate, fih.lshoulder, fih.lomoplate);
+		        }
+		        if (tabs_main_checkbox_states[2]) {
+		          i01.moveArm("right", fih.rbicep, fih.rrotate, fih.rshoulder, fih.romoplate);
+		        }
+		        if (tabs_main_checkbox_states[3]) {
+		          i01.moveHand("left", fih.lthumb, fih.lindex, fih.lmajeure, fih.lringfinger, fih.lpinky, (double) fih.lwrist);
+		        }
+		        if (tabs_main_checkbox_states[4]) {
+		          i01.moveHand("right", fih.rthumb, fih.rindex, fih.rmajeure, fih.rringfinger, fih.rpinky, (double) fih.rwrist);
+		        }
+		        if (tabs_main_checkbox_states[5]) {
+		          i01.moveTorso(fih.topStom, fih.midStom, fih.lowStom);
+		        }
+		      } else {
+		        if (tabs_main_checkbox_states[0]) {
+		          i01.setHeadSpeed(fih.neckspeed, fih.rotheadspeed, fih.eyeXspeed, fih.eyeYspeed, fih.jawspeed);
+		        }
+		        if (tabs_main_checkbox_states[1]) {
+		          i01.setArmSpeed("left", fih.lbicepspeed, fih.lrotatespeed, fih.lshoulderspeed, fih.lomoplatespeed);
+		        }
+		        if (tabs_main_checkbox_states[2]) {
+		          i01.setArmSpeed("right", fih.rbicepspeed, fih.rrotatespeed, fih.rshoulderspeed, fih.romoplatespeed);
+		        }
+		        if (tabs_main_checkbox_states[3]) {
+		          i01.setHandSpeed("left", fih.lthumbspeed, fih.lindexspeed, fih.lmajeurespeed, fih.lringfingerspeed, fih.lpinkyspeed, fih.lwristspeed);
+		        }
+		        if (tabs_main_checkbox_states[4]) {
+		          i01.setHandSpeed("right", fih.rthumbspeed, fih.rindexspeed, fih.rmajeurespeed, fih.rringfingerspeed, fih.rpinkyspeed, fih.rwristspeed);
+		        }
+		        if (tabs_main_checkbox_states[5]) {
+		          i01.setTorsoSpeed(fih.topStomspeed, fih.midStomspeed, fih.lowStomspeed);
+		        }
+		      }
+		    }
+	    }
+	  } 
   public void frame_up(JList framelist) {
     // Move this frame one up on the framelist (button bottom-right)
     int pos = framelist.getSelectedIndex();
@@ -1432,6 +1442,8 @@ public class InMoovGestureCreator extends Service {
 
   public void framelistact(JList framelist) {
     // Re-Build the framelist
+	log.info("Pozvan sam pri incijalizaciji!");
+	frame_list_global = framelist;
     String[] listdata = new String[frameitemholder.size()];
 
     for (int i = 0; i < frameitemholder.size(); i++) {
@@ -1503,12 +1515,183 @@ public class InMoovGestureCreator extends Service {
     framelist.setListData(listdata);
   }
 
+  public void control_loadscri(JList control_list) {
+	
+		StringBuffer stringBuffer = new StringBuffer();
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+		try {
+			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
+			bufferedReader = new BufferedReader(fileReader);
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				stringBuffer.append(line + "\n");
+			}
+			bufferedReader.close();
+		} catch (Exception e) {
+			log.warn("Exception occurred trying to read /home/abe/abe.py", e);
+		} finally {
+			if (fileReader != null) {
+				try {
+					fileReader.close();
+				} catch (IOException e) {
+					log.warn("Could not close fileReader", e);
+				}
+			}
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+					log.warn("Could not close bufferedReader", e);
+				}
+			}
+		}
+		
+		pythonscript = stringBuffer.toString();
+		//parsescript(control_list);
+		parse_script_to_frame(control_list, pythonscript);
+		
+  }
+  
+public void parse_script_to_frame(JList list, String code) {
+		pythonitemholder.clear();
+		FrameItemHolder fih = new FrameItemHolder();
+		log.info("Usao sam u parsiranje skripte. frame_list_global: " + frame_list_global + " ...");
+	    fih.rthumb = 0;
+	    fih.rindex = 0;
+	    fih.rmajeure = 0;
+	    fih.rringfinger = 0;
+	    fih.rpinky = 0;
+	    fih.rwrist = 0;
+
+	    fih.rbicep = 0;
+	    fih.rrotate = 0;
+	    fih.rshoulder = 0;
+	    fih.romoplate = 0;
+
+	    fih.lthumb = 0;
+	    fih.lindex = 0;
+	    fih.lmajeure = 0;
+	    fih.lringfinger = 0;
+	    fih.lpinky = 0;
+	    fih.lwrist = 0;
+
+	    fih.lbicep = 0;
+	    fih.lrotate = 0;
+	    fih.lshoulder = 0;
+	    fih.lomoplate = 0;
+
+	    fih.neck = 0;
+	    fih.rothead = 0;
+	    fih.eyeX = 0;
+	    fih.eyeY = 0;
+	    fih.jaw = 0;
+
+	    fih.topStom = 0;
+	    fih.midStom = 0;
+	    fih.lowStom = 0;
+
+	    fih.sleep = 3;
+	    fih.speech = null;
+	    fih.name = "Abe";
+		
+		frameitemholder.add(fih);
+		framelistact(frame_list_global);
+		controllistact(list);
+		
+ } 
+ 
+  public void parse_frame_to_script() {
+	  String code = "def " + /*ime_funkcije*/"test" + "():\n  i01.startedGesture()\n  "; //def + ime plus () + enter i dva spejsa + i01.
+	  //treba reci da se prvo dodaje brzina pa onda frame
+	  for (int i = 0; i < frameitemholder.size(); i++) {
+	      FrameItemHolder fih = frameitemholder.get(i);
+	      
+	      if(fih.name == null && fih.sleep == -1) {
+	    	  String brzine[] = {"","","","","",""};
+	    	  if(tabs_main_checkbox_states[0])	brzine[0] = "i01.setHeadVelocity(" + fih.rotheadspeed + "," + fih.neckspeed + ")";
+	    	  if(tabs_main_checkbox_states[1])	brzine[1] = "i01.setArmVelocity(\"left\"," + fih.lbicepspeed + "," + fih.lrotatespeed + "," + fih.lshoulderspeed + "," + fih.lomoplatespeed + ")";
+	    	  if(tabs_main_checkbox_states[2])	brzine[2] = "i01.setArmVelocity(\"right\"," + fih.rbicepspeed + "," + fih.rrotatespeed + "," + fih.rshoulderspeed + "," + fih.romoplatespeed + ")";
+	    	  if(tabs_main_checkbox_states[3])	brzine[3] = "i01.setHandVelocity(\"left\"," + fih.lthumbspeed + "," + fih.lpinkyspeed + "," + fih.lmajeurespeed + "," + fih.lringfingerspeed + "," + fih.lpinkyspeed + "," + fih.lwristspeed +")";
+	    	  if(tabs_main_checkbox_states[4])	brzine[4] = "i01.setHandVelocity(\"right\"," + fih.rthumbspeed + "," + fih.rpinkyspeed + "," + fih.rmajeurespeed + "," + fih.rringfingerspeed + "," + fih.rpinky + "," + fih.rwristspeed +")";
+	    	  if(tabs_main_checkbox_states[5])	brzine[5] = "i01.setTorsoVelocity(" + fih.topStomspeed + "," + fih.midStomspeed + "," + fih.lowStomspeed + ")";
+	    	  for(int j = 0; j <= 5; j++) {
+    			  if(tabs_main_checkbox_states[j]) 
+    				  code += (brzine[j] + "\n  ");
+	    	  }
+	      }else if(fih.name == null && fih.sleep != -1){
+	    	  code += "sleep(" + fih.sleep + ")\n  ";
+	      }else {
+	    	  String pomjeranja[] = {"","","","","",""};
+	    	  if(tabs_main_checkbox_states[0])	pomjeranja[0] = "i01.moveHead(" + fih.neck + "," + fih.rothead + "," + fih.eyeX + "," + fih.eyeY + "," + fih.jaw + ")";
+	    	  if(tabs_main_checkbox_states[1])	pomjeranja[1] = "i01.moveArm(\"left\"," + fih.lbicep + "," + fih.lrotate + "," + fih.lshoulder + "," + fih.lomoplate + ")";
+	    	  if(tabs_main_checkbox_states[2])	pomjeranja[2] = "i01.moveArm(\"right\"," + fih.rbicep + "," + fih.rrotate + "," + fih.rshoulder + "," + fih.romoplate + ")";
+	    	  if(tabs_main_checkbox_states[3])	pomjeranja[3] = "i01.moveHand(\"left\"," + fih.lthumb + "," + fih.lpinky + "," + fih.lmajeure + "," + fih.lringfinger + "," + fih.lpinky + "," + fih.lwrist +")";
+	    	  if(tabs_main_checkbox_states[4])	pomjeranja[4] = "i01.moveHand(\"right\"," + fih.rthumb + "," + fih.rpinky + "," + fih.rmajeure + "," + fih.rringfinger + "," + fih.rpinky + "," + fih.rwrist +")";
+	    	  if(tabs_main_checkbox_states[5])	pomjeranja[5] = "i01.moveTorso(" + fih.topStom + "," + fih.midStom + "," + fih.lowStom + ")";
+	    	  for(int j = 0; j <= 5; j++) {
+    			  if(tabs_main_checkbox_states[j]) 
+    				  code += (pomjeranja[j] + "\n  ");
+	    	  }	    	 
+	      }
+	  }
+	  //code += "i01.finishedGesture()";
+	  parsirani_kod = code;
+  }
+ 
+  public void frame_add(JList framelist, JTextField frame_add_textfield) {
+	    // Add a servo movement frame to the framelist (button bottom-right)
+	    FrameItemHolder fih = new FrameItemHolder();
+
+	    fih.rthumb = servoitemholder[0][0].sli.getValue();
+	    fih.rindex = servoitemholder[0][1].sli.getValue();
+	    fih.rmajeure = servoitemholder[0][2].sli.getValue();
+	    fih.rringfinger = servoitemholder[0][3].sli.getValue();
+	    fih.rpinky = servoitemholder[0][4].sli.getValue();
+	    fih.rwrist = servoitemholder[0][5].sli.getValue();
+
+	    fih.rbicep = servoitemholder[1][0].sli.getValue();
+	    fih.rrotate = servoitemholder[1][1].sli.getValue();
+	    fih.rshoulder = servoitemholder[1][2].sli.getValue();
+	    fih.romoplate = servoitemholder[1][3].sli.getValue();
+
+	    fih.lthumb = servoitemholder[2][0].sli.getValue();
+	    fih.lindex = servoitemholder[2][1].sli.getValue();
+	    fih.lmajeure = servoitemholder[2][2].sli.getValue();
+	    fih.lringfinger = servoitemholder[2][3].sli.getValue();
+	    fih.lpinky = servoitemholder[2][4].sli.getValue();
+	    fih.lwrist = servoitemholder[2][5].sli.getValue();
+
+	    fih.lbicep = servoitemholder[3][0].sli.getValue();
+	    fih.lrotate = servoitemholder[3][1].sli.getValue();
+	    fih.lshoulder = servoitemholder[3][2].sli.getValue();
+	    fih.lomoplate = servoitemholder[3][3].sli.getValue();
+
+	    fih.neck = servoitemholder[4][0].sli.getValue();
+	    fih.rothead = servoitemholder[4][1].sli.getValue();
+	    fih.eyeX = servoitemholder[4][2].sli.getValue();
+	    fih.eyeY = servoitemholder[4][3].sli.getValue();
+	    fih.jaw = servoitemholder[4][4].sli.getValue();
+
+	    fih.topStom = servoitemholder[5][0].sli.getValue();
+	    fih.midStom = servoitemholder[5][1].sli.getValue();
+	    fih.lowStom = servoitemholder[5][2].sli.getValue();
+
+	    fih.sleep = -1;
+	    fih.speech = null;
+	    fih.name = frame_add_textfield.getText();
+
+	    frameitemholder.add(fih);
+
+	    framelistact(framelist);
+  }
+  
   public void parsescript(JList control_list) {
     pythonitemholder.clear();
 
-    if (true) {
+    if (true) { //wut?
       String pscript = pythonscript;
-      String[] pscriptsplit = pscript.split("\n");
+      String[] pscriptsplit = pscript.split("\n"); 
 
       // get the name of the InMoov-reference
       for (String line : pscriptsplit) {
@@ -1517,7 +1700,6 @@ public class InMoovGestureCreator extends Service {
             pythonname = line.substring(0, line.indexOf(" = "));
             referencename = line.substring(line.indexOf("(\"") + 2, line.indexOf("\", \"InMoov\")"));
           }
-
         }
       }
 
@@ -1644,6 +1826,31 @@ public class InMoovGestureCreator extends Service {
       }
     }
     controllistact(control_list);
+  }
+
+  public void controllistact(JList control_list) {
+    String[] listdata = new String[pythonitemholder.size()];
+    for (int i = 0; i < pythonitemholder.size(); i++) {
+      PythonItemHolder pih = pythonitemholder.get(i);
+
+      String pre;
+      if (!(pih.modifyable)) {
+        pre = "X    ";
+      } else {
+        pre = "     ";
+      }
+
+      int he = 21;
+      if (pih.code.length() < he) {
+        he = pih.code.length();
+      }
+
+      String des = pih.code.substring(0, he);
+
+      String displaytext = pre + des;
+      listdata[i] = displaytext;
+    }
+    control_list.setListData(listdata);
   }
 
   public void servoitemholder_set_sih1(int i1, ServoItemHolder[] sih1) {
