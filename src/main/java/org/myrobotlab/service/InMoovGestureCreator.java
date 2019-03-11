@@ -1601,7 +1601,7 @@ public static void main(String[] args) throws InterruptedException {
 
 	    fih.setSleep(3);
 	    fih.setSpeech(null);
-	    fih.setName("Abe");
+	    fih.s etName("Abe");
 		
 		frameitemholder.add(fih);
 		framelistact(frameListGlobal);
