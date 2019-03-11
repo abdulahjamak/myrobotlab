@@ -1573,7 +1573,7 @@ public static void main(String[] args) throws InterruptedException {
 		scriptLines = scriptLines.subList(counter, scriptLines.size());
 		// at this point the first gesture is starting
 		List<String> frameLines = new ArrayList<String>();
-		List<FrameItemHolder> fihList = ArrayList<FrameItemHolder>();
+		List<FrameItemHolder> fihList = new ArrayList<FrameItemHolder>();
 		for(String singleScriptLine : scriptLines) {
 			if(!singleScriptLine.contains("setHeadVelocity") 
 					&& !singleScriptLine.contains("setArmVelocity") 
