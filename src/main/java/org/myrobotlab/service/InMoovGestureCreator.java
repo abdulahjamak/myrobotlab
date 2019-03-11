@@ -1553,7 +1553,7 @@ public static void main(String[] args) throws InterruptedException {
 		// TODO add complete file list from folder
 		pythonitemholder.clear();
 		PythonItemHolder pythonItem = new PythonItemHolder();
-		pythonitemholder.add(pythonItem);
+		//pythonitemholder.add(pythonItem);
 		// parse start
 		// step #1: find gesture start
 		boolean gestureStartFound = false;
@@ -1567,8 +1567,7 @@ public static void main(String[] args) throws InterruptedException {
 			counter++;
 		}
 		if(!gestureStartFound) {
-			// TODO write nice message
-			throw new Exception("Gestrue not found. Please bla bla");
+			throw new Exception("Gestrue not found. Please provide a startedGesture() as the first command!");
 		}
 		// trimming lines before startedGesture
 		scriptLines = scriptLines.subList(counter, scriptLines.size());
@@ -1595,8 +1594,12 @@ public static void main(String[] args) throws InterruptedException {
 			}
 			if(singleScriptLine.contains("sleep")) {
 				// sleep means the end of the frame
-				fihList.add(parseScriptFragmentIntoSingleFrame(frameLines)); // parse the frame and add it
-				fihList.add(parseScriptSleepToFrameSleep(singleScriptLine)); // finish it with a sleep
+				try {
+					fihList.add(parseScriptFragmentIntoSingleFrame(frameLines)); // parse the frame and add it
+					fihList.add(parseScriptSleepToFrameSleep(singleScriptLine)); // finish it with a sleep
+				}catch(Exception e){
+					log.error("Exception from function parseScriptFragmentIntoSingleFrame: " + e);
+				}
 			}
 			frameLines.add(singleScriptLine);
 		}
