@@ -1628,13 +1628,14 @@ public static void main(String[] args) throws InterruptedException {
 		for(String singleScriptLine : frameLines) {
 			// it always starts with 'i01.'
 //			i01.setHeadSpeed(0.95,0.95)
-			singleScriptLine = singleScriptLine.substring(3, singleScriptLine.length()-1);
+			log.info("expected: i01.setHeadSpeed(0.95,0.95) \""+singleScriptLine+"\"");
+			singleScriptLine = singleScriptLine.substring(3, singleScriptLine.length()-2);
 //			setHeadSpeed(0.95,0.95
 			String[] splitString = singleScriptLine.split("(");
 			// splitString[0] setHeadSpeed
 			// splitString[1] 0.95,0.95
 			String[] valuesString = splitString[1].split(",");
-			log.info(singleScriptLine);
+			log.info("expected: setHeadSpeed(0.95,0.95 \""+singleScriptLine+"\"");
 			log.info(splitString.toString());
 			log.info(valuesString.toString());
 			if(splitString[0].contains("Speed")) { 
@@ -1651,14 +1652,34 @@ public static void main(String[] args) throws InterruptedException {
 				} else if(splitString[0].contains("Arm")) { 
 					if(valuesString[0].contains("left")) {
 //						setArmSpeed("left",1.0,0.85,0.95,0.95)
+						fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[0].trim()));
+						fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[1].trim()));
+						fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[2].trim()));
+						fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[3].trim()));
 					} else if(valuesString[0].contains("right")) { 
 //						setArmSpeed("right",0.65,0.85,0.65,0.85)
+						fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[0].trim()));
+						fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[1].trim()));
+						fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[2].trim()));
+						fihSpeed.setRomoplatespeed(Double.parseDouble(valuesString[3].trim()));
 					}
 				} else if(splitString[0].contains("Hand")) { 
 					if(valuesString[0].contains("left")) {
 //						setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
+						fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[0].trim()));
+						fihSpeed.setLindexspeed(Double.parseDouble(valuesString[1].trim()));
+						fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[2].trim()));
+						fihSpeed.setLringfingerspeed(Double.parseDouble(valuesString[3].trim()));
+						fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[4].trim()));
+						fihSpeed.setLwristspeed(Double.parseDouble(valuesString[5].trim()));
 					} else if(valuesString[0].contains("right")) { 
 //						setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
+						fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[0].trim()));
+						fihSpeed.setRindexspeed(Double.parseDouble(valuesString[1].trim()));
+						fihSpeed.setRmajeurespeed(Double.parseDouble(valuesString[2].trim()));
+						fihSpeed.setRringfingerspeed(Double.parseDouble(valuesString[3].trim()));
+						fihSpeed.setRpinkyspeed(Double.parseDouble(valuesString[4].trim()));
+						fihSpeed.setRwristspeed(Double.parseDouble(valuesString[5].trim()));
 					}
 				} else { 
 					
@@ -1666,15 +1687,49 @@ public static void main(String[] args) throws InterruptedException {
 			} else if(splitString[0].contains("move")) { 
 				addMove = true;
 				if(splitString[0].contains("Head")) {
-//				  moveHead(79,100,82,78,65)
+//				    moveHead(79,100,82,78,65)
+					fihMove.setNeck(Integer.parseInt(valuesString[0].trim()));
+					fihMove.setRothead(Integer.parseInt(valuesString[1].trim()));
+					fihMove.setEyeX(Integer.parseInt(valuesString[2].trim()));
+					fihMove.setEyeY(Integer.parseInt(valuesString[3].trim()));
+					fihMove.setJaw(Integer.parseInt(valuesString[4].trim()));
 				} else if(splitString[0].contains("Arm")) { 
-//				  moveArm("left",5,84,28,15)
-//				  moveArm("right",5,82,28,15)
+					if(valuesString[0].contains("left")) {
+//				        moveArm("left",5,84,28,15)
+						fihMove.setLbicep(Integer.parseInt(valuesString[0].trim()));
+						fihMove.setLrotate(Integer.parseInt(valuesString[1].trim()));
+						fihMove.setLshoulder(Integer.parseInt(valuesString[2].trim()));
+						fihMove.setLomoplate(Integer.parseInt(valuesString[3].trim()));
+					} else if(valuesString[0].contains("right")) { 
+//					    moveArm("right",5,82,28,15)	
+						fihMove.setRbicep(Integer.parseInt(valuesString[0].trim()));
+						fihMove.setRrotate(Integer.parseInt(valuesString[1].trim()));
+						fihMove.setRshoulder(Integer.parseInt(valuesString[2].trim()));
+						fihMove.setRomoplate(Integer.parseInt(valuesString[3].trim()));					
+					}
 				} else if(splitString[0].contains("Hand")) { 
-//				  moveHand("left",92,33,37,71,66,25)
-//				  moveHand("right",81,66,82,60,105,113)
+					if(valuesString[0].contains("left")) {
+//				    	moveHand("left",92,33,37,71,66,25)
+						fihMove.setLthumb(Integer.parseInt(valuesString[0].trim()));
+						fihMove.setLindex(Integer.parseInt(valuesString[1].trim()));
+						fihMove.setLmajeure(Integer.parseInt(valuesString[2].trim()));
+						fihMove.setLringfinger(Integer.parseInt(valuesString[3].trim()));	
+						fihMove.setLpinky(Integer.parseInt(valuesString[4].trim()));
+						fihMove.setLwrist(Integer.parseInt(valuesString[5].trim()));
+					} else if(valuesString[0].contains("right")) { 
+//				    	moveHand("right",81,66,82,60,105,113)
+						fihMove.setRthumb(Integer.parseInt(valuesString[0].trim()));
+						fihMove.setRindex(Integer.parseInt(valuesString[1].trim()));
+						fihMove.setRmajeure(Integer.parseInt(valuesString[2].trim()));
+						fihMove.setRringfinger(Integer.parseInt(valuesString[3].trim()));	
+						fihMove.setRpinky(Integer.parseInt(valuesString[4].trim()));
+						fihMove.setRwrist(Integer.parseInt(valuesString[5].trim()));
+					}
 				} else if(splitString[0].contains("Torso")) { 
-//				  moveTorso(90,90,90)
+//				    moveTorso(90,90,90)
+					fihMove.setTopStom(Integer.parseInt(valuesString[0].trim()));
+					fihMove.setMidStom(Integer.parseInt(valuesString[1].trim()));
+					fihMove.setLowStom(Integer.parseInt(valuesString[2].trim()));
 				} else { 
 					
 				}
@@ -1692,8 +1747,7 @@ public static void main(String[] args) throws InterruptedException {
 	
 	private void parseScriptSleepToFrameSleep(List<FrameItemHolder> fihList, String sleepLine) {
 		//sleep line:
-		//  sleep(3) !!note the 2 spaces at the beginning
-		
+		//  sleep(3) !!note the 2 spaces at the beginning		
 		int sleepTime = Integer.parseInt(sleepLine.substring(sleepLine.indexOf('('), sleepLine.indexOf(')')));
 		FrameItemHolder fih = new FrameItemHolder();
 		fih.resetValues();
