@@ -1575,6 +1575,9 @@ public static void main(String[] args) throws InterruptedException {
 		List<String> frameLines = new ArrayList<String>();
 		List<FrameItemHolder> fihList = new ArrayList<FrameItemHolder>();
 		for(String singleScriptLine : scriptLines) {
+			// '  sleep(4)'
+			singleScriptLine = singleScriptLine.trim();
+			// 'sleep(4)'
 			if(!singleScriptLine.contains("setHeadVelocity") 
 					&& !singleScriptLine.contains("setArmVelocity") 
 					&& !singleScriptLine.contains("setHandVelocity") 
@@ -1592,11 +1595,17 @@ public static void main(String[] args) throws InterruptedException {
 				// we are finished
 				return fihList;
 			}
+			if(singleScriptLine.contains("speech")) {
+				// ignore
+				continue;
+			}
 			if(singleScriptLine.contains("sleep")) {
 				// sleep means the end of the frame
 				try {
-					fihList.add(parseScriptFragmentIntoSingleFrame(frameLines)); // parse the frame and add it
-					fihList.add(parseScriptSleepToFrameSleep(singleScriptLine)); // finish it with a sleep
+					// parse the frame and add it
+					parseScriptFragmentIntoSingleFrame(fihList, frameLines, counter); 
+					// finish it with a sleep
+					parseScriptSleepToFrameSleep(fihList, singleScriptLine); 
 				}catch(Exception e){
 					log.error("Exception from function parseScriptFragmentIntoSingleFrame: " + e);
 				}
@@ -1605,8 +1614,98 @@ public static void main(String[] args) throws InterruptedException {
 		}
 		return fihList;
 	}
+
+	private void parseScriptFragmentIntoSingleFrame(List<FrameItemHolder> fihList, 
+			List<String> frameLines, int frameCounter) throws Exception {
+		FrameItemHolder fihSpeed = new FrameItemHolder();
+		fihSpeed.setSpeech(null);
+		fihSpeed.setName(null);
+		FrameItemHolder fihMove = new FrameItemHolder();
+		fihMove.setName("Frame#"+frameCounter);
+		boolean addSpeed = false;
+		boolean addMove = false;
+
+		for(String singleScriptLine : frameLines) {
+			// it always starts with 'i01.'
+//			i01.setHeadSpeed(0.95,0.95)
+			singleScriptLine = singleScriptLine.substring(3, singleScriptLine.length()-1);
+//			setHeadSpeed(0.95,0.95
+			String[] splitString = singleScriptLine.split("(");
+			// splitString[0] setHeadSpeed
+			// splitString[1] 0.95,0.95
+			String[] valuesString = splitString[1].split(",");
+			log.info(singleScriptLine);
+			log.info(splitString.toString());
+			log.info(valuesString.toString());
+			if(splitString[0].contains("Speed")) { 
+				addSpeed = true;
+				if(splitString[0].contains("Head")) {
+//					setHeadSpeed(0.95,0.95)
+					fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
+					fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
+				} else if(splitString[0].contains("Torso")) { 
+//					setTorsoSpeed(0.95,0.85,1.0)
+					fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
+					fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
+					fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
+				} else if(splitString[0].contains("Arm")) { 
+					if(valuesString[0].contains("left")) {
+//						setArmSpeed("left",1.0,0.85,0.95,0.95)
+					} else if(valuesString[0].contains("right")) { 
+//						setArmSpeed("right",0.65,0.85,0.65,0.85)
+					}
+				} else if(splitString[0].contains("Hand")) { 
+					if(valuesString[0].contains("left")) {
+//						setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
+					} else if(valuesString[0].contains("right")) { 
+//						setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
+					}
+				} else { 
+					
+				}
+			} else if(splitString[0].contains("move")) { 
+				addMove = true;
+				if(splitString[0].contains("Head")) {
+//				  moveHead(79,100,82,78,65)
+				} else if(splitString[0].contains("Arm")) { 
+//				  moveArm("left",5,84,28,15)
+//				  moveArm("right",5,82,28,15)
+				} else if(splitString[0].contains("Hand")) { 
+//				  moveHand("left",92,33,37,71,66,25)
+//				  moveHand("right",81,66,82,60,105,113)
+				} else if(splitString[0].contains("Torso")) { 
+//				  moveTorso(90,90,90)
+				} else { 
+					
+				}
+			} else { 
+				// we should never get here
+			}
+		}
+		if(addSpeed) {
+			fihList.add(fihSpeed);
+		}
+		if(addMove) {
+			fihList.add(fihMove);
+		}
+	}
 	
-	private FrameItemHolder parseScriptFragmentIntoSingleFrame(List<String> frameLines) throws Exception{
+	private void parseScriptSleepToFrameSleep(List<FrameItemHolder> fihList, String sleepLine) {
+		//sleep line:
+		//  sleep(3) !!note the 2 spaces at the beginning
+		
+		int sleepTime = Integer.parseInt(sleepLine.substring(sleepLine.indexOf('('), sleepLine.indexOf(')')));
+		FrameItemHolder fih = new FrameItemHolder();
+		fih.resetValues();
+		
+		fih.setName(null); //sleep frame has Name and Speech as null and Sleep as int
+		fih.setSpeech(null);
+		fih.setSleep(sleepTime);
+		
+		fihList.add(fih);
+	}
+	
+	private FrameItemHolder parseScriptFragmentIntoSingleFrameAbe(List<String> frameLines) throws Exception{
 		
 		FrameItemHolder fih = new FrameItemHolder();
 		
@@ -1927,20 +2026,6 @@ public static void main(String[] args) throws InterruptedException {
 				
 //		frameitemholder.add(fih);
 //		framelistact(frameListGlobal);
-		return fih;
-	}
-	
-	private FrameItemHolder parseScriptSleepToFrameSleep(String sleepLine) {
-		//sleep line:
-		//  sleep(3) !!note the 2 spaces at the beginning
-		int sleepTime = Integer.parseInt(sleepLine.substring(sleepLine.indexOf('('), sleepLine.indexOf(')')));
-		FrameItemHolder fih = new FrameItemHolder();
-		fih.resetValues();
-		
-		fih.setName(null); //sleep frame has Name and Speech as null and Sleep as int
-		fih.setSpeech(null);
-		fih.setSleep(sleepTime);
-		
 		return fih;
 	}
  
