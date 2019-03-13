@@ -511,7 +511,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
     if (o == control_connect) {
       swingGui.send(boundServiceName, "control_connect", control_connect);
     } else if (o == control_loadscri) {
-      swingGui.send(boundServiceName, "control_loadscri", control_list);
+      swingGui.send(boundServiceName, "control_loadscri", control_list, framelist);
     } else if (o == control_savescri) {
       swingGui.send(boundServiceName, "control_savescri");
     } else if (o == control_loadgest) {

@@ -60,11 +60,9 @@ public class InMoovGestureCreator extends Service {
 
 	transient ServoItemHolder[][] servoitemholder;
 
-	transient ArrayList<FrameItemHolder> frameitemholder;
+	transient ArrayList<FrameItemHolder> frames;
 
 	transient ArrayList<PythonItemHolder> pythonitemholder;
-
-	boolean[] tabs_main_checkbox_states;
 
 	boolean moverealtime = false;
 	InMoov i01;
@@ -109,10 +107,8 @@ public static void main(String[] args) throws InterruptedException {
     super(n);
     // intializing variables
     servoitemholder = new ServoItemHolder[6][];
-    frameitemholder = new ArrayList<FrameItemHolder>();
+    frames = new ArrayList<FrameItemHolder>();
     pythonitemholder = new ArrayList<PythonItemHolder>();
-
-    tabs_main_checkbox_states = new boolean[6];
   }
 
 
@@ -122,7 +118,7 @@ public static void main(String[] args) throws InterruptedException {
     String gestname = ime_gest = control_gestname.getText();
 
     String code = "";
-    for (FrameItemHolder fih : frameitemholder) {
+    for (FrameItemHolder fih : frames) {
       String code1;
       if (fih.getSleep() != -1) {
         code1 = "    sleep(" + fih.getSleep() + ")\n";
@@ -135,24 +131,24 @@ public static void main(String[] args) throws InterruptedException {
         String code14 = "";
         String code15 = "";
         String code16 = "";
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           code11 = "    " + pythonname + ".moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")\n";
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")\n";
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")\n";
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLindex() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + "," + fih.getLwrist()
               + ")\n";
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRindex() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + "," + fih.getRwrist()
               + ")\n";
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")\n";
         }
         code1 = code11 + code12 + code13 + code14 + code15 + code16;
@@ -163,24 +159,24 @@ public static void main(String[] args) throws InterruptedException {
         String code14 = "";
         String code15 = "";
         String code16 = "";
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckspeed() + "," + fih.getRotheadspeed() + "," + fih.getEyeXspeed() + "," + fih.getEyeYspeed() + "," + fih.getJawspeed() + ")\n";
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")\n";
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")\n";
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLthumbspeed() + "," + fih.getLindexspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + ","
               + fih.getLpinkyspeed() + "," + fih.getLwristspeed() + ")\n";
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRthumbspeed() + "," + fih.getRindexspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + ","
               + fih.getRpinkyspeed() + "," + fih.getRwristspeed() + ")\n";
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")\n";
         }
         code1 = code11 + code12 + code13 + code14 + code15 + code16;
@@ -220,7 +216,7 @@ public static void main(String[] args) throws InterruptedException {
 
     if (posl != -1) {
       if (pythonitemholder.get(posl).modifyable) {
-        frameitemholder.clear();
+        frames.clear();
 
         String defname = null;
 
@@ -264,7 +260,7 @@ public static void main(String[] args) throws InterruptedException {
               fih.setSleep(Integer.parseInt(sleeptime));
               fih.setSpeech(null);
               fih.setName(null);
-              frameitemholder.add(fih);
+              frames.add(fih);
               fih = null;
               pos++;
             } else if (line2.startsWith(pythonname)) {
@@ -272,7 +268,7 @@ public static void main(String[] args) throws InterruptedException {
                 fih.setSleep(-1);
                 fih.setSpeech(line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")));
                 fih.setName(null);
-                frameitemholder.add(fih);
+                frames.add(fih);
                 fih = null;
                 pos++;
               } else if (line2.startsWith(pythonname + ".move")) {
@@ -540,7 +536,7 @@ public static void main(String[] args) throws InterruptedException {
               fih.setSleep(-1);
               fih.setSpeech(null);
               fih.setName("SEQ");
-              frameitemholder.add(fih);
+              frames.add(fih);
               fih = null;
               ismove = false;
               head = false;
@@ -667,7 +663,7 @@ public static void main(String[] args) throws InterruptedException {
               fih.setSleep(-1);
               fih.setSpeech(null);
               fih.setName(null);
-              frameitemholder.add(fih);
+              frames.add(fih);
               fih = null;
               isspeed = false;
               head = false;
@@ -762,7 +758,7 @@ public static void main(String[] args) throws InterruptedException {
   public void control_testgest() {
     // test (execute) the created gesture (button bottom-left)
     if (i01 != null) {
-      for (FrameItemHolder fih : frameitemholder) {
+      for (FrameItemHolder fih : frames) {
         if (fih.getSleep() != -1) {
           sleep(fih.getSleep());
         } else if (fih.getSpeech() != null) {
@@ -772,41 +768,41 @@ public static void main(String[] args) throws InterruptedException {
             Logging.logError(e);
           }
         } else if (fih.getName() != null) {
-          if (tabs_main_checkbox_states[0]) {
+          if (fih.getTabsMainCheckboxStates()[0]) {
             i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
           }
-          if (tabs_main_checkbox_states[1]) {
+          if (fih.getTabsMainCheckboxStates()[1]) {
             i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
           }
-          if (tabs_main_checkbox_states[2]) {
+          if (fih.getTabsMainCheckboxStates()[2]) {
             i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
           }
-          if (tabs_main_checkbox_states[3]) {
+          if (fih.getTabsMainCheckboxStates()[3]) {
             i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
           }
-          if (tabs_main_checkbox_states[4]) {
+          if (fih.getTabsMainCheckboxStates()[4]) {
             i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
           }
-          if (tabs_main_checkbox_states[5]) {
+          if (fih.getTabsMainCheckboxStates()[5]) {
             i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
           }
         } else {
-          if (tabs_main_checkbox_states[0]) {
+          if (fih.getTabsMainCheckboxStates()[0]) {
             i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
           }
-          if (tabs_main_checkbox_states[1]) {
+          if (fih.getTabsMainCheckboxStates()[1]) {
             i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
           }
-          if (tabs_main_checkbox_states[2]) {
+          if (fih.getTabsMainCheckboxStates()[2]) {
             i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
           }
-          if (tabs_main_checkbox_states[3]) {
+          if (fih.getTabsMainCheckboxStates()[3]) {
             i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
           }
-          if (tabs_main_checkbox_states[4]) {
+          if (fih.getTabsMainCheckboxStates()[4]) {
             i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
           }
-          if (tabs_main_checkbox_states[5]) {
+          if (fih.getTabsMainCheckboxStates()[5]) {
             i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
           }
         }
@@ -829,7 +825,7 @@ public static void main(String[] args) throws InterruptedException {
         String gestname = control_gestname.getText();
 
         String code = "";
-        for (FrameItemHolder fih : frameitemholder) {
+        for (FrameItemHolder fih : frames) {
           String code1;
           if (fih.getSleep() != -1) {
             code1 = "    sleep(" + fih.getSleep() + ")\n";
@@ -842,24 +838,24 @@ public static void main(String[] args) throws InterruptedException {
             String code14 = "";
             String code15 = "";
             String code16 = "";
-            if (tabs_main_checkbox_states[0]) {
+            if (fih.getTabsMainCheckboxStates()[0]) {
               code11 = "    " + pythonname + ".moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")\n";
             }
-            if (tabs_main_checkbox_states[1]) {
+            if (fih.getTabsMainCheckboxStates()[1]) {
               code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")\n";
             }
-            if (tabs_main_checkbox_states[2]) {
+            if (fih.getTabsMainCheckboxStates()[2]) {
               code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")\n";
             }
-            if (tabs_main_checkbox_states[3]) {
+            if (fih.getTabsMainCheckboxStates()[3]) {
               code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLindex() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + ","
                   + fih.getLwrist() + ")\n";
             }
-            if (tabs_main_checkbox_states[4]) {
+            if (fih.getTabsMainCheckboxStates()[4]) {
               code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRindex() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + ","
                   + fih.getRwrist() + ")\n";
             }
-            if (tabs_main_checkbox_states[5]) {
+            if (fih.getTabsMainCheckboxStates()[5]) {
               code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")\n";
             }
             code1 = code11 + code12 + code13 + code14 + code15 + code16;
@@ -870,25 +866,25 @@ public static void main(String[] args) throws InterruptedException {
             String code14 = "";
             String code15 = "";
             String code16 = "";
-            if (tabs_main_checkbox_states[0]) {
+            if (fih.getTabsMainCheckboxStates()[0]) {
               code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckspeed() + "," + fih.getRotheadspeed() + "," + fih.getEyeXspeed() + "," + fih.getEyeYspeed() + "," + fih.getJawspeed() + ")\n";
             }
-            if (tabs_main_checkbox_states[1]) {
+            if (fih.getTabsMainCheckboxStates()[1]) {
               code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")\n";
             }
 
-            if (tabs_main_checkbox_states[2]) {
+            if (fih.getTabsMainCheckboxStates()[2]) {
               code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")\n";
             }
-            if (tabs_main_checkbox_states[3]) {
+            if (fih.getTabsMainCheckboxStates()[3]) {
               code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLthumbspeed() + "," + fih.getLindexspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + ","
                   + fih.getLpinkyspeed() + "," + fih.getLwristspeed() + ")\n";
             }
-            if (tabs_main_checkbox_states[4]) {
+            if (fih.getTabsMainCheckboxStates()[4]) {
               code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRthumbspeed() + "," + fih.getRindexspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + ","
                   + fih.getRpinkyspeed() + "," + fih.getRwristspeed() + ")\n";
             }
-            if (tabs_main_checkbox_states[5]) {
+            if (fih.getTabsMainCheckboxStates()[5]) {
               code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")\n";
             }
             code1 = code11 + code12 + code13 + code14 + code15 + code16;
@@ -926,7 +922,7 @@ public static void main(String[] args) throws InterruptedException {
     fih.setSpeech(null);
     fih.setName(null);
 
-    frameitemholder.add(fih);
+    frames.add(fih);
 
     framelistact(framelist);
   }
@@ -939,7 +935,7 @@ public static void main(String[] args) throws InterruptedException {
     fih.setSpeech(frame_addspeech_textfield.getText());
     fih.setName(null);
 
-    frameitemholder.add(fih);
+    frames.add(fih);
 
     framelistact(framelist);
   }
@@ -986,7 +982,7 @@ public static void main(String[] args) throws InterruptedException {
     fih.setSpeech(null);
     fih.setName(null);
 
-    frameitemholder.add(fih);
+    frames.add(fih);
 
     framelistact(framelist);
   }
@@ -996,8 +992,8 @@ public static void main(String[] args) throws InterruptedException {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frameitemholder.get(pos);
-      frameitemholder.add(fih);
+      FrameItemHolder fih = frames.get(pos);
+      frames.add(fih);
 
       framelistact(framelist);
     }
@@ -1008,8 +1004,8 @@ public static void main(String[] args) throws InterruptedException {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frameitemholder.remove(pos);
-      frameitemholder.add(pos + 1, fih);
+      FrameItemHolder fih = frames.remove(pos);
+      frames.add(pos + 1, fih);
 
       framelistact(framelist);
     }
@@ -1109,79 +1105,79 @@ public static void main(String[] args) throws InterruptedException {
     if (pos != -1) {
 
       // sleep || speech || servo movement || speed setting
-      if (frameitemholder.get(pos).getSleep() != -1) {
-        frame_addsleep_textfield.setText(frameitemholder.get(pos).getSleep() + "");
-      } else if (frameitemholder.get(pos).getSpeech() != null) {
-        frame_addspeech_textfield.setText(frameitemholder.get(pos).getSpeech());
-      } else if (frameitemholder.get(pos).getName() != null) {
-        servoitemholder[0][0].sli.setValue(frameitemholder.get(pos).getRthumb());
-        servoitemholder[0][1].sli.setValue(frameitemholder.get(pos).getRindex());
-        servoitemholder[0][2].sli.setValue(frameitemholder.get(pos).getRmajeure());
-        servoitemholder[0][3].sli.setValue(frameitemholder.get(pos).getRringfinger());
-        servoitemholder[0][4].sli.setValue(frameitemholder.get(pos).getRpinky());
-        servoitemholder[0][5].sli.setValue(frameitemholder.get(pos).getRwrist());
+      if (frames.get(pos).getSleep() != -1) {
+        frame_addsleep_textfield.setText(frames.get(pos).getSleep() + "");
+      } else if (frames.get(pos).getSpeech() != null) {
+        frame_addspeech_textfield.setText(frames.get(pos).getSpeech());
+      } else if (frames.get(pos).getName() != null) {
+        servoitemholder[0][0].sli.setValue(frames.get(pos).getRthumb());
+        servoitemholder[0][1].sli.setValue(frames.get(pos).getRindex());
+        servoitemholder[0][2].sli.setValue(frames.get(pos).getRmajeure());
+        servoitemholder[0][3].sli.setValue(frames.get(pos).getRringfinger());
+        servoitemholder[0][4].sli.setValue(frames.get(pos).getRpinky());
+        servoitemholder[0][5].sli.setValue(frames.get(pos).getRwrist());
 
-        servoitemholder[1][0].sli.setValue(frameitemholder.get(pos).getRbicep());
-        servoitemholder[1][1].sli.setValue(frameitemholder.get(pos).getRrotate());
-        servoitemholder[1][2].sli.setValue(frameitemholder.get(pos).getRshoulder());
-        servoitemholder[1][3].sli.setValue(frameitemholder.get(pos).getRomoplate());
+        servoitemholder[1][0].sli.setValue(frames.get(pos).getRbicep());
+        servoitemholder[1][1].sli.setValue(frames.get(pos).getRrotate());
+        servoitemholder[1][2].sli.setValue(frames.get(pos).getRshoulder());
+        servoitemholder[1][3].sli.setValue(frames.get(pos).getRomoplate());
 
-        servoitemholder[2][0].sli.setValue(frameitemholder.get(pos).getLthumb());
-        servoitemholder[2][1].sli.setValue(frameitemholder.get(pos).getLindex());
-        servoitemholder[2][2].sli.setValue(frameitemholder.get(pos).getLmajeure());
-        servoitemholder[2][3].sli.setValue(frameitemholder.get(pos).getLringfinger());
-        servoitemholder[2][4].sli.setValue(frameitemholder.get(pos).getLpinky());
-        servoitemholder[2][5].sli.setValue(frameitemholder.get(pos).getLwrist());
+        servoitemholder[2][0].sli.setValue(frames.get(pos).getLthumb());
+        servoitemholder[2][1].sli.setValue(frames.get(pos).getLindex());
+        servoitemholder[2][2].sli.setValue(frames.get(pos).getLmajeure());
+        servoitemholder[2][3].sli.setValue(frames.get(pos).getLringfinger());
+        servoitemholder[2][4].sli.setValue(frames.get(pos).getLpinky());
+        servoitemholder[2][5].sli.setValue(frames.get(pos).getLwrist());
 
-        servoitemholder[3][0].sli.setValue(frameitemholder.get(pos).getLbicep());
-        servoitemholder[3][1].sli.setValue(frameitemholder.get(pos).getLrotate());
-        servoitemholder[3][2].sli.setValue(frameitemholder.get(pos).getLshoulder());
-        servoitemholder[3][3].sli.setValue(frameitemholder.get(pos).getLomoplate());
+        servoitemholder[3][0].sli.setValue(frames.get(pos).getLbicep());
+        servoitemholder[3][1].sli.setValue(frames.get(pos).getLrotate());
+        servoitemholder[3][2].sli.setValue(frames.get(pos).getLshoulder());
+        servoitemholder[3][3].sli.setValue(frames.get(pos).getLomoplate());
 
-        servoitemholder[4][0].sli.setValue(frameitemholder.get(pos).getNeck());
-        servoitemholder[4][1].sli.setValue(frameitemholder.get(pos).getRothead());
-        servoitemholder[4][2].sli.setValue(frameitemholder.get(pos).getEyeX());
-        servoitemholder[4][3].sli.setValue(frameitemholder.get(pos).getEyeY());
-        servoitemholder[4][4].sli.setValue(frameitemholder.get(pos).getJaw());
+        servoitemholder[4][0].sli.setValue(frames.get(pos).getNeck());
+        servoitemholder[4][1].sli.setValue(frames.get(pos).getRothead());
+        servoitemholder[4][2].sli.setValue(frames.get(pos).getEyeX());
+        servoitemholder[4][3].sli.setValue(frames.get(pos).getEyeY());
+        servoitemholder[4][4].sli.setValue(frames.get(pos).getJaw());
 
-        servoitemholder[5][0].sli.setValue(frameitemholder.get(pos).getTopStom());
-        servoitemholder[5][1].sli.setValue(frameitemholder.get(pos).getMidStom());
-        servoitemholder[5][2].sli.setValue(frameitemholder.get(pos).getLowStom());
-        frame_add_textfield.setText(frameitemholder.get(pos).getName());
+        servoitemholder[5][0].sli.setValue(frames.get(pos).getTopStom());
+        servoitemholder[5][1].sli.setValue(frames.get(pos).getMidStom());
+        servoitemholder[5][2].sli.setValue(frames.get(pos).getLowStom());
+        frame_add_textfield.setText(frames.get(pos).getName());
       } else {
-        servoitemholder[0][0].spe.setText(frameitemholder.get(pos).getRthumbspeed() + "");
-        servoitemholder[0][1].spe.setText(frameitemholder.get(pos).getRindexspeed() + "");
-        servoitemholder[0][2].spe.setText(frameitemholder.get(pos).getRmajeurespeed() + "");
-        servoitemholder[0][3].spe.setText(frameitemholder.get(pos).getRringfingerspeed() + "");
-        servoitemholder[0][4].spe.setText(frameitemholder.get(pos).getRpinkyspeed() + "");
-        servoitemholder[0][5].spe.setText(frameitemholder.get(pos).getRwristspeed() + "");
+        servoitemholder[0][0].spe.setText(frames.get(pos).getRthumbspeed() + "");
+        servoitemholder[0][1].spe.setText(frames.get(pos).getRindexspeed() + "");
+        servoitemholder[0][2].spe.setText(frames.get(pos).getRmajeurespeed() + "");
+        servoitemholder[0][3].spe.setText(frames.get(pos).getRringfingerspeed() + "");
+        servoitemholder[0][4].spe.setText(frames.get(pos).getRpinkyspeed() + "");
+        servoitemholder[0][5].spe.setText(frames.get(pos).getRwristspeed() + "");
 
-        servoitemholder[1][0].spe.setText(frameitemholder.get(pos).getRbicepspeed() + "");
-        servoitemholder[1][1].spe.setText(frameitemholder.get(pos).getRrotatespeed() + "");
-        servoitemholder[1][2].spe.setText(frameitemholder.get(pos).getRshoulderspeed() + "");
-        servoitemholder[1][3].spe.setText(frameitemholder.get(pos).getRomoplatespeed() + "");
+        servoitemholder[1][0].spe.setText(frames.get(pos).getRbicepspeed() + "");
+        servoitemholder[1][1].spe.setText(frames.get(pos).getRrotatespeed() + "");
+        servoitemholder[1][2].spe.setText(frames.get(pos).getRshoulderspeed() + "");
+        servoitemholder[1][3].spe.setText(frames.get(pos).getRomoplatespeed() + "");
 
-        servoitemholder[2][0].spe.setText(frameitemholder.get(pos).getLthumbspeed() + "");
-        servoitemholder[2][1].spe.setText(frameitemholder.get(pos).getLindexspeed() + "");
-        servoitemholder[2][2].spe.setText(frameitemholder.get(pos).getLmajeurespeed() + "");
-        servoitemholder[2][3].spe.setText(frameitemholder.get(pos).getLringfingerspeed() + "");
-        servoitemholder[2][4].spe.setText(frameitemholder.get(pos).getLpinkyspeed() + "");
-        servoitemholder[2][5].spe.setText(frameitemholder.get(pos).getLwristspeed() + "");
+        servoitemholder[2][0].spe.setText(frames.get(pos).getLthumbspeed() + "");
+        servoitemholder[2][1].spe.setText(frames.get(pos).getLindexspeed() + "");
+        servoitemholder[2][2].spe.setText(frames.get(pos).getLmajeurespeed() + "");
+        servoitemholder[2][3].spe.setText(frames.get(pos).getLringfingerspeed() + "");
+        servoitemholder[2][4].spe.setText(frames.get(pos).getLpinkyspeed() + "");
+        servoitemholder[2][5].spe.setText(frames.get(pos).getLwristspeed() + "");
 
-        servoitemholder[3][0].spe.setText(frameitemholder.get(pos).getLbicepspeed() + "");
-        servoitemholder[3][1].spe.setText(frameitemholder.get(pos).getLrotatespeed() + "");
-        servoitemholder[3][2].spe.setText(frameitemholder.get(pos).getLshoulderspeed() + "");
-        servoitemholder[3][3].spe.setText(frameitemholder.get(pos).getLomoplatespeed() + "");
+        servoitemholder[3][0].spe.setText(frames.get(pos).getLbicepspeed() + "");
+        servoitemholder[3][1].spe.setText(frames.get(pos).getLrotatespeed() + "");
+        servoitemholder[3][2].spe.setText(frames.get(pos).getLshoulderspeed() + "");
+        servoitemholder[3][3].spe.setText(frames.get(pos).getLomoplatespeed() + "");
 
-        servoitemholder[4][0].spe.setText(frameitemholder.get(pos).getNeckspeed() + "");
-        servoitemholder[4][1].spe.setText(frameitemholder.get(pos).getRotheadspeed() + "");
-        servoitemholder[4][2].spe.setText(frameitemholder.get(pos).getEyeXspeed() + "");
-        servoitemholder[4][3].spe.setText(frameitemholder.get(pos).getEyeYspeed() + "");
-        servoitemholder[4][4].spe.setText(frameitemholder.get(pos).getJawspeed() + "");
+        servoitemholder[4][0].spe.setText(frames.get(pos).getNeckspeed() + "");
+        servoitemholder[4][1].spe.setText(frames.get(pos).getRotheadspeed() + "");
+        servoitemholder[4][2].spe.setText(frames.get(pos).getEyeXspeed() + "");
+        servoitemholder[4][3].spe.setText(frames.get(pos).getEyeYspeed() + "");
+        servoitemholder[4][4].spe.setText(frames.get(pos).getJawspeed() + "");
 
-        servoitemholder[5][0].spe.setText(frameitemholder.get(pos).getTopStomspeed() + "");
-        servoitemholder[5][1].spe.setText(frameitemholder.get(pos).getMidStomspeed() + "");
-        servoitemholder[5][2].spe.setText(frameitemholder.get(pos).getLowStomspeed() + "");
+        servoitemholder[5][0].spe.setText(frames.get(pos).getTopStomspeed() + "");
+        servoitemholder[5][1].spe.setText(frames.get(pos).getMidStomspeed() + "");
+        servoitemholder[5][2].spe.setText(frames.get(pos).getLowStomspeed() + "");
       }
     }
   }
@@ -1194,7 +1190,7 @@ public static void main(String[] args) throws InterruptedException {
     // Remove this frame from the framelist (button bottom-right)
     int pos = framelist.getSelectedIndex();
     if (pos != -1) {
-      frameitemholder.remove(pos);
+      frames.remove(pos);
 
       framelistact(framelist);
     }
@@ -1216,41 +1212,41 @@ public static void main(String[] args) throws InterruptedException {
           Logging.logError(e);
         }
       } else if (fih.getName() != null) {
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
         }
       } else {
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
         }
       }
@@ -1262,8 +1258,8 @@ public static void main(String[] args) throws InterruptedException {
 	    int pos = framelist.getSelectedIndex();
 	    LOGGER.info("indeks je: " + framelist.getSelectedIndex() + "a i01 = "  + (i01 == null ? "null" : "nije_ null"));
 	    if (i01 != null && pos != -1) {
-		    for (int i = 0; i < frameitemholder.size(); i++) {
-		  	  FrameItemHolder fih = frameitemholder.get(i);
+		    for (int i = 0; i < frames.size(); i++) {
+		  	  FrameItemHolder fih = frames.get(i);
 		    //  FrameItemHolder fih = frameitemholder.get(pos);
 		      LOGGER.info("Trenutno se testira: " + fih.getName() + "\n");
 		      // sleep || speech || servo movement || speed setting
@@ -1276,41 +1272,41 @@ public static void main(String[] args) throws InterruptedException {
 		          Logging.logError(e);
 		        }
 		      } else if (fih.getName() != null) {
-		        if (tabs_main_checkbox_states[0]) {
+		        if (fih.getTabsMainCheckboxStates()[0]) {
 		          i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
 		        }
-		        if (tabs_main_checkbox_states[1]) {
+		        if (fih.getTabsMainCheckboxStates()[1]) {
 		          i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
 		        }
-		        if (tabs_main_checkbox_states[2]) {
+		        if (fih.getTabsMainCheckboxStates()[2]) {
 		          i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
 		        }
-		        if (tabs_main_checkbox_states[3]) {
+		        if (fih.getTabsMainCheckboxStates()[3]) {
 		          i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
 		        }
-		        if (tabs_main_checkbox_states[4]) {
+		        if (fih.getTabsMainCheckboxStates()[4]) {
 		          i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
 		        }
-		        if (tabs_main_checkbox_states[5]) {
+		        if (fih.getTabsMainCheckboxStates()[5]) {
 		          i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
 		        }
 		      } else {
-		        if (tabs_main_checkbox_states[0]) {
+		        if (fih.getTabsMainCheckboxStates()[0]) {
 		          i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
 		        }
-		        if (tabs_main_checkbox_states[1]) {
+		        if (fih.getTabsMainCheckboxStates()[1]) {
 		          i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
 		        }
-		        if (tabs_main_checkbox_states[2]) {
+		        if (fih.getTabsMainCheckboxStates()[2]) {
 		          i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
 		        }
-		        if (tabs_main_checkbox_states[3]) {
+		        if (fih.getTabsMainCheckboxStates()[3]) {
 		          i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
 		        }
-		        if (tabs_main_checkbox_states[4]) {
+		        if (fih.getTabsMainCheckboxStates()[4]) {
 		          i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
 		        }
-		        if (tabs_main_checkbox_states[5]) {
+		        if (fih.getTabsMainCheckboxStates()[5]) {
 		          i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
 		        }
 		      }
@@ -1322,8 +1318,8 @@ public static void main(String[] args) throws InterruptedException {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frameitemholder.remove(pos);
-      frameitemholder.add(pos - 1, fih);
+      FrameItemHolder fih = frames.remove(pos);
+      frames.add(pos - 1, fih);
 
       framelistact(framelist);
     }
@@ -1338,15 +1334,15 @@ public static void main(String[] args) throws InterruptedException {
       FrameItemHolder fih = new FrameItemHolder();
 
       // sleep || speech || servo movement || speed setting
-      if (frameitemholder.get(pos).getSleep() != -1) {
+      if (frames.get(pos).getSleep() != -1) {
         fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
         fih.setSpeech(null);
         fih.setName(null);
-      } else if (frameitemholder.get(pos).getSpeech() != null) {
+      } else if (frames.get(pos).getSpeech() != null) {
         fih.setSleep(-1);
         fih.setSpeech(frame_addspeech_textfield.getText());
         fih.setName(null);
-      } else if (frameitemholder.get(pos).getName() != null) {
+      } else if (frames.get(pos).getName() != null) {
         fih.setRthumb(servoitemholder[0][0].sli.getValue());
         fih.setRindex(servoitemholder[0][1].sli.getValue());
         fih.setRmajeure(servoitemholder[0][2].sli.getValue());
@@ -1423,7 +1419,7 @@ public static void main(String[] args) throws InterruptedException {
         fih.setSpeech(null);
         fih.setName(null);
       }
-      frameitemholder.set(pos, fih);
+      frames.set(pos, fih);
 
       framelistact(framelist);
     }
@@ -1433,10 +1429,10 @@ public static void main(String[] args) throws InterruptedException {
     // Re-Build the framelist
 	LOGGER.info("Pozvan sam pri incijalizaciji!");
 	frameListGlobal = framelist;
-    String[] listdata = new String[frameitemholder.size()];
+    String[] listdata = new String[frames.size()];
 
-    for (int i = 0; i < frameitemholder.size(); i++) {
-      FrameItemHolder fih = frameitemholder.get(i);
+    for (int i = 0; i < frames.size(); i++) {
+      FrameItemHolder fih = frames.get(i);
 
       String displaytext = "";
 
@@ -1452,22 +1448,22 @@ public static void main(String[] args) throws InterruptedException {
         String displaytext4 = "";
         String displaytext5 = "";
         String displaytext6 = "";
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           displaytext1 = fih.getRthumb() + " " + fih.getRindex() + " " + fih.getRmajeure() + " " + fih.getRringfinger() + " " + fih.getRpinky() + " " + fih.getRwrist();
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           displaytext2 = fih.getRbicep() + " " + fih.getRrotate() + " " + fih.getRshoulder() + " " + fih.getRomoplate();
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           displaytext3 = fih.getLthumb() + " " + fih.getLindex() + " " + fih.getLmajeure() + " " + fih.getLringfinger() + " " + fih.getLpinky() + " " + fih.getLwrist();
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           displaytext4 = fih.getLbicep() + " " + fih.getLrotate() + " " + fih.getLshoulder() + " " + fih.getLomoplate();
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           displaytext5 = fih.getNeck() + " " + fih.getRothead() + " " + fih.getEyeX() + " " + fih.getEyeY() + " " + fih.getJaw();
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           displaytext6 = fih.getTopStom() + " " + fih.getMidStom() + " " + fih.getLowStom();
         }
         displaytext = fih.getName() + ": " + displaytext1 + " | " + displaytext2 + " | " + displaytext3 + " | " + displaytext4 + " | " + displaytext5 + " | " + displaytext6;
@@ -1478,22 +1474,22 @@ public static void main(String[] args) throws InterruptedException {
         String displaytext4 = "";
         String displaytext5 = "";
         String displaytext6 = "";
-        if (tabs_main_checkbox_states[0]) {
+        if (fih.getTabsMainCheckboxStates()[0]) {
           displaytext1 = fih.getRthumbspeed() + " " + fih.getRindexspeed() + " " + fih.getRmajeurespeed() + " " + fih.getRringfingerspeed() + " " + fih.getRpinkyspeed() + " " + fih.getRwristspeed();
         }
-        if (tabs_main_checkbox_states[1]) {
+        if (fih.getTabsMainCheckboxStates()[1]) {
           displaytext2 = fih.getRbicepspeed() + " " + fih.getRrotatespeed() + " " + fih.getRshoulderspeed() + " " + fih.getRomoplatespeed();
         }
-        if (tabs_main_checkbox_states[2]) {
+        if (fih.getTabsMainCheckboxStates()[2]) {
           displaytext3 = fih.getLthumbspeed() + " " + fih.getLindexspeed() + " " + fih.getLmajeurespeed() + " " + fih.getLringfingerspeed() + " " + fih.getLpinkyspeed() + " " + fih.getLwristspeed();
         }
-        if (tabs_main_checkbox_states[3]) {
+        if (fih.getTabsMainCheckboxStates()[3]) {
           displaytext4 = fih.getLbicepspeed() + " " + fih.getLrotatespeed() + " " + fih.getLshoulderspeed() + " " + fih.getLomoplatespeed();
         }
-        if (tabs_main_checkbox_states[4]) {
+        if (fih.getTabsMainCheckboxStates()[4]) {
           displaytext5 = fih.getNeckspeed() + " " + fih.getRotheadspeed() + " " + fih.getEyeXspeed() + " " + fih.getEyeYspeed() + " " + fih.getJawspeed();
         }
-        if (tabs_main_checkbox_states[5]) {
+        if (fih.getTabsMainCheckboxStates()[5]) {
           displaytext6 = fih.getTopStomspeed() + " " + fih.getMidStomspeed() + " " + fih.getLowStomspeed();
         }
         displaytext = "SPEED   " + displaytext1 + " | " + displaytext2 + " | " + displaytext3 + " | " + displaytext4 + " | " + displaytext5 + " | " + displaytext6;
@@ -1504,8 +1500,8 @@ public static void main(String[] args) throws InterruptedException {
     framelist.setListData(listdata);
   }
 
-  public void control_loadscri(JList control_list) {
-	
+	public void control_loadscri(JList control_list, JList framelist) {
+
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
@@ -1536,23 +1532,32 @@ public static void main(String[] args) throws InterruptedException {
 				}
 			}
 		}
-		
-//		pythonscript = stringBuffer.toString();
-		//parsescript(control_list);
 		try {
-			parseScriptToFrame(control_list, scriptLines);
+			List<FrameItemHolder> fihList = parseScriptToFrame(scriptLines);
+			if (fihList != null) {
+				// loading parsed frames into GUI list
+				LOGGER.info("Existing FRAME count \"" + frames.size() + "\"");
+				// reload GUI now
+				controlListReload(framelist, fihList);
+				LOGGER.info("Reload GUI finished");
+			}
 		} catch (Exception e) {
-			// TODO
-		}		
-  }
+			LOGGER.warn("Loading parsed frames", e);
+		}
+	}
 
-	private List<FrameItemHolder> parseScriptToFrame(JList list, List<String> scriptLines) throws Exception {
+	public void controlListReload(JList framelist, List<FrameItemHolder> fihList) {
+		List<String> listdata = new ArrayList<String>();
+		for (FrameItemHolder fih : fihList) {
+			listdata.add(fih.toString());
+		}
+		framelist.setListData(listdata.toArray());
+	}
+
+	private List<FrameItemHolder> parseScriptToFrame(List<String> scriptLines) throws Exception {
 		// TODO add complete file list from folder
 		List<FrameItemHolder> fihList = new ArrayList<FrameItemHolder>();
 		try {
-			pythonitemholder.clear();
-			PythonItemHolder pythonItem = new PythonItemHolder();
-			// pythonitemholder.add(pythonItem);
 			// parse start
 			// step #1: find gesture start
 			boolean gestureStartFound = false;
@@ -1573,8 +1578,10 @@ public static void main(String[] args) throws InterruptedException {
 			// at this point the first gesture is starting
 			List<String> frameLines = new ArrayList<String>();
 			for (String singleScriptLine : scriptLines) {
+				LOGGER.info("fihList.size() \"" + fihList.size() + "\"");
 				// ' sleep(4)'
 				singleScriptLine = singleScriptLine.trim();
+				LOGGER.info("singleScriptLine \"" + singleScriptLine + "\"");
 				// 'sleep(4)'
 				if (!singleScriptLine.contains("setHeadVelocity") && !singleScriptLine.contains("setArmVelocity")
 						&& !singleScriptLine.contains("setHandVelocity")
@@ -1587,6 +1594,7 @@ public static void main(String[] args) throws InterruptedException {
 				/// at this point we have frame command
 				if (singleScriptLine.contains("finishedGesture")) {
 					// we are finished
+					LOGGER.info("Parsed FRAME count \"" + fihList.size() + "\"");
 					return fihList;
 				} else if (singleScriptLine.contains("speech")) {
 					// ignore
@@ -1600,12 +1608,13 @@ public static void main(String[] args) throws InterruptedException {
 						parseScriptSleepToFrameSleep(fihList, singleScriptLine);
 					} catch (Exception e) {
 						LOGGER.error("Exception from function parseScriptFragmentIntoSingleFrame: " + e);
+					} finally {
+						counter++;
 					}
 				} else {
 					frameLines.add(singleScriptLine);
 				}
 			}
-			LOGGER.info("Parsed FRAME count \"" + fihList.size() + "\"");
 		} catch (Exception e) {
 			LOGGER.warn("parseScriptToFrame error", e);
 		}
@@ -1627,18 +1636,18 @@ public static void main(String[] args) throws InterruptedException {
 				try {
 					// it always starts with 'i01.'
 					// i01.setHeadSpeed(0.95,0.95)
-					LOGGER.info("expected: i01.setHeadSpeed(0.95,0.95) \"" + singleScriptLine + "\"");
+					LOGGER.trace("expected: i01.setHeadSpeed(0.95,0.95) \"" + singleScriptLine + "\"");
 					singleScriptLine = singleScriptLine.substring(4, singleScriptLine.length() - 2);
 					// setHeadSpeed(0.95,0.95
-					LOGGER.info("expected: setHeadSpeed(0.95,0.95 \"" + singleScriptLine + "\"");
+					LOGGER.trace("expected: setHeadSpeed(0.95,0.95 \"" + singleScriptLine + "\"");
 					String[] splitString = singleScriptLine.split("\\(");
-					LOGGER.info("splitString[0] expected: setHeadSpeed \"" + splitString[0] + "\"");
-					LOGGER.info("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");
+					LOGGER.trace("splitString[0] expected: setHeadSpeed \"" + splitString[0] + "\"");
+					LOGGER.trace("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");
 					// splitString[0] setHeadSpeed
 					// splitString[1] 0.95,0.95
 					String[] valuesString = splitString[1].split(",");
-					LOGGER.info("valuesString[0] \"" + valuesString[0] + "\"");
-					LOGGER.info("valuesString.length \"" + valuesString.length + "\"");
+					LOGGER.trace("valuesString[0] \"" + valuesString[0] + "\"");
+					LOGGER.trace("valuesString.length \"" + valuesString.length + "\"");
 					if (splitString[0].contains("Speed")) {
 						addSpeed = true;
 						if (splitString[0].contains("Head")) {
@@ -1756,13 +1765,13 @@ public static void main(String[] args) throws InterruptedException {
 		try {
 			// sleep line: sleep(3)
 			sleepLine = sleepLine.substring(sleepLine.indexOf('(')+1, sleepLine.indexOf(')'));
-			int sleepTime = Integer.parseInt(sleepLine);
+			Double sleepTime = Double.parseDouble(sleepLine);
 			FrameItemHolder fihSleep = new FrameItemHolder();
 			fihSleep.resetValues();
 
 			fihSleep.setName(null); // sleep frame has Name and Speech as null and Sleep as int
 			fihSleep.setSpeech(null);
-			fihSleep.setSleep(sleepTime);
+			fihSleep.setSleep(sleepTime.intValue());
 
 			fihList.add(fihSleep);
 		} catch (Exception e) {
@@ -2097,33 +2106,33 @@ public static void main(String[] args) throws InterruptedException {
   public void parse_frame_to_script() {
 	  String code = "def " + /*ime_funkcije*/"test" + "():\n  i01.startedGesture()\n  "; //def + ime plus () + enter i dva spejsa + i01.
 	  //treba reci da se prvo dodaje brzina pa onda frame
-	  for (int i = 0; i < frameitemholder.size(); i++) {
-	      FrameItemHolder fih = frameitemholder.get(i);
+	  for (int i = 0; i < frames.size(); i++) {
+	      FrameItemHolder fih = frames.get(i);
 	      
 	      if(fih.getName() == null && fih.getSleep() == -1) {
 	    	  String speeds[] = {"","","","","",""};
-	    	  if(tabs_main_checkbox_states[0])	speeds[0] = "i01.setHeadVelocity(" + fih.getRotheadspeed() + "," + fih.getNeckspeed() + ")";
-	    	  if(tabs_main_checkbox_states[1])	speeds[1] = "i01.setArmVelocity(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")";
-	    	  if(tabs_main_checkbox_states[2])	speeds[2] = "i01.setArmVelocity(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")";
-	    	  if(tabs_main_checkbox_states[3])	speeds[3] = "i01.setHandVelocity(\"left\"," + fih.getLthumbspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLwristspeed() +")";
-	    	  if(tabs_main_checkbox_states[4])	speeds[4] = "i01.setHandVelocity(\"right\"," + fih.getRthumbspeed() + "," + fih.getRpinkyspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + "," + fih.getRpinky() + "," + fih.getRwristspeed() +")";
-	    	  if(tabs_main_checkbox_states[5])	speeds[5] = "i01.setTorsoVelocity(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[0])	speeds[0] = "i01.setHeadVelocity(" + fih.getRotheadspeed() + "," + fih.getNeckspeed() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[1])	speeds[1] = "i01.setArmVelocity(\"left\"," + fih.getLbicepspeed() + "," + fih.getLrotatespeed() + "," + fih.getLshoulderspeed() + "," + fih.getLomoplatespeed() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[2])	speeds[2] = "i01.setArmVelocity(\"right\"," + fih.getRbicepspeed() + "," + fih.getRrotatespeed() + "," + fih.getRshoulderspeed() + "," + fih.getRomoplatespeed() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[3])	speeds[3] = "i01.setHandVelocity(\"left\"," + fih.getLthumbspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLmajeurespeed() + "," + fih.getLringfingerspeed() + "," + fih.getLpinkyspeed() + "," + fih.getLwristspeed() +")";
+	    	  if(fih.getTabsMainCheckboxStates()[4])	speeds[4] = "i01.setHandVelocity(\"right\"," + fih.getRthumbspeed() + "," + fih.getRpinkyspeed() + "," + fih.getRmajeurespeed() + "," + fih.getRringfingerspeed() + "," + fih.getRpinky() + "," + fih.getRwristspeed() +")";
+	    	  if(fih.getTabsMainCheckboxStates()[5])	speeds[5] = "i01.setTorsoVelocity(" + fih.getTopStomspeed() + "," + fih.getMidStomspeed() + "," + fih.getLowStomspeed() + ")";
 	    	  for(int j = 0; j <= 5; j++) {
-    			  if(tabs_main_checkbox_states[j]) 
+    			  if(fih.getTabsMainCheckboxStates()[j]) 
     				  code += (speeds[j] + "\n  ");
 	    	  }
 	      }else if(fih.getName() == null && fih.getSleep() != -1){
 	    	  code += "sleep(" + fih.getSleep() + ")\n  ";
 	      }else {
 	    	  String movements[] = {"","","","","",""};
-	    	  if(tabs_main_checkbox_states[0])	movements[0] = "i01.moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")";
-	    	  if(tabs_main_checkbox_states[1])	movements[1] = "i01.moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")";
-	    	  if(tabs_main_checkbox_states[2])	movements[2] = "i01.moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")";
-	    	  if(tabs_main_checkbox_states[3])	movements[3] = "i01.moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLpinky() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + "," + fih.getLwrist() +")";
-	    	  if(tabs_main_checkbox_states[4])	movements[4] = "i01.moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRpinky() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + "," + fih.getRwrist() +")";
-	    	  if(tabs_main_checkbox_states[5])	movements[5] = "i01.moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[0])	movements[0] = "i01.moveHead(" + fih.getNeck() + "," + fih.getRothead() + "," + fih.getEyeX() + "," + fih.getEyeY() + "," + fih.getJaw() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[1])	movements[1] = "i01.moveArm(\"left\"," + fih.getLbicep() + "," + fih.getLrotate() + "," + fih.getLshoulder() + "," + fih.getLomoplate() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[2])	movements[2] = "i01.moveArm(\"right\"," + fih.getRbicep() + "," + fih.getRrotate() + "," + fih.getRshoulder() + "," + fih.getRomoplate() + ")";
+	    	  if(fih.getTabsMainCheckboxStates()[3])	movements[3] = "i01.moveHand(\"left\"," + fih.getLthumb() + "," + fih.getLpinky() + "," + fih.getLmajeure() + "," + fih.getLringfinger() + "," + fih.getLpinky() + "," + fih.getLwrist() +")";
+	    	  if(fih.getTabsMainCheckboxStates()[4])	movements[4] = "i01.moveHand(\"right\"," + fih.getRthumb() + "," + fih.getRpinky() + "," + fih.getRmajeure() + "," + fih.getRringfinger() + "," + fih.getRpinky() + "," + fih.getRwrist() +")";
+	    	  if(fih.getTabsMainCheckboxStates()[5])	movements[5] = "i01.moveTorso(" + fih.getTopStom() + "," + fih.getMidStom() + "," + fih.getLowStom() + ")";
 	    	  for(int j = 0; j <= 5; j++) {
-    			  if(tabs_main_checkbox_states[j]) 
+    			  if(fih.getTabsMainCheckboxStates()[j]) 
     				  code += (movements[j] + "\n  ");
 	    	  }	    	 
 	      }
@@ -2174,7 +2183,7 @@ public static void main(String[] args) throws InterruptedException {
 	    fih.setSpeech(null);
 	    fih.setName(frame_add_textfield.getText());
 
-	    frameitemholder.add(fih);
+	    frames.add(fih);
 
 	    framelistact(framelist);
   }
@@ -2392,22 +2401,22 @@ public static void main(String[] args) throws InterruptedException {
       fih.setMidStom(servoitemholder[5][1].sli.getValue());
       fih.setLowStom(servoitemholder[5][2].sli.getValue());
 
-      if (tabs_main_checkbox_states[0]) {
+      if (fih.getTabsMainCheckboxStates()[0]) {
         i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
       }
-      if (tabs_main_checkbox_states[1]) {
+      if (fih.getTabsMainCheckboxStates()[1]) {
         i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
       }
-      if (tabs_main_checkbox_states[2]) {
+      if (fih.getTabsMainCheckboxStates()[2]) {
         i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
       }
-      if (tabs_main_checkbox_states[3]) {
+      if (fih.getTabsMainCheckboxStates()[3]) {
         i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
       }
-      if (tabs_main_checkbox_states[4]) {
+      if (fih.getTabsMainCheckboxStates()[4]) {
         i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
       }
-      if (tabs_main_checkbox_states[5]) {
+      if (fih.getTabsMainCheckboxStates()[5]) {
         i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
       }
     }

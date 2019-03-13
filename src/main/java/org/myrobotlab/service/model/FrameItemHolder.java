@@ -1,7 +1,12 @@
 package org.myrobotlab.service.model;
 
-public class FrameItemHolder {
+import java.io.Serializable;
+import java.util.Arrays;
 
+public class FrameItemHolder implements Serializable {
+
+	private static final long serialVersionUID = -7038574417962603966L;
+	
 	private int rthumb, rindex, rmajeure, rringfinger, rpinky, rwrist;
 	private int rbicep, rrotate, rshoulder, romoplate;
 	private int lthumb, lindex, lmajeure, lringfinger, lpinky, lwrist;
@@ -14,44 +19,77 @@ public class FrameItemHolder {
 	private double lbicepspeed, lrotatespeed, lshoulderspeed, lomoplatespeed;
 	private double neckspeed, rotheadspeed, eyeXspeed, eyeYspeed, jawspeed;
 	private double topStomspeed, midStomspeed, lowStomspeed;
-	private int sleep;
+	private int sleep = -1;
 	private String speech;
 	private String name;
 
+	private final boolean[] tabsMainCheckboxStates = new boolean[6];
+
+	public FrameItemHolder() {
+		resetValues();
+	}
+
+	@Override
+	public String toString() {
+		if (this.sleep != -1) {
+			// sleep frame
+			return "SLEEP "+this.sleep;
+		} else if (this.speech != null) {
+			// speech frame
+			return "SPEECH "+this.speech;
+		} else if (this.name != null) {
+			// move frame
+			// TODO
+			return this.name + ": "+this.lshoulder;
+		} else {
+			// speed frame
+			// TODO
+			return "SPEED "+this.eyeXspeed;
+		}
+	}
+
+	public boolean[] getTabsMainCheckboxStates() {
+		return tabsMainCheckboxStates;
+	}
+
 	public void resetValues() {
+		Arrays.fill(tabsMainCheckboxStates, true);
+		
+		this.sleep = -1;
+
 		this.rthumb = 90;
-	    this.rindex = 90;
-	    this.rmajeure = 90;
-	    this.rringfinger = 90;
-	    this.rpinky = 90;
-	    this.rwrist = 90;
+		this.rindex = 90;
+		this.rmajeure = 90;
+		this.rringfinger = 90;
+		this.rpinky = 90;
+		this.rwrist = 90;
 
-	    this.rbicep = 90;
-	    this.rrotate = 90;
-	    this.rshoulder = 90;
-	    this.romoplate = 90;
+		this.rbicep = 90;
+		this.rrotate = 90;
+		this.rshoulder = 90;
+		this.romoplate = 90;
 
-	    this.lthumb = 90;
-	    this.lindex = 90;
-	    this.lmajeure = 90;
-	    this.lringfinger = 90;
-	    this.lpinky = 90;
-	    this.lwrist = 90;
+		this.lthumb = 90;
+		this.lindex = 90;
+		this.lmajeure = 90;
+		this.lringfinger = 90;
+		this.lpinky = 90;
+		this.lwrist = 90;
 
-	    this.lbicep = 90;
-	    this.lrotate = 90;
-	    this.lshoulder = 90;
-	    this.lomoplate = 90;
+		this.lbicep = 90;
+		this.lrotate = 90;
+		this.lshoulder = 90;
+		this.lomoplate = 90;
 
-	    this.neck = 90;
-	    this.rothead = 90;
-	    this.eyeX = 90;
-	    this.eyeY = 90;
-	    this.jaw = 90;
+		this.neck = 90;
+		this.rothead = 90;
+		this.eyeX = 90;
+		this.eyeY = 90;
+		this.jaw = 90;
 
-	    this.topStom = 90;
-	    this.midStom = 90;
-	    this.lowStom = 90;
+		this.topStom = 90;
+		this.midStom = 90;
+		this.lowStom = 90;
 	}
 
 	public int getRthumb() {
@@ -525,5 +563,5 @@ public class FrameItemHolder {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }
