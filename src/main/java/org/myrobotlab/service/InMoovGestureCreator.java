@@ -2424,7 +2424,8 @@ public static void main(String[] args) throws InterruptedException {
 
   public void tabs_main_checkbox_states_changed(boolean[] tabs_main_checkbox_states2) {
     // checkbox states (on the main site) (for the services) changed
-    tabs_main_checkbox_states = tabs_main_checkbox_states2;
+	  // TODO this needs to be updated based on FRAME selection 
+//    tabs_main_checkbox_states = tabs_main_checkbox_states2;
   }
 
   /**
