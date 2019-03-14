@@ -1693,7 +1693,7 @@ public static void main(String[] args) throws InterruptedException {
 					String[] valuesString = splitString[1].split(",");
 					LOGGER.trace("valuesString[0] \"" + valuesString[0] + "\"");
 					LOGGER.trace("valuesString.length \"" + valuesString.length + "\"");
-					if (splitString[0].contains("Speed")) {
+					if (splitString[0].contains("Speed") || splitString[0].contains("Velocity")) {
 						addSpeed = true;
 						if (splitString[0].contains("Head")) {
 							// setHeadSpeed(0.95,0.95)
