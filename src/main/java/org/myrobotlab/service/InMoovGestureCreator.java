@@ -1,6 +1,7 @@
 package org.myrobotlab.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -17,6 +19,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.lang.StringUtils;
 import org.myrobotlab.framework.Service;
@@ -1499,6 +1502,30 @@ public static void main(String[] args) throws InterruptedException {
 
     framelist.setListData(listdata);
   }
+	public void control_ScriptFolder(JList control_list) {
+		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		jfc.setDialogTitle("Choose a directory with Gesture scripts in Python");
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		int returnValue = jfc.showSaveDialog(null);
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			if (jfc.getSelectedFile().isDirectory()) {
+				LOGGER.info("Selected script directory: " + jfc.getSelectedFile());
+
+				File[] listOfFiles = jfc.getSelectedFile().listFiles();
+				List<String> pythonFiles = new ArrayList<String>();
+				for (int i = 0; i < listOfFiles.length; i++) { 
+					if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".py")) {
+						// list only ".py" files in the folder
+						pythonFiles.add(listOfFiles[i].getName());
+					}
+				}
+				if(pythonFiles != null && pythonFiles.size() > 0) {
+					control_list.setListData(pythonFiles.toArray());
+				}
+			}
+		}
+	}
 
 	public void control_loadscri(JList control_list, JList framelist) {
 
@@ -1536,8 +1563,10 @@ public static void main(String[] args) throws InterruptedException {
 			List<FrameItemHolder> fihList = parseScriptToFrame(scriptLines);
 			if (fihList != null) {
 				// loading parsed frames into GUI list
-				LOGGER.info("Existing FRAME count \"" + frames.size() + "\"");
+				LOGGER.info("Existing FRAME count \"" + fihList.size() + "\"");
 				// reload GUI now
+				frames.clear();
+				frames.addAll(fihList);
 				controlListReload(framelist, fihList);
 				LOGGER.info("Reload GUI finished");
 			}
@@ -1578,10 +1607,10 @@ public static void main(String[] args) throws InterruptedException {
 			// at this point the first gesture is starting
 			List<String> frameLines = new ArrayList<String>();
 			for (String singleScriptLine : scriptLines) {
-				LOGGER.info("fihList.size() \"" + fihList.size() + "\"");
+				LOGGER.trace("fihList.size() \"" + fihList.size() + "\"");
 				// ' sleep(4)'
 				singleScriptLine = singleScriptLine.trim();
-				LOGGER.info("singleScriptLine \"" + singleScriptLine + "\"");
+				LOGGER.trace("singleScriptLine \"" + singleScriptLine + "\"");
 				// 'sleep(4)'
 				if (!singleScriptLine.contains("setHeadVelocity") 
 						&& !singleScriptLine.contains("setArmVelocity")

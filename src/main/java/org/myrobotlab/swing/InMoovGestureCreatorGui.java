@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -31,7 +29,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.myrobotlab.logging.LoggerFactory;
-import org.myrobotlab.logging.Logging;
 import org.myrobotlab.service.InMoovGestureCreator;
 import org.myrobotlab.service.InMoovGestureCreator.ServoItemHolder;
 import org.myrobotlab.service.SwingGui;
@@ -54,6 +51,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
   JTextField control_gestname;
   JTextField control_funcname;
 
+  JButton control_ScriptFolder;
   JButton control_connect;
   JButton control_loadscri;
   JButton control_savescri;
@@ -332,6 +330,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			bottom1top.add(control_connect);
 			control_connect.addActionListener(this);
 
+			control_ScriptFolder = new JButton("Scri Fldr");
+			bottom1top.add(control_ScriptFolder);
+			control_ScriptFolder.addActionListener(this);
+
 			bottom1.add(BorderLayout.NORTH, bottom1top);
 
 			JPanel bottom1right = new JPanel();
@@ -366,21 +368,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			control_testgest.addActionListener(this);
 
 			bottom1.add(BorderLayout.EAST, bottom1right);
-			// ovdje umjesto T1 .. imena svih fileova iz foldera
-//			File folder = new File("/home/abe/ws-fx/inmoov/InMoov/gestures");
-//			File[] listOfFiles = folder.listFiles();
-//			ArrayList<String> lista = new ArrayList<String>();
-//			for (int i = 0; i < listOfFiles.length; i++) { // moze se isfiltrirati samo na .py filove
-//				if (listOfFiles[i].isFile()) {
-//					lista.add(listOfFiles[i].getName());
-//				} else if (listOfFiles[i].isDirectory()) {
-//					continue;
-//				}
-//			}
-			 String[] te1 = { " ", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9",
-			 "T10" };
-//			String[] te1 = new String[lista.size()];
-//			te1 = lista.toArray(te1);
+			
+			String[] te1 = { "Load folder with scripts" };
 			control_list = new JList(te1);
 			control_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -491,7 +480,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			bottom.add(splitpanebottom1bottom2);
 
-			JSplitPane splitpanetopbottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+			JSplitPane splitpanetopbottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, bottom, top);
 			splitpanetopbottom.setOneTouchExpandable(true);
 			// splitpanetopbottom.setDividerLocation(300);
 
@@ -510,8 +499,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
     // Button - Events
     if (o == control_connect) {
       swingGui.send(boundServiceName, "control_connect", control_connect);
+    } else if (o == control_ScriptFolder) {
+        swingGui.send(boundServiceName, "control_ScriptFolder", control_list);
     } else if (o == control_loadscri) {
-      swingGui.send(boundServiceName, "control_loadscri", control_list, framelist);
+        swingGui.send(boundServiceName, "control_loadscri", control_list, framelist);
     } else if (o == control_savescri) {
       swingGui.send(boundServiceName, "control_savescri");
     } else if (o == control_loadgest) {
