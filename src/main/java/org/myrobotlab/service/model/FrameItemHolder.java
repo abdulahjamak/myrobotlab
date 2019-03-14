@@ -53,13 +53,13 @@ public class FrameItemHolder implements Serializable {
 
 	@Override
 	public String toString() {
-		if (this.sleep != -1) {
+		if (this.frameType == FrameType.SLEEP) {
 			// sleep frame
 			return "SLEEP "+this.sleep;
-		} else if (this.speech != null) {
+		} else if (this.frameType == FrameType.SPEECH) {
 			// speech frame
 			return "SPEECH "+this.speech;
-		} else if (this.name != null) {
+		} else if (this.frameType == FrameType.MOVE) {
 			// move frame
 			StringBuffer movements = new StringBuffer();
 			movements.append(this.name).append(": ");

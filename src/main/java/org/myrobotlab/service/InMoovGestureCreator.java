@@ -2244,7 +2244,7 @@ public static void main(String[] args) throws InterruptedException {
 			Container c1con = c1panel;
 			Container c2con = c2panel;
 			Container c3con = c3panel;
-	
+	// seting the layout of panels
 			GridBagLayout c1gbl = new GridBagLayout();
 			c1con.setLayout(c1gbl);
 			GridBagLayout c2gbl = new GridBagLayout();
@@ -2254,12 +2254,12 @@ public static void main(String[] args) throws InterruptedException {
 	
 			// predefined min- / res- / max- positions
 			int[][][] minresmaxpos = {
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
-					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } } };
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 60, 180 }, { 0, 90, 180 }, { 0, 90, 180 } } };
 			
 			// c1-, c2-, c3-panel
 			for (int i1 = 0; i1 < 6; i1++) {
@@ -2298,7 +2298,8 @@ public static void main(String[] args) throws InterruptedException {
 				}
 	
 				ServoItemHolder[] sih1 = new ServoItemHolder[size];
-	
+				int value = 0;
+				
 				for (int i2 = 0; i2 < size; i2++) {
 					ServoItemHolder sih11 = new ServoItemHolder();
 	
@@ -2306,16 +2307,46 @@ public static void main(String[] args) throws InterruptedException {
 	
 					if (i1 == 0 || i1 == 2) {
 						if (i2 == 0) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRthumb();
+							}else {
+								value = frameItemHolder.getLthumb();
+							}
 							servoname = "thumb";
 						} else if (i2 == 1) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRindex();
+							}else {
+								value = frameItemHolder.getLindex();
+							}
 							servoname = "index";
 						} else if (i2 == 2) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRmajeure();
+							}else {
+								value = frameItemHolder.getLmajeure();
+							}
 							servoname = "majeure";
 						} else if (i2 == 3) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRringfinger();
+							}else {
+								value = frameItemHolder.getLringfinger();
+							}
 							servoname = "ringfinger";
 						} else if (i2 == 4) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRpinky();
+							}else {
+								value = frameItemHolder.getLpinky();
+							}
 							servoname = "pinky";
 						} else if (i2 == 5) {
+							if(i1 == 0) {
+								value = frameItemHolder.getRwrist();
+							}else {
+								value = frameItemHolder.getLwrist();
+							}
 							servoname = "wrist";
 						}
 					} else if (i1 == 1 || i1 == 3) {
@@ -2349,13 +2380,14 @@ public static void main(String[] args) throws InterruptedException {
 							servoname = "lowStom";
 						}
 					}
-	
+					
 					sih11.fin = new JLabel(servoname);
 					sih11.min = new JLabel(minresmaxpos[i1][i2][0] + "");
 					sih11.res = new JLabel(minresmaxpos[i1][i2][1] + "");
 					sih11.max = new JLabel(minresmaxpos[i1][i2][2] + "");
 					sih11.sli = new JSlider();
-					customizeslider(sih11.sli, i1, i2, minresmaxpos[i1][i2]);
+					//customizeslider(sih11.sli, i1, i2, minresmaxpos[i1][i2]);
+					sliderSetUp(sih11.sli, i1, i2, minresmaxpos[i1][i2], value);
 					sih11.akt = new JLabel(sih11.sli.getValue() + "");
 					sih11.spe = new JTextField("1.00");
 	
@@ -2413,6 +2445,27 @@ public static void main(String[] args) throws InterruptedException {
 		slider.setPaintTicks(true);
 		slider.setPaintLabels(true);
 		slider.setValue((minresmaxpos11[0] + minresmaxpos11[2]) / 2);
+
+		slider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+//				swingGui.send(boundServiceName, "servoitemholder_slider_changed", t1, t2);
+				servoitemholder_slider_changed(t1, t2);
+			}
+		});
+	}
+	private void sliderSetUp(JSlider slider, final int t1, final int t2, int[] minresmaxpos11, int value) {
+		// preset the slider
+		slider.setOrientation(SwingConstants.VERTICAL);
+		slider.setMinimum(minresmaxpos11[0]);
+		slider.setMaximum(minresmaxpos11[2]);
+		slider.setMajorTickSpacing(20);
+		slider.setMinorTickSpacing(1);
+		slider.createStandardLabels(1);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		slider.setValue(value);
 
 		slider.addChangeListener(new ChangeListener() {
 
