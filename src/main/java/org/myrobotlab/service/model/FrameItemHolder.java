@@ -3,6 +3,8 @@ package org.myrobotlab.service.model;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.python.jline.internal.Log;
+
 public class FrameItemHolder implements Serializable {
 
 	private static final long serialVersionUID = -7038574417962603966L;
@@ -40,12 +42,31 @@ public class FrameItemHolder implements Serializable {
 		} else if (this.name != null) {
 			// move frame
 			// TODO
-			return this.name + ": "+this.lshoulder;
-		} else {
+			StringBuffer movements = new StringBuffer(this.name + ": "); //first word is the name 
+			if(tabsMainCheckboxStates[0] == tabsMainCheckboxStates[1] == tabsMainCheckboxStates[2] == tabsMainCheckboxStates[3] == tabsMainCheckboxStates[4] == tabsMainCheckboxStates[5] == true) {
+				//all checkBoxStates are true, every motor is returned!
+				//right hand
+				movements.append(this.rthumb + " " + this.rindex + " " + this.rmajeure + " " + this.rringfinger + " " + this.rpinky + " " + this.rwrist + " " + " | ");
+				//right arm
+				movements.append(this.rbicep + " " + this.rrotate + " " + this.rshoulder + " " + this.romoplate + " | ");
+				//left hand
+				movements.append(this.lthumb + " " + this.lindex + " " + this.lmajeure + " " + this.lringfinger + " " + this.lpinky + " " + this.lwrist + " " + " | ");
+				//left arm
+				movements.append(this.lbicep + " " + this.lrotate + " " + this.lshoulder + " " + this.lomoplate + " | ");
+				//head
+				movements.append(this.neck + " " + this.rothead + " " + this.eyeX + " " + this.eyeY + " " + this.jaw +" | ");
+				//torso
+				movements.append(this.topStom + " " + this.midStom + " " + this.lowStom );
+				return movements.toString();				
+			}else {
+				return "";
+			}
+		}else {
 			// speed frame
+			Log.info("Entering toString function, speed frame part!");
 			// TODO
-			return "SPEED "+this.eyeXspeed;
-		}
+			return "SPEED "+this.neckspeed;
+		} 
 	}
 
 	public boolean[] getTabsMainCheckboxStates() {

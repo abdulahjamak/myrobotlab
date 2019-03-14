@@ -1507,7 +1507,7 @@ public static void main(String[] args) throws InterruptedException {
 		BufferedReader bufferedReader = null;
 		try {
 //			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
-			fileReader = new FileReader("/d:/balance.py");
+			fileReader = new FileReader("/home/abe/balance.py");
 			bufferedReader = new BufferedReader(fileReader);
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -1629,6 +1629,7 @@ public static void main(String[] args) throws InterruptedException {
 			FrameItemHolder fihSpeed = new FrameItemHolder();
 			fihSpeed.setSpeech(null);
 			fihSpeed.setName(null);
+			fihSpeed.setSleep(-1);
 			FrameItemHolder fihMove = new FrameItemHolder();
 			fihMove.setName("Frame#" + frameCounter);
 
