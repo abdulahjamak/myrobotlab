@@ -28,19 +28,19 @@ public class FrameItemHolder implements Serializable {
 	private String speech;
 	private String name;
 
-	private boolean rightHandSpeedSet = true;
-	private boolean rightArmSpeedSet = true;
-	private boolean leftHandSpeedSet = true;
-	private boolean leftArmSpeedSet = true;
-	private boolean headSpeedSet = true;
-	private boolean torsoSpeedSet = true;
+	private boolean rightHandSpeedSet = false;
+	private boolean rightArmSpeedSet = false;
+	private boolean leftHandSpeedSet = false;
+	private boolean leftArmSpeedSet = false;
+	private boolean headSpeedSet = false;
+	private boolean torsoSpeedSet = false;
 	
-	private boolean rightHandMoveSet = false;
-	private boolean rightArmMoveSet = false;
-	private boolean leftHandMoveSet = false;
-	private boolean leftArmMoveSet = false;
-	private boolean headMoveSet = false;
-	private boolean torsoMoveSet = false;
+	private boolean rightHandMoveSet = true;
+	private boolean rightArmMoveSet = true;
+	private boolean leftHandMoveSet = true;
+	private boolean leftArmMoveSet = true;
+	private boolean headMoveSet = true;
+	private boolean torsoMoveSet = true;
 
 	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
@@ -192,7 +192,7 @@ public class FrameItemHolder implements Serializable {
 						.append(this.midStomspeed).append(SPACE_SYMBOL)
 						.append(this.lowStomspeed);
 				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 				}
 			return speeds.toString();
 		} 

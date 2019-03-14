@@ -1,5 +1,12 @@
 package org.myrobotlab.service;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,17 +15,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileSystemView;
 
 import org.myrobotlab.framework.Service;
@@ -1183,19 +1196,19 @@ public static void main(String[] args) throws InterruptedException {
     }
   }
 
-  public void frame_moverealtime(JCheckBox frame_moverealtime) {
-    moverealtime = frame_moverealtime.isSelected();
-  }
+	public void frame_moverealtime(JCheckBox frame_moverealtime) {
+		moverealtime = frame_moverealtime.isSelected();
+	}
 
-  public void frame_remove(JList framelist) {
-    // Remove this frame from the framelist (button bottom-right)
-    int pos = framelist.getSelectedIndex();
-    if (pos != -1) {
-      frames.remove(pos);
+	public void frame_remove(JList framelist) {
+		// Remove this frame from the framelist (button bottom-right)
+		int pos = framelist.getSelectedIndex();
+		if (pos != -1) {
+			frames.remove(pos);
 
-      framelistact(framelist);
-    }
-  }
+			framelistact(framelist);
+		}
+	}
 
  /* public void frame_test(JList framelist) {
     // Test this frame (execute)
@@ -1567,12 +1580,12 @@ public static void main(String[] args) throws InterruptedException {
 			List<FrameItemHolder> fihList = parseScriptToFrame(scriptLines);
 			if (fihList != null) {
 				// loading parsed frames into GUI list
-				LOGGER.info("Existing FRAME count \"" + fihList.size() + "\"");
+				LOGGER.trace("Existing FRAME count \"" + fihList.size() + "\"");
 				// reload GUI now
 				frames.clear();
 				frames.addAll(fihList);
 				controlListReload(framelist, fihList);
-				LOGGER.info("Reload GUI finished");
+				LOGGER.trace("Reload GUI finished");
 			}
 		} catch (Exception e) {
 			LOGGER.warn("Loading parsed frames", e);
@@ -1832,7 +1845,6 @@ public static void main(String[] args) throws InterruptedException {
  
   public void parse_frame_to_script() {
 	  String code = "def " + /*ime_funkcije*/"test" + "():\n  i01.startedGesture()\n  "; //def + ime plus () + enter i dva spejsa + i01.
-	  //treba reci da se prvo dodaje brzina pa onda frame
 	  for (int i = 0; i < frames.size(); i++) {
 	      FrameItemHolder fih = frames.get(i);
 	      
@@ -2157,20 +2169,258 @@ public static void main(String[] args) throws InterruptedException {
 //    tabs_main_checkbox_states = tabs_main_checkbox_states2;
   }
 
-  /**
-   * This static method returns all the details of the class without it having
-   * to be constructed. It has description, categories, dependencies, and peer
-   * definitions.
-   * 
-   * @return ServiceType - returns all the data
-   * 
-   */
-  static public ServiceType getMetaData() {
+	/**
+	 * This static method returns all the details of the class without it having to
+	 * be constructed. It has description, categories, dependencies, and peer
+	 * definitions.
+	 * 
+	 * @return ServiceType - returns all the data
+	 * 
+	 */
+	static public ServiceType getMetaData() {
 
-    ServiceType meta = new ServiceType(InMoovGestureCreator.class.getCanonicalName());
-    meta.addDescription("an easier way to create gestures for InMoov");
-    meta.addCategory("robot");
+		ServiceType meta = new ServiceType(InMoovGestureCreator.class.getCanonicalName());
+		meta.addDescription("an easier way to create gestures for InMoov");
+		meta.addCategory("robot");
 
-    return meta;
-  }
+		return meta;
+	}
+
+	public void frameSelectionChanged(JPanel bottom, int frameItemHolderIndex) {
+		LOGGER.info("frameSelectionChanged [START]");
+		LOGGER.info("frameItemHolderIndex \"" + frameItemHolderIndex + "\"");
+		LOGGER.info("frames.get(frameItemHolderIndex) \"" + frames.get(frameItemHolderIndex) + "\"");
+		initializeBottomPaneTabs(bottom, frames.get(frameItemHolderIndex));
+		LOGGER.info("frameSelectionChanged [END]");
+	}
+		
+	public void initializeBottomPaneTabs(JPanel bottom, FrameItemHolder frameItemHolder) {
+		LOGGER.info("initializeBottomPaneTabs [START]");
+		try {
+			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
+	
+			// JPanels for the JTabbedPane
+			final JPanel mainpanel = new JPanel();
+			final JPanel c1panel = new JPanel();
+			final JPanel c2panel = new JPanel();
+			final JPanel c3panel = new JPanel();
+	
+			// mainpanel (enabling / disabling sections)
+			mainpanel.setLayout(new BoxLayout(mainpanel, BoxLayout.Y_AXIS));
+			boolean[] tabs_main_checkbox_states = new boolean[6];
+			for (int i = 0; i < 6; i++) {
+				String name = "";
+				if (i == 0) {
+					name = "Right Hand";
+				} else if (i == 1) {
+					name = "Right Arm";
+				} else if (i == 2) {
+					name = "Left Hand";
+				} else if (i == 3) {
+					name = "Left Arm";
+				} else if (i == 4) {
+					name = "Head";
+				} else if (i == 5) {
+					name = "Torso";
+				}
+	
+				final int fi = i;
+	
+				final JCheckBox checkbox = new JCheckBox(name);
+				checkbox.addItemListener(new ItemListener() {
+					@Override
+					public void itemStateChanged(ItemEvent arg0) {
+						tabs_main_checkbox_states[fi] = checkbox.isSelected();
+	//					myService.send(boundServiceName, "tabs_main_checkbox_states_changed",
+	//							tabs_main_checkbox_states);
+						tabs_main_checkbox_states_changed(tabs_main_checkbox_states);
+					}
+	
+				});
+				checkbox.setSelected(true);
+				mainpanel.add(checkbox);
+			}
+	
+			Container c1con = c1panel;
+			Container c2con = c2panel;
+			Container c3con = c3panel;
+	
+			GridBagLayout c1gbl = new GridBagLayout();
+			c1con.setLayout(c1gbl);
+			GridBagLayout c2gbl = new GridBagLayout();
+			c2con.setLayout(c2gbl);
+			GridBagLayout c3gbl = new GridBagLayout();
+			c3con.setLayout(c3gbl);
+	
+			// predefined min- / res- / max- positions
+			int[][][] minresmaxpos = {
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } },
+					{ { 0, 90, 180 }, { 0, 90, 180 }, { 0, 90, 180 } } };
+			
+			// c1-, c2-, c3-panel
+			for (int i1 = 0; i1 < 6; i1++) {
+	
+				Container con = null;
+				GridBagLayout gbl = null;
+	
+				if (i1 == 0 || i1 == 1) {
+					con = c1con;
+					gbl = c1gbl;
+				} else if (i1 == 2 || i1 == 3) {
+					con = c2con;
+					gbl = c2gbl;
+				} else if (i1 == 4 || i1 == 5) {
+					con = c3con;
+					gbl = c3gbl;
+				}
+	
+				int size = 0;
+	
+				if (i1 == 0 || i1 == 2) {
+					size = 6;
+				} else if (i1 == 1 || i1 == 3) {
+					size = 4;
+				} else if (i1 == 4) {
+					size = 5;
+				} else if (i1 == 5) {
+					size = 3;
+				}
+	
+				int offset = 0;
+				if (i1 == 1 || i1 == 3) {
+					offset = 6;
+				} else if (i1 == 5) {
+					offset = 5;
+				}
+	
+				ServoItemHolder[] sih1 = new ServoItemHolder[size];
+	
+				for (int i2 = 0; i2 < size; i2++) {
+					ServoItemHolder sih11 = new ServoItemHolder();
+	
+					String servoname = "";
+	
+					if (i1 == 0 || i1 == 2) {
+						if (i2 == 0) {
+							servoname = "thumb";
+						} else if (i2 == 1) {
+							servoname = "index";
+						} else if (i2 == 2) {
+							servoname = "majeure";
+						} else if (i2 == 3) {
+							servoname = "ringfinger";
+						} else if (i2 == 4) {
+							servoname = "pinky";
+						} else if (i2 == 5) {
+							servoname = "wrist";
+						}
+					} else if (i1 == 1 || i1 == 3) {
+						if (i2 == 0) {
+							servoname = "bicep";
+						} else if (i2 == 1) {
+							servoname = "rotate";
+						} else if (i2 == 2) {
+							servoname = "shoulder";
+						} else if (i2 == 3) {
+							servoname = "omoplate";
+						}
+					} else if (i1 == 4) {
+						if (i2 == 0) {
+							servoname = "neck";
+						} else if (i2 == 1) {
+							servoname = "rothead";
+						} else if (i2 == 2) {
+							servoname = "eyeX";
+						} else if (i2 == 3) {
+							servoname = "eyeY";
+						} else if (i2 == 4) {
+							servoname = "jaw";
+						}
+					} else if (i1 == 5) {
+						if (i2 == 0) {
+							servoname = "topStom";
+						} else if (i2 == 1) {
+							servoname = "midStom";
+						} else if (i2 == 2) {
+							servoname = "lowStom";
+						}
+					}
+	
+					sih11.fin = new JLabel(servoname);
+					sih11.min = new JLabel(minresmaxpos[i1][i2][0] + "");
+					sih11.res = new JLabel(minresmaxpos[i1][i2][1] + "");
+					sih11.max = new JLabel(minresmaxpos[i1][i2][2] + "");
+					sih11.sli = new JSlider();
+					customizeslider(sih11.sli, i1, i2, minresmaxpos[i1][i2]);
+					sih11.akt = new JLabel(sih11.sli.getValue() + "");
+					sih11.spe = new JTextField("1.00");
+	
+					// x y w h wx wy
+					gridbaglayout_addComponent(con, gbl, sih11.fin, offset + i2, 0, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.min, offset + i2, 1, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.res, offset + i2, 2, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.max, offset + i2, 3, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.sli, offset + i2, 4, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.akt, offset + i2, 5, 1, 1, 1.0, 1.0);
+					gridbaglayout_addComponent(con, gbl, sih11.spe, offset + i2, 6, 1, 1, 1.0, 1.0);
+	
+					sih1[i2] = sih11;
+				}
+	//			myService.send(boundServiceName, "servoitemholder_set_sih1", i1, sih1);
+				servoitemholder_set_sih1(i1, sih1);
+			}
+	
+			bottomTabs.addTab("Main", mainpanel);
+			bottomTabs.addTab("Right Side", c1panel);
+			bottomTabs.addTab("Left Side", c2panel);
+			bottomTabs.addTab("Head + Torso", c3panel);
+			bottom.removeAll();
+			bottom.add(BorderLayout.CENTER, bottomTabs);
+			
+			LOGGER.info("initializeBottomPaneTabs [END]");
+		} catch (Exception e) {
+			LOGGER.warn("Creating bottom tabbed frame", e);
+		}
+	}
+
+	private void gridbaglayout_addComponent(Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
+			int height, double weightx, double weighty) {
+		// function for easier gridbaglayout's
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = width;
+		gbc.gridheight = height;
+		gbc.weightx = weightx;
+		gbc.weighty = weighty;
+		gbl.setConstraints(c, gbc);
+		cont.add(c);
+	}
+
+	private void customizeslider(JSlider slider, final int t1, final int t2, int[] minresmaxpos11) {
+		// preset the slider
+		slider.setOrientation(SwingConstants.VERTICAL);
+		slider.setMinimum(minresmaxpos11[0]);
+		slider.setMaximum(minresmaxpos11[2]);
+		slider.setMajorTickSpacing(20);
+		slider.setMinorTickSpacing(1);
+		slider.createStandardLabels(1);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(true);
+		slider.setValue((minresmaxpos11[0] + minresmaxpos11[2]) / 2);
+
+		slider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent ce) {
+//				swingGui.send(boundServiceName, "servoitemholder_slider_changed", t1, t2);
+				servoitemholder_slider_changed(t1, t2);
+			}
+		});
+	}
 }
