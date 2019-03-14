@@ -31,8 +31,18 @@ public class FrameItemHolder implements Serializable {
 	private String speech;
 	private String name;
 
+	/**
+	    0 = "Right Hand"
+	    1 = "Right Arm"
+		2 = "Left Hand"
+		3 = "Left Arm"
+		4 = "Head"
+		5 = "Torso"
+	 */
+	private final boolean[] speedsSet = new boolean[6];
 	private final boolean[] tabsMainCheckboxStates = new boolean[6];
 
+	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
 	private static final String PIPE_SYMBOL = " | ";
 
@@ -93,59 +103,76 @@ public class FrameItemHolder implements Serializable {
 			// speed frame
 			Log.info("Entering toString function, speed frame part!");
 			StringBuffer speeds = new StringBuffer();
-			speeds.append("SPEED").append(" ")
-			// right hand
-			.append(this.rthumbspeed).append(SPACE_SYMBOL)
-			.append(this.rindexspeed).append(SPACE_SYMBOL)
-			.append(this.rmajeurespeed).append(SPACE_SYMBOL)
-			.append(this.rringfingerspeed).append(SPACE_SYMBOL)
-			.append(this.rpinkyspeed).append(SPACE_SYMBOL)
-			.append(this.rwristspeed).append(PIPE_SYMBOL)
-			// right arm
-			.append(this.rbicepspeed).append(SPACE_SYMBOL)
-			.append(this.rrotatespeed).append(SPACE_SYMBOL)
-			.append(this.rshoulderspeed).append(SPACE_SYMBOL)
-			.append(this.romoplatespeed).append(PIPE_SYMBOL)
-			// left hand
-			.append(this.lthumbspeed).append(SPACE_SYMBOL)
-			.append(this.lindexspeed).append(SPACE_SYMBOL)
-			.append(this.lmajeurespeed).append(SPACE_SYMBOL)
-			.append(this.lringfingerspeed).append(SPACE_SYMBOL)
-			.append(this.lpinkyspeed).append(SPACE_SYMBOL)
-			.append(this.lwristspeed).append(PIPE_SYMBOL)
-			// left arm
-			.append(this.lbicepspeed).append(SPACE_SYMBOL)
-			.append(this.lrotatespeed).append(SPACE_SYMBOL)
-			.append(this.lshoulderspeed).append(SPACE_SYMBOL)
-			.append(this.lomoplatespeed).append(PIPE_SYMBOL)
-			// head
-			.append(this.neckspeed).append(SPACE_SYMBOL)
-			.append(this.rotheadspeed).append(SPACE_SYMBOL)
-			.append(this.eyeXspeed).append(SPACE_SYMBOL)
-			.append(this.eyeYspeed).append(SPACE_SYMBOL)
-			.append(this.jawspeed).append(PIPE_SYMBOL)
-			// torso
-			.append(this.topStomspeed).append(SPACE_SYMBOL)
-			.append(this.midStomspeed).append(SPACE_SYMBOL)
-			.append(this.lowStomspeed);
+			speeds.append("SPEED").append(" ");
+				// right hand
+				if(speedsSet[0]) {
+					speeds.append(this.rthumbspeed).append(SPACE_SYMBOL)
+						.append(this.rindexspeed).append(SPACE_SYMBOL)
+						.append(this.rmajeurespeed).append(SPACE_SYMBOL)
+						.append(this.rringfingerspeed).append(SPACE_SYMBOL)
+						.append(this.rpinkyspeed).append(SPACE_SYMBOL)
+						.append(this.rwristspeed).append(PIPE_SYMBOL);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
+				// right arm
+				if(speedsSet[1]) {
+					speeds.append(this.rbicepspeed).append(SPACE_SYMBOL)
+						.append(this.rrotatespeed).append(SPACE_SYMBOL)
+						.append(this.rshoulderspeed).append(SPACE_SYMBOL)
+						.append(this.romoplatespeed).append(PIPE_SYMBOL);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
+				// left hand
+				if(speedsSet[2]) {
+					speeds.append(this.lthumbspeed).append(SPACE_SYMBOL)
+						.append(this.lindexspeed).append(SPACE_SYMBOL)
+						.append(this.lmajeurespeed).append(SPACE_SYMBOL)
+						.append(this.lringfingerspeed).append(SPACE_SYMBOL)
+						.append(this.lpinkyspeed).append(SPACE_SYMBOL)
+						.append(this.lwristspeed).append(PIPE_SYMBOL);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
+				// left arm
+				if(speedsSet[3]) {
+					speeds.append(this.lbicepspeed).append(SPACE_SYMBOL)
+						.append(this.lrotatespeed).append(SPACE_SYMBOL)
+						.append(this.lshoulderspeed).append(SPACE_SYMBOL)
+						.append(this.lomoplatespeed).append(PIPE_SYMBOL);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
+						.append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
+				// head
+				if(speedsSet[4]) {
+					speeds.append(this.neckspeed).append(SPACE_SYMBOL)
+						.append(this.rotheadspeed).append(SPACE_SYMBOL)
+						.append(this.eyeXspeed).append(SPACE_SYMBOL)
+						.append(this.eyeYspeed).append(SPACE_SYMBOL)
+						.append(this.jawspeed).append(PIPE_SYMBOL);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
+				if(speedsSet[5]) {
+					speeds.append(this.topStomspeed).append(SPACE_SYMBOL)
+						.append(this.midStomspeed).append(SPACE_SYMBOL)
+						.append(this.lowStomspeed);
+				} else {
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+				}
 			return speeds.toString();
 		} 
 	}
 
-	public FrameType getFrameType() {
-		return frameType;
-	}
-
-	public void setFrameType(FrameType frameType) {
-		this.frameType = frameType;
-	}
-
-	public boolean[] getTabsMainCheckboxStates() {
-		return tabsMainCheckboxStates;
-	}
-
 	public void resetValues() {
 		Arrays.fill(tabsMainCheckboxStates, true);
+		Arrays.fill(speedsSet, false);
 		
 		this.sleep = -1;
 
@@ -182,6 +209,22 @@ public class FrameItemHolder implements Serializable {
 		this.topStom = 90;
 		this.midStom = 90;
 		this.lowStom = 90;
+	}
+
+	public FrameType getFrameType() {
+		return frameType;
+	}
+
+	public void setFrameType(FrameType frameType) {
+		this.frameType = frameType;
+	}
+
+	public boolean[] getSpeedsSet() {
+		return speedsSet;
+	}
+
+	public boolean[] getTabsMainCheckboxStates() {
+		return tabsMainCheckboxStates;
 	}
 
 	public int getRthumb() {

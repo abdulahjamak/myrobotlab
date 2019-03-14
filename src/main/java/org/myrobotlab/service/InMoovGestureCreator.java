@@ -1697,22 +1697,26 @@ public static void main(String[] args) throws InterruptedException {
 						addSpeed = true;
 						if (splitString[0].contains("Head")) {
 							// setHeadSpeed(0.95,0.95)
+							fihSpeed.getSpeedsSet()[4] = true;
 							fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
 							fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
 						} else if (splitString[0].contains("Torso")) {
 							// setTorsoSpeed(0.95,0.85,1.0)
+							fihSpeed.getSpeedsSet()[5] = true;
 							fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
 							fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
 							fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
 						} else if (splitString[0].contains("Arm")) {
 							if (valuesString[0].contains("left")) {
 								// setArmSpeed("left",1.0,0.85,0.95,0.95)
+								fihSpeed.getSpeedsSet()[3] = true;
 								fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[1].trim()));
 								fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[2].trim()));
 								fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[3].trim()));
 								fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[4].trim()));
 							} else if (valuesString[0].contains("right")) {
 								// setArmSpeed("right",0.65,0.85,0.65,0.85)
+								fihSpeed.getSpeedsSet()[1] = true;
 								fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[1].trim()));
 								fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[2].trim()));
 								fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[3].trim()));
@@ -1721,6 +1725,7 @@ public static void main(String[] args) throws InterruptedException {
 						} else if (splitString[0].contains("Hand")) {
 							if (valuesString[0].contains("left")) {
 								// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
+								fihSpeed.getSpeedsSet()[2] = true;
 								fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[1].trim()));
 								fihSpeed.setLindexspeed(Double.parseDouble(valuesString[2].trim()));
 								fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[3].trim()));
@@ -1728,6 +1733,7 @@ public static void main(String[] args) throws InterruptedException {
 								fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[5].trim()));
 								fihSpeed.setLwristspeed(Double.parseDouble(valuesString[6].trim()));
 							} else if (valuesString[0].contains("right")) {
+								fihSpeed.getSpeedsSet()[0] = true;
 								// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
 								fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[1].trim()));
 								fihSpeed.setRindexspeed(Double.parseDouble(valuesString[2].trim()));
