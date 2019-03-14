@@ -85,8 +85,43 @@ public class FrameItemHolder implements Serializable {
 		} else {
 			// speed frame
 			Log.info("Entering toString function, speed frame part!");
-			// TODO
-			return "SPEED "+this.neckspeed;
+			StringBuffer movements = new StringBuffer();
+			movements.append("SPEED").append(" ")
+			// right hand
+			.append(this.rthumbspeed).append(SPACE_SYMBOL)
+			.append(this.rindexspeed).append(SPACE_SYMBOL)
+			.append(this.rmajeurespeed).append(SPACE_SYMBOL)
+			.append(this.rringfingerspeed).append(SPACE_SYMBOL)
+			.append(this.rpinkyspeed).append(SPACE_SYMBOL)
+			.append(this.rwristspeed).append(PIPE_SYMBOL)
+			// right arm
+			.append(this.rbicepspeed).append(SPACE_SYMBOL)
+			.append(this.rrotatespeed).append(SPACE_SYMBOL)
+			.append(this.rshoulderspeed).append(SPACE_SYMBOL)
+			.append(this.romoplatespeed).append(PIPE_SYMBOL)
+			// left hand
+			.append(this.lthumbspeed).append(SPACE_SYMBOL)
+			.append(this.lindexspeed).append(SPACE_SYMBOL)
+			.append(this.lmajeurespeed).append(SPACE_SYMBOL)
+			.append(this.lringfingerspeed).append(SPACE_SYMBOL)
+			.append(this.lpinkyspeed).append(SPACE_SYMBOL)
+			.append(this.lwristspeed).append(PIPE_SYMBOL)
+			// left arm
+			.append(this.lbicepspeed).append(SPACE_SYMBOL)
+			.append(this.lrotatespeed).append(SPACE_SYMBOL)
+			.append(this.lshoulderspeed).append(SPACE_SYMBOL)
+			.append(this.lomoplatespeed).append(PIPE_SYMBOL)
+			// head
+			.append(this.neckspeed).append(SPACE_SYMBOL)
+			.append(this.rotheadspeed).append(SPACE_SYMBOL)
+			.append(this.eyeXspeed).append(SPACE_SYMBOL)
+			.append(this.eyeYspeed).append(SPACE_SYMBOL)
+			.append(this.jawspeed).append(PIPE_SYMBOL)
+			// torso
+			.append(this.topStomspeed).append(SPACE_SYMBOL)
+			.append(this.midStomspeed).append(SPACE_SYMBOL)
+			.append(this.lowStomspeed);
+			return movements.toString();
 		} 
 	}
 
