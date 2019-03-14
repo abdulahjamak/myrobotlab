@@ -1,9 +1,6 @@
 package org.myrobotlab.service.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
-
-import org.python.jline.internal.Log;
 
 public class FrameItemHolder implements Serializable {
 
@@ -31,16 +28,19 @@ public class FrameItemHolder implements Serializable {
 	private String speech;
 	private String name;
 
-	/**
-	    0 = "Right Hand"
-	    1 = "Right Arm"
-		2 = "Left Hand"
-		3 = "Left Arm"
-		4 = "Head"
-		5 = "Torso"
-	 */
-	private final boolean[] speedsSet = new boolean[6];
-	private final boolean[] tabsMainCheckboxStates = new boolean[6];
+	private boolean rightHandSpeedSet = true;
+	private boolean rightArmSpeedSet = true;
+	private boolean leftHandSpeedSet = true;
+	private boolean leftArmSpeedSet = true;
+	private boolean headSpeedSet = true;
+	private boolean torsoSpeedSet = true;
+	
+	private boolean rightHandMoveSet = false;
+	private boolean rightArmMoveSet = false;
+	private boolean leftHandMoveSet = false;
+	private boolean leftArmMoveSet = false;
+	private boolean headMoveSet = false;
+	private boolean torsoMoveSet = false;
 
 	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
@@ -101,11 +101,10 @@ public class FrameItemHolder implements Serializable {
 			return movements.toString();
 		} else {
 			// speed frame
-			Log.info("Entering toString function, speed frame part!");
 			StringBuffer speeds = new StringBuffer();
 			speeds.append("SPEED").append(" ");
 				// right hand
-				if(speedsSet[0]) {
+				if(rightHandSpeedSet) {
 					speeds.append(this.rthumbspeed).append(SPACE_SYMBOL)
 						.append(this.rindexspeed).append(SPACE_SYMBOL)
 						.append(this.rmajeurespeed).append(SPACE_SYMBOL)
@@ -114,20 +113,20 @@ public class FrameItemHolder implements Serializable {
 						.append(this.rwristspeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// right arm
-				if(speedsSet[1]) {
+				if(rightArmSpeedSet) {
 					speeds.append(this.rbicepspeed).append(SPACE_SYMBOL)
 						.append(this.rrotatespeed).append(SPACE_SYMBOL)
 						.append(this.rshoulderspeed).append(SPACE_SYMBOL)
 						.append(this.romoplatespeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL);
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left hand
-				if(speedsSet[2]) {
+				if(leftHandSpeedSet) {
 					speeds.append(this.lthumbspeed).append(SPACE_SYMBOL)
 						.append(this.lindexspeed).append(SPACE_SYMBOL)
 						.append(this.lmajeurespeed).append(SPACE_SYMBOL)
@@ -136,20 +135,20 @@ public class FrameItemHolder implements Serializable {
 						.append(this.lwristspeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left arm
-				if(speedsSet[3]) {
+				if(leftArmSpeedSet) {
 					speeds.append(this.lbicepspeed).append(SPACE_SYMBOL)
 						.append(this.lrotatespeed).append(SPACE_SYMBOL)
 						.append(this.lshoulderspeed).append(SPACE_SYMBOL)
 						.append(this.lomoplatespeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
-						.append(STAR_SYMBOL).append(STAR_SYMBOL);
+						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// head
-				if(speedsSet[4]) {
+				if(headSpeedSet) {
 					speeds.append(this.neckspeed).append(SPACE_SYMBOL)
 						.append(this.rotheadspeed).append(SPACE_SYMBOL)
 						.append(this.eyeXspeed).append(SPACE_SYMBOL)
@@ -157,22 +156,34 @@ public class FrameItemHolder implements Serializable {
 						.append(this.jawspeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL);
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
-				if(speedsSet[5]) {
+				// torso
+				if(torsoSpeedSet) {
 					speeds.append(this.topStomspeed).append(SPACE_SYMBOL)
 						.append(this.midStomspeed).append(SPACE_SYMBOL)
 						.append(this.lowStomspeed);
 				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 			return speeds.toString();
 		} 
 	}
 
-	public void resetValues() {
-		Arrays.fill(tabsMainCheckboxStates, true);
-		Arrays.fill(speedsSet, false);
+	public void resetValues() {		
+		rightHandSpeedSet = false;
+		rightArmSpeedSet = false;
+		leftHandSpeedSet = false;
+		leftArmSpeedSet = false;
+		headSpeedSet = false;
+		torsoSpeedSet = false;
+		
+		rightHandMoveSet = true;
+		rightArmMoveSet = true;
+		leftHandMoveSet = true;
+		leftArmMoveSet = true;
+		headMoveSet = true;
+		torsoMoveSet = true;
 		
 		this.sleep = -1;
 
@@ -211,6 +222,102 @@ public class FrameItemHolder implements Serializable {
 		this.lowStom = 90;
 	}
 
+	public boolean getRightHandSpeedSet() {
+		return rightHandSpeedSet;
+	}
+
+	public void setRightHandSpeedSet(boolean rightHandSpeedSet) {
+		this.rightHandSpeedSet = rightHandSpeedSet;
+	}
+
+	public boolean getRightArmSpeedSet() {
+		return rightArmSpeedSet;
+	}
+
+	public void setRightArmSpeedSet(boolean rightArmSpeedSet) {
+		this.rightArmSpeedSet = rightArmSpeedSet;
+	}
+
+	public boolean getLeftHandSpeedSet() {
+		return leftHandSpeedSet;
+	}
+
+	public void setLeftHandSpeedSet(boolean leftHandSpeedSet) {
+		this.leftHandSpeedSet = leftHandSpeedSet;
+	}
+
+	public boolean getLeftArmSpeedSet() {
+		return leftArmSpeedSet;
+	}
+
+	public void setLeftArmSpeedSet(boolean leftArmSpeedSet) {
+		this.leftArmSpeedSet = leftArmSpeedSet;
+	}
+
+	public boolean getHeadSpeedSet() {
+		return headSpeedSet;
+	}
+
+	public void setHeadSpeedSet(boolean headSpeedSet) {
+		this.headSpeedSet = headSpeedSet;
+	}
+
+	public boolean getTorsoSpeedSet() {
+		return torsoSpeedSet;
+	}
+
+	public void setTorsoSpeedSet(boolean torsoSpeedSet) {
+		this.torsoSpeedSet = torsoSpeedSet;
+	}
+
+	public boolean getRightHandMoveSet() {
+		return rightHandMoveSet;
+	}
+
+	public void setRightHandMoveSet(boolean rightHandMoveSet) {
+		this.rightHandMoveSet = rightHandMoveSet;
+	}
+
+	public boolean getRightArmMoveSet() {
+		return rightArmMoveSet;
+	}
+
+	public void setRightArmMoveSet(boolean rightArmMoveSet) {
+		this.rightArmMoveSet = rightArmMoveSet;
+	}
+
+	public boolean getLeftHandMoveSet() {
+		return leftHandMoveSet;
+	}
+
+	public void setLeftHandMoveSet(boolean leftHandMoveSet) {
+		this.leftHandMoveSet = leftHandMoveSet;
+	}
+
+	public boolean getLeftArmMoveSet() {
+		return leftArmMoveSet;
+	}
+
+	public void setLeftArmMoveSet(boolean leftArmMoveSet) {
+		this.leftArmMoveSet = leftArmMoveSet;
+	}
+
+	public boolean getHeadMoveSet() {
+		return headMoveSet;
+	}
+
+	public void setHeadMoveSet(boolean headMoveSet) {
+		this.headMoveSet = headMoveSet;
+	}
+
+	public boolean getTorsoMoveSet() {
+		return torsoMoveSet;
+	}
+
+	public void setTorsoMoveSet(boolean torsoMoveSet) {
+		this.torsoMoveSet = torsoMoveSet;
+	}
+
 	public FrameType getFrameType() {
 		return frameType;
 	}
@@ -219,13 +326,9 @@ public class FrameItemHolder implements Serializable {
 		this.frameType = frameType;
 	}
 
-	public boolean[] getSpeedsSet() {
-		return speedsSet;
-	}
-
-	public boolean[] getTabsMainCheckboxStates() {
-		return tabsMainCheckboxStates;
-	}
+//	public boolean[] getMovesSet() {
+//		return movesSet;
+//	}
 
 	public int getRthumb() {
 		return rthumb;
