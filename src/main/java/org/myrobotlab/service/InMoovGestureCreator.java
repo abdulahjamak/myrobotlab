@@ -1507,7 +1507,7 @@ public static void main(String[] args) throws InterruptedException {
 		BufferedReader bufferedReader = null;
 		try {
 //			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
-			fileReader = new FileReader("/home/abe/balance.py");
+			fileReader = new FileReader("/d:/balance.py");
 			bufferedReader = new BufferedReader(fileReader);
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -1583,11 +1583,19 @@ public static void main(String[] args) throws InterruptedException {
 				singleScriptLine = singleScriptLine.trim();
 				LOGGER.info("singleScriptLine \"" + singleScriptLine + "\"");
 				// 'sleep(4)'
-				if (!singleScriptLine.contains("setHeadVelocity") && !singleScriptLine.contains("setArmVelocity")
+				if (!singleScriptLine.contains("setHeadVelocity") 
+						&& !singleScriptLine.contains("setArmVelocity")
 						&& !singleScriptLine.contains("setHandVelocity")
-						&& !singleScriptLine.contains("setTorsoVelocity") && !singleScriptLine.contains("moveHead")
-						&& !singleScriptLine.contains("moveArm") && !singleScriptLine.contains("moveHand")
-						&& !singleScriptLine.contains("moveTorso") && !singleScriptLine.contains("sleep") // end frame
+						&& !singleScriptLine.contains("setTorsoVelocity") 
+						&& !singleScriptLine.contains("setHeadSpeed") 
+						&& !singleScriptLine.contains("setArmSpeed")
+						&& !singleScriptLine.contains("setHandSpeed")
+						&& !singleScriptLine.contains("setTorsoSpeed") 
+						&& !singleScriptLine.contains("moveHead")
+						&& !singleScriptLine.contains("moveArm") 
+						&& !singleScriptLine.contains("moveHand")
+						&& !singleScriptLine.contains("moveTorso") 
+						&& !singleScriptLine.contains("sleep") // end frame
 						&& !singleScriptLine.contains("finishedGesture")) { // end gesture
 					continue;
 				}
@@ -1606,6 +1614,8 @@ public static void main(String[] args) throws InterruptedException {
 						parseScriptFragmentIntoSingleFrame(fihList, frameLines, counter);
 						// finish it with a sleep
 						parseScriptSleepToFrameSleep(fihList, singleScriptLine);
+						// reset framelines
+						frameLines.clear();
 					} catch (Exception e) {
 						LOGGER.error("Exception from function parseScriptFragmentIntoSingleFrame: " + e);
 					} finally {
