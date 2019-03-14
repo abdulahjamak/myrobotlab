@@ -64,6 +64,7 @@ public class InMoovGestureCreator extends Service {
 	transient ServoItemHolder[][] servoitemholder;
 
 	transient ArrayList<FrameItemHolder> frames;
+	private final List<File> pythonFiles = new ArrayList<File>();
 
 	transient ArrayList<PythonItemHolder> pythonitemholder;
 
@@ -1513,15 +1514,17 @@ public static void main(String[] args) throws InterruptedException {
 				LOGGER.info("Selected script directory: " + jfc.getSelectedFile());
 
 				File[] listOfFiles = jfc.getSelectedFile().listFiles();
-				List<String> pythonFiles = new ArrayList<String>();
+				pythonFiles.clear();
+				List<String> pythonFileNames = new ArrayList<String>();
 				for (int i = 0; i < listOfFiles.length; i++) { 
 					if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".py")) {
 						// list only ".py" files in the folder
-						pythonFiles.add(listOfFiles[i].getName());
+						pythonFileNames.add(listOfFiles[i].getName());
+						pythonFiles.add(listOfFiles[i]);
 					}
 				}
-				if(pythonFiles != null && pythonFiles.size() > 0) {
-					control_list.setListData(pythonFiles.toArray());
+				if(pythonFileNames != null && pythonFileNames.size() > 0) {
+					control_list.setListData(pythonFileNames.toArray());
 				}
 			}
 		}
@@ -1533,10 +1536,12 @@ public static void main(String[] args) throws InterruptedException {
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
 		try {
+			File selectedFile = pythonFiles.get(control_list.getSelectedIndex());
+			fileReader = new FileReader(selectedFile);
 //			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
-			fileReader = new FileReader("/d:/balance.py");
+//			fileReader = new FileReader("/d:/balance.py");
 			bufferedReader = new BufferedReader(fileReader);
-			String line;
+			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
 				scriptLines.add(line);
 			}
