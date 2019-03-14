@@ -27,6 +27,9 @@ public class FrameItemHolder implements Serializable {
 
 	private final boolean[] tabsMainCheckboxStates = new boolean[6];
 
+	private static final String SPACE_SYMBOL = " ";
+	private static final String PIPE_SYMBOL = " | ";
+
 	public FrameItemHolder() {
 		resetValues();
 	}
@@ -41,27 +44,45 @@ public class FrameItemHolder implements Serializable {
 			return "SPEECH "+this.speech;
 		} else if (this.name != null) {
 			// move frame
-			// TODO
-			StringBuffer movements = new StringBuffer(this.name + ": "); //first word is the name 
-			if(tabsMainCheckboxStates[0] == tabsMainCheckboxStates[1] == tabsMainCheckboxStates[2] == tabsMainCheckboxStates[3] == tabsMainCheckboxStates[4] == tabsMainCheckboxStates[5] == true) {
-				//all checkBoxStates are true, every motor is returned!
-				//right hand
-				movements.append(this.rthumb + " " + this.rindex + " " + this.rmajeure + " " + this.rringfinger + " " + this.rpinky + " " + this.rwrist + " " + " | ");
-				//right arm
-				movements.append(this.rbicep + " " + this.rrotate + " " + this.rshoulder + " " + this.romoplate + " | ");
-				//left hand
-				movements.append(this.lthumb + " " + this.lindex + " " + this.lmajeure + " " + this.lringfinger + " " + this.lpinky + " " + this.lwrist + " " + " | ");
-				//left arm
-				movements.append(this.lbicep + " " + this.lrotate + " " + this.lshoulder + " " + this.lomoplate + " | ");
-				//head
-				movements.append(this.neck + " " + this.rothead + " " + this.eyeX + " " + this.eyeY + " " + this.jaw +" | ");
-				//torso
-				movements.append(this.topStom + " " + this.midStom + " " + this.lowStom );
-				return movements.toString();				
-			}else {
-				return "";
-			}
-		}else {
+			StringBuffer movements = new StringBuffer();
+			// first word is the name 
+			movements.append(this.name).append(": ")
+				// right hand
+				.append(this.rthumb).append(SPACE_SYMBOL)
+				.append(this.rindex).append(SPACE_SYMBOL)
+				.append(this.rmajeure).append(SPACE_SYMBOL)
+				.append(this.rringfinger).append(SPACE_SYMBOL)
+				.append(this.rpinky).append(SPACE_SYMBOL)
+				.append(this.rwrist).append(PIPE_SYMBOL)
+				// right arm
+				.append(this.rbicep).append(SPACE_SYMBOL)
+				.append(this.rrotate).append(SPACE_SYMBOL)
+				.append(this.rshoulder).append(SPACE_SYMBOL)
+				.append(this.romoplate).append(PIPE_SYMBOL)
+				// left hand
+				.append(this.lthumb).append(SPACE_SYMBOL)
+				.append(this.lindex).append(SPACE_SYMBOL)
+				.append(this.lmajeure).append(SPACE_SYMBOL)
+				.append(this.lringfinger).append(SPACE_SYMBOL)
+				.append(this.lpinky).append(SPACE_SYMBOL)
+				.append(this.lwrist).append(PIPE_SYMBOL)
+				// left arm
+				.append(this.lbicep).append(SPACE_SYMBOL)
+				.append(this.lrotate).append(SPACE_SYMBOL)
+				.append(this.lshoulder).append(SPACE_SYMBOL)
+				.append(this.lomoplate).append(PIPE_SYMBOL)
+				// head
+				.append(this.neck).append(SPACE_SYMBOL)
+				.append(this.rothead).append(SPACE_SYMBOL)
+				.append(this.eyeX).append(SPACE_SYMBOL)
+				.append(this.eyeY).append(SPACE_SYMBOL)
+				.append(this.jaw).append(PIPE_SYMBOL)
+				// torso
+				.append(this.topStom).append(SPACE_SYMBOL)
+				.append(this.midStom).append(SPACE_SYMBOL)
+				.append(this.lowStom);
+			return movements.toString();
+		} else {
 			// speed frame
 			Log.info("Entering toString function, speed frame part!");
 			// TODO
