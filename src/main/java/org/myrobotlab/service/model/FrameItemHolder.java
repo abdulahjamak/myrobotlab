@@ -62,42 +62,70 @@ public class FrameItemHolder implements Serializable {
 		} else if (this.name != null) {
 			// move frame
 			StringBuffer movements = new StringBuffer();
-			// first word is the name 
-			movements.append(this.name).append(": ")
+			movements.append(this.name).append(": ");
 				// right hand
-				.append(this.rthumb).append(SPACE_SYMBOL)
-				.append(this.rindex).append(SPACE_SYMBOL)
-				.append(this.rmajeure).append(SPACE_SYMBOL)
-				.append(this.rringfinger).append(SPACE_SYMBOL)
-				.append(this.rpinky).append(SPACE_SYMBOL)
-				.append(this.rwrist).append(PIPE_SYMBOL)
+				if(rightHandMoveSet) {
+					movements.append(this.rthumb).append(SPACE_SYMBOL)
+						.append(this.rindex).append(SPACE_SYMBOL)
+						.append(this.rmajeure).append(SPACE_SYMBOL)
+						.append(this.rringfinger).append(SPACE_SYMBOL)
+						.append(this.rpinky).append(SPACE_SYMBOL)
+						.append(this.rwrist).append(PIPE_SYMBOL);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 				// right arm
-				.append(this.rbicep).append(SPACE_SYMBOL)
-				.append(this.rrotate).append(SPACE_SYMBOL)
-				.append(this.rshoulder).append(SPACE_SYMBOL)
-				.append(this.romoplate).append(PIPE_SYMBOL)
+				if(rightArmMoveSet) {
+					movements.append(this.rbicep).append(SPACE_SYMBOL)
+						.append(this.rrotate).append(SPACE_SYMBOL)
+						.append(this.rshoulder).append(SPACE_SYMBOL)
+						.append(this.romoplate).append(PIPE_SYMBOL);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 				// left hand
-				.append(this.lthumb).append(SPACE_SYMBOL)
-				.append(this.lindex).append(SPACE_SYMBOL)
-				.append(this.lmajeure).append(SPACE_SYMBOL)
-				.append(this.lringfinger).append(SPACE_SYMBOL)
-				.append(this.lpinky).append(SPACE_SYMBOL)
-				.append(this.lwrist).append(PIPE_SYMBOL)
+				if(leftHandMoveSet) {
+					movements.append(this.lthumb).append(SPACE_SYMBOL)
+						.append(this.lindex).append(SPACE_SYMBOL)
+						.append(this.lmajeure).append(SPACE_SYMBOL)
+						.append(this.lringfinger).append(SPACE_SYMBOL)
+						.append(this.lpinky).append(SPACE_SYMBOL)
+						.append(this.lwrist).append(PIPE_SYMBOL);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 				// left arm
-				.append(this.lbicep).append(SPACE_SYMBOL)
-				.append(this.lrotate).append(SPACE_SYMBOL)
-				.append(this.lshoulder).append(SPACE_SYMBOL)
-				.append(this.lomoplate).append(PIPE_SYMBOL)
+				if(leftArmMoveSet) {
+					movements.append(this.lbicep).append(SPACE_SYMBOL)
+						.append(this.lrotate).append(SPACE_SYMBOL)
+						.append(this.lshoulder).append(SPACE_SYMBOL)
+						.append(this.lomoplate).append(PIPE_SYMBOL);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
+						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 				// head
-				.append(this.neck).append(SPACE_SYMBOL)
-				.append(this.rothead).append(SPACE_SYMBOL)
-				.append(this.eyeX).append(SPACE_SYMBOL)
-				.append(this.eyeY).append(SPACE_SYMBOL)
-				.append(this.jaw).append(PIPE_SYMBOL)
+				if(headMoveSet) {
+					movements.append(this.neck).append(SPACE_SYMBOL)
+						.append(this.rothead).append(SPACE_SYMBOL)
+						.append(this.eyeX).append(SPACE_SYMBOL)
+						.append(this.eyeY).append(SPACE_SYMBOL)
+						.append(this.jaw).append(PIPE_SYMBOL);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 				// torso
-				.append(this.topStom).append(SPACE_SYMBOL)
-				.append(this.midStom).append(SPACE_SYMBOL)
-				.append(this.lowStom);
+				if(torsoMoveSet) {
+					movements.append(this.topStom).append(SPACE_SYMBOL)
+						.append(this.midStom).append(SPACE_SYMBOL)
+						.append(this.lowStom);
+				} else {
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+				}
 			return movements.toString();
 		} else {
 			// speed frame

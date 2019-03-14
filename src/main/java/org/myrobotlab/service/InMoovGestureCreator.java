@@ -1681,14 +1681,15 @@ public static void main(String[] args) throws InterruptedException {
 					// it always starts with 'i01.'
 					// i01.setHeadSpeed(0.95,0.95)
 					LOGGER.trace("expected: i01.setHeadSpeed(0.95,0.95) \"" + singleScriptLine + "\"");
-					singleScriptLine = singleScriptLine.substring(4, singleScriptLine.length() - 2);
+					singleScriptLine = singleScriptLine.substring(4, singleScriptLine.length() - 1);
 					// setHeadSpeed(0.95,0.95
 					LOGGER.trace("expected: setHeadSpeed(0.95,0.95 \"" + singleScriptLine + "\"");
 					String[] splitString = singleScriptLine.split("\\(");
 					LOGGER.trace("splitString[0] expected: setHeadSpeed \"" + splitString[0] + "\"");
-					LOGGER.trace("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");
+					LOGGER.trace("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");;
 					// splitString[0] setHeadSpeed
 					// splitString[1] 0.95,0.95
+					//LOGGER.trace("Testing if split function does as predicted. splitString[0] = " + splitString[0] + " and splitString[1] = " + splitString[1]);
 					String[] valuesString = splitString[1].split(",");
 					LOGGER.trace("valuesString[0] \"" + valuesString[0] + "\"");
 					LOGGER.trace("valuesString.length \"" + valuesString.length + "\"");
@@ -1797,7 +1798,7 @@ public static void main(String[] args) throws InterruptedException {
 						// we should never get here
 					}
 				} catch (Exception e) {
-					LOGGER.warn("Frame line parsing error", e);
+					LOGGER.warn("Frame line parsing error on frame: " + frameCounter + "! ", e);
 				}
 			}
 			if (addSpeed) {
