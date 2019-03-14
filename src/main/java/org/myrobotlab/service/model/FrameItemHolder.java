@@ -85,8 +85,8 @@ public class FrameItemHolder implements Serializable {
 		} else {
 			// speed frame
 			Log.info("Entering toString function, speed frame part!");
-			StringBuffer movements = new StringBuffer();
-			movements.append("SPEED").append(" ")
+			StringBuffer speeds = new StringBuffer();
+			speeds.append("SPEED").append(" ")
 			// right hand
 			.append(this.rthumbspeed).append(SPACE_SYMBOL)
 			.append(this.rindexspeed).append(SPACE_SYMBOL)
@@ -121,7 +121,7 @@ public class FrameItemHolder implements Serializable {
 			.append(this.topStomspeed).append(SPACE_SYMBOL)
 			.append(this.midStomspeed).append(SPACE_SYMBOL)
 			.append(this.lowStomspeed);
-			return movements.toString();
+			return speeds.toString();
 		} 
 	}
 
