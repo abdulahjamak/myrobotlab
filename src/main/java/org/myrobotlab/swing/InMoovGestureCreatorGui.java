@@ -90,8 +90,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			// top:
 			// |--------------------|
-			// |top#|##top   2#####|
-			// |# 1#|##############|
+			// |top#| ##top   2#####|
+			// |# 1#| ##############|
 			// |--------------------|
 			// ######/\
 			// splitpanetop1top2

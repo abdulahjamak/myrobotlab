@@ -1,6 +1,5 @@
 package org.myrobotlab.service;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -2193,12 +2192,135 @@ public static void main(String[] args) throws InterruptedException {
 		initializeBottomPaneTabs(bottom, frames.get(frameItemHolderIndex));
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
-		
+
+	private void addEnableCheckBoxesToSectionPane(JPanel panel, FrameItemHolder frameItemHolder, String title) {
+		// checkboxes
+		final JCheckBox checkbox = new JCheckBox(title);
+		checkbox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				// TODO
+				frameItemHolder.setRightHandMoveSet(checkbox.isSelected());
+			}
+		});
+		// TODO
+		checkbox.setSelected(frameItemHolder.getRightHandMoveSet());
+		panel.add(checkbox);
+	}
+
+	private void setPanelEnabled(JPanel panel, Boolean isEnabled) {
+		try {
+			panel.setEnabled(isEnabled);
+			Component[] components = panel.getComponents();
+			for (Component component : components) {
+				if (component instanceof JPanel) {
+					setPanelEnabled((JPanel) component, isEnabled);
+				}
+				component.setEnabled(isEnabled);
+			}
+		} catch (Exception e) {
+			LOGGER.warn("Creating bottom tabbed frame", e);
+		}
+	}
+	
 	public void initializeBottomPaneTabs(JPanel bottom, FrameItemHolder frameItemHolder) {
 		LOGGER.trace("initializeBottomPaneTabs [START]");
 		try {
 			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
-	
+
+			// JPanels for the JTabbedPane
+			final JPanel rightHandPanel = new JPanel();
+			final JPanel rightArmPanel = new JPanel();
+			final JPanel leftHandPanel = new JPanel();
+			final JPanel leftArmPanel = new JPanel();
+			final JPanel headPanel = new JPanel();
+			final JPanel torsoPanel = new JPanel();
+			// JPanels for the JTabbedPane
+			final JPanel rightHandMovePanel = new JPanel();
+			final JPanel rightArmMovePanel = new JPanel();
+			final JPanel leftHandMovePanel = new JPanel();
+			final JPanel leftArmMovePanel = new JPanel();
+			final JPanel headMovePanel = new JPanel();
+			final JPanel torsoMovePanel = new JPanel();
+			// JPanels for the JTabbedPane
+			final JPanel rightHandSpeedPanel = new JPanel();
+			final JPanel rightArmSpeedPanel = new JPanel();
+			final JPanel leftHandSpeedPanel = new JPanel();
+			final JPanel leftArmSpeedPanel = new JPanel();
+			final JPanel headSpeedPanel = new JPanel();
+			final JPanel torsoSpeedPanel = new JPanel();
+			// Titles
+			rightHandPanel.add(new JLabel("Right Hand"));
+			rightHandPanel.setLayout(new BoxLayout(rightHandPanel, BoxLayout.Y_AXIS));
+			rightArmPanel.add(new JLabel("Right Arm"));
+			rightArmPanel.setLayout(new BoxLayout(rightArmPanel, BoxLayout.Y_AXIS));
+			leftHandPanel.add(new JLabel("Left Hand"));
+			leftHandPanel.setLayout(new BoxLayout(leftHandPanel, BoxLayout.Y_AXIS));
+			leftArmPanel.add(new JLabel("Left Arm"));
+			leftArmPanel.setLayout(new BoxLayout(leftArmPanel, BoxLayout.Y_AXIS));
+			headPanel.add(new JLabel("Head"));
+			headPanel.setLayout(new BoxLayout(headPanel, BoxLayout.Y_AXIS));
+			torsoPanel.add(new JLabel("Torso"));
+			torsoPanel.setLayout(new BoxLayout(torsoPanel, BoxLayout.Y_AXIS));
+			// layouts
+			rightHandPanel.add(rightHandMovePanel);
+			rightHandPanel.add(rightHandSpeedPanel);
+			rightArmPanel.add(rightArmMovePanel);
+			rightArmPanel.add(rightArmSpeedPanel);
+			leftHandPanel.add(leftHandMovePanel);
+			leftHandPanel.add(leftHandSpeedPanel);
+			leftArmPanel.add(leftArmMovePanel);
+			leftArmPanel.add(leftArmSpeedPanel);
+			headPanel.add(headMovePanel);
+			headPanel.add(headSpeedPanel);
+			torsoPanel.add(torsoMovePanel);
+			torsoPanel.add(torsoSpeedPanel);
+			// movecheckboxes
+			addEnableCheckBoxesToSectionPane(rightHandMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(rightArmMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(leftHandMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(leftArmMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(headMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(torsoMovePanel, frameItemHolder, "Move?");
+			// speed checkBoxes
+			addEnableCheckBoxesToSectionPane(rightHandSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(rightArmSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(leftHandSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(leftArmSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(headSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(torsoSpeedPanel, frameItemHolder, "Set Speed?");
+			if(frameItemHolder.getFrameType() == FrameItemHolder.FrameType.MOVE) {
+				// disable SPEED panels
+				setPanelEnabled(rightHandSpeedPanel,false);
+				setPanelEnabled(rightArmSpeedPanel,false);
+				setPanelEnabled(leftHandSpeedPanel,false);
+				setPanelEnabled(leftArmSpeedPanel,false);
+				setPanelEnabled(headSpeedPanel,false);
+				setPanelEnabled(torsoSpeedPanel,false);
+				// enable MOVE panels
+				setPanelEnabled(rightHandMovePanel,true);
+				setPanelEnabled(rightArmMovePanel,true);
+				setPanelEnabled(leftHandMovePanel,true);
+				setPanelEnabled(leftArmMovePanel,true);
+				setPanelEnabled(headMovePanel,true);
+				setPanelEnabled(torsoMovePanel,true);
+			} else if(frameItemHolder.getFrameType() == FrameItemHolder.FrameType.SPEED) {
+				// enable SPEED panels
+				setPanelEnabled(rightHandSpeedPanel,true);
+				setPanelEnabled(rightArmSpeedPanel,true);
+				setPanelEnabled(leftHandSpeedPanel,true);
+				setPanelEnabled(leftArmSpeedPanel,true);
+				setPanelEnabled(headSpeedPanel,true);
+				setPanelEnabled(torsoSpeedPanel,true);
+				// disable MOVE panels
+				setPanelEnabled(rightHandMovePanel,false);
+				setPanelEnabled(rightArmMovePanel,false);
+				setPanelEnabled(leftHandMovePanel,false);
+				setPanelEnabled(leftArmMovePanel,false);
+				setPanelEnabled(headMovePanel,false);
+				setPanelEnabled(torsoMovePanel,false);
+			}
+			
 			// JPanels for the JTabbedPane
 			final JPanel mainpanel = new JPanel();
 			final JPanel c1panel = new JPanel();
@@ -2410,8 +2532,16 @@ public static void main(String[] args) throws InterruptedException {
 			bottomTabs.addTab("Right Side", c1panel);
 			bottomTabs.addTab("Left Side", c2panel);
 			bottomTabs.addTab("Head + Torso", c3panel);
+			//
 			bottom.removeAll();
-			bottom.add(BorderLayout.CENTER, bottomTabs);
+			bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+//			bottom.add(BorderLayout.CENTER, bottomTabs);
+			bottom.add(rightHandPanel);
+			bottom.add(rightArmPanel);
+			bottom.add(leftHandPanel);
+			bottom.add(leftArmPanel);
+			bottom.add(headPanel);
+			bottom.add(torsoPanel);
 			bottom.revalidate();
 			bottom.repaint();
 			
