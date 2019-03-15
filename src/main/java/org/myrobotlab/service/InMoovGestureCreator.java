@@ -220,7 +220,11 @@ public static void main(String[] args) throws InterruptedException {
         referencename = "i01";
       }
       i01 = (InMoov) Runtime.getService(referencename);
-      control_connect.setText("Disconnect");
+      if(i01 != null) {
+    	  control_connect.setText("Disconnect");
+      } else {
+    	  LOGGER.info("Failed to connect!"); // should be a message to the user
+      }
     } else {
       i01 = null;
       control_connect.setText("Connect");
