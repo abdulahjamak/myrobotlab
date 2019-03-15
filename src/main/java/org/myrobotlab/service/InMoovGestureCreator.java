@@ -1274,7 +1274,7 @@ public static void main(String[] args) throws InterruptedException {
 	    if (i01 != null && pos != -1) {
 		    for (int i = 0; i < frames.size(); i++) {
 		  	  FrameItemHolder fih = frames.get(i);
-		    //  FrameItemHolder fih = frameitemholder.get(pos);
+		  	  //  FrameItemHolder fih = frameitemholder.get(pos);
 		      LOGGER.info("Trenutno se testira: " + fih.getName() + "\n");
 		      // sleep || speech || servo movement || speed setting
 		      if (fih.getSleep() != -1) {
@@ -1549,6 +1549,7 @@ public static void main(String[] args) throws InterruptedException {
 		BufferedReader bufferedReader = null;
 		try {
 			File selectedFile = pythonFiles.get(control_list.getSelectedIndex());
+			LOGGER.info("Loading script \"" + selectedFile.getAbsolutePath() + "\"...");
 			fileReader = new FileReader(selectedFile);
 //			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
 //			fileReader = new FileReader("/d:/balance.py");
@@ -1699,7 +1700,7 @@ public static void main(String[] args) throws InterruptedException {
 					LOGGER.trace("expected: setHeadSpeed(0.95,0.95 \"" + singleScriptLine + "\"");
 					String[] splitString = singleScriptLine.split("\\(");
 					LOGGER.trace("splitString[0] expected: setHeadSpeed \"" + splitString[0] + "\"");
-					LOGGER.trace("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");;
+					LOGGER.trace("splitString[1] expected: 0.95,0.95 \"" + splitString[1] + "\"");
 					// splitString[0] setHeadSpeed
 					// splitString[1] 0.95,0.95
 					//LOGGER.trace("Testing if split function does as predicted. splitString[0] = " + splitString[0] + " and splitString[1] = " + splitString[1]);
@@ -2187,15 +2188,14 @@ public static void main(String[] args) throws InterruptedException {
 	}
 
 	public void frameSelectionChanged(JPanel bottom, int frameItemHolderIndex) {
-		LOGGER.info("frameSelectionChanged [START]");
-		LOGGER.info("frameItemHolderIndex \"" + frameItemHolderIndex + "\"");
-		LOGGER.info("frames.get(frameItemHolderIndex) \"" + frames.get(frameItemHolderIndex) + "\"");
+		LOGGER.trace("frameSelectionChanged [START]");
+		LOGGER.info("frame#"+frameItemHolderIndex+": \"" + frames.get(frameItemHolderIndex) + "\"");
 		initializeBottomPaneTabs(bottom, frames.get(frameItemHolderIndex));
-		LOGGER.info("frameSelectionChanged [END]");
+		LOGGER.trace("frameSelectionChanged [END]");
 	}
 		
 	public void initializeBottomPaneTabs(JPanel bottom, FrameItemHolder frameItemHolder) {
-		LOGGER.info("initializeBottomPaneTabs [START]");
+		LOGGER.trace("initializeBottomPaneTabs [START]");
 		try {
 			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 	
@@ -2412,8 +2412,10 @@ public static void main(String[] args) throws InterruptedException {
 			bottomTabs.addTab("Head + Torso", c3panel);
 			bottom.removeAll();
 			bottom.add(BorderLayout.CENTER, bottomTabs);
+			bottom.revalidate();
+			bottom.repaint();
 			
-			LOGGER.info("initializeBottomPaneTabs [END]");
+			LOGGER.trace("initializeBottomPaneTabs [END]");
 		} catch (Exception e) {
 			LOGGER.warn("Creating bottom tabbed frame", e);
 		}

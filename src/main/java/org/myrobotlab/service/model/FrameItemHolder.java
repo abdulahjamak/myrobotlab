@@ -124,7 +124,7 @@ public class FrameItemHolder implements Serializable {
 						.append(this.midStom).append(SPACE_SYMBOL)
 						.append(this.lowStom);
 				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 				}
 			return movements.toString();
 		} else {
