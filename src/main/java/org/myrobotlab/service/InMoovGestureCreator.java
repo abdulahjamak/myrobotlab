@@ -41,6 +41,7 @@ import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.logging.Logging;
 import org.myrobotlab.logging.LoggingFactory;
 import org.myrobotlab.service.model.FrameItemHolder;
+import org.myrobotlab.service.model.FrameItemHolder.FrameType;
 import org.slf4j.Logger;
 
 /**
@@ -771,60 +772,24 @@ public static void main(String[] args) throws InterruptedException {
 	}
   }
 
-  public void control_testgest() {
-    // test (execute) the created gesture (button bottom-left)
-    if (i01 != null) {
-      for (FrameItemHolder fih : frames) {
-        if (fih.getSleep() != -1) {
-          sleep(fih.getSleep());
-        } else if (fih.getSpeech() != null) {
-          try {
-            i01.mouth.speakBlocking(fih.getSpeech());
-          } catch (Exception e) {
-            Logging.logError(e);
-          }
-        } else if (fih.getName() != null) {
-          if (fih.getRightHandMoveSet()) {
-            i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-          }
-          if (fih.getRightArmMoveSet()) {
-            i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-          }
-          if (fih.getLeftHandMoveSet()) {
-            i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-          }
-          if (fih.getLeftArmMoveSet()) {
-            i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-          }
-          if (fih.getHeadMoveSet()) {
-            i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-          }
-          if (fih.getTorsoMoveSet()) {
-            i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-          }
-        } else {
-          if (fih.getRightHandMoveSet()) {
-            i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-          }
-          if (fih.getRightArmMoveSet()) {
-            i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-          }
-          if (fih.getLeftHandMoveSet()) {
-            i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-          }
-          if (fih.getLeftArmMoveSet()) {
-            i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-          }
-          if (fih.getHeadMoveSet()) {
-            i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-          }
-          if (fih.getTorsoMoveSet()) {
-            i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-          }
-        }
-      }
-    }
-  }
+	public void control_testgest() {
+		// test the gesture
+		if (i01 != null && frames.size() != 0) {
+			LOGGER.info("Starting the test.");
+			for (FrameItemHolder fih : frames) {
+				frameTestFunction(fih);
+			}
+		}
+		else {
+			if(i01 == null) {
+				//this should go into some kind of message to the user
+				LOGGER.info("Testing of gesture is not possible!");
+				LOGGER.info("Robot is not initialised!");
+			} else {
+				LOGGER.info("No gestures loaded!");
+			}
+		}
+	}
 
   public void control_updategest(JList control_list, JTextField control_gestname, JTextField control_funcname) {
     // Update the current gesture in the script (button bottom-left)
@@ -1208,125 +1173,104 @@ public static void main(String[] args) throws InterruptedException {
 
 			framelistact(framelist);
 		}
+	} 
+
+	private void frameTestFunction(FrameItemHolder fih) {
+		if (fih.getFrameType() == FrameType.SLEEP) {
+			LOGGER.info("Starting testing of sleep frame! Sleep for: " + fih.getSleep() + "!");
+			// sleep frame
+			sleep(fih.getSleep());
+		} else if (fih.getFrameType() == FrameType.SPEECH) {
+			// speech frame
+			try {
+				i01.mouth.speakBlocking(fih.getSpeech());
+				LOGGER.info("Starting testing of speech frame! Speech: " + fih.getSpeech() + "!");
+			} catch (Exception e) {
+				Logging.logError(e);
+			}
+		} else if (fih.getFrameType() == FrameType.MOVE) {
+			// move frame
+			LOGGER.info("Starting testing of frame: " + fih.getName() + "!");
+			if (fih.getRightHandMoveSet()) {
+				i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
+			}
+			if (fih.getRightArmMoveSet()) {
+				i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
+			}
+			if (fih.getLeftHandMoveSet()) {
+				i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
+			}
+			if (fih.getLeftArmMoveSet()) {
+				i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(),
+						fih.getLpinky(), (double) fih.getLwrist());
+			}
+			if (fih.getHeadMoveSet()) {
+				i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(),
+						fih.getRpinky(), (double) fih.getRwrist());
+			}
+			if (fih.getTorsoMoveSet()) {
+				i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
+			}
+		} else {
+			// speed frame
+			LOGGER.info("Starting testing of speed frame!");
+			if (fih.getRightHandMoveSet()) {
+//				i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(),
+//						fih.getJawspeed());
+				i01.setHeadVelocity(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(),
+						fih.getJawspeed());
+			}
+			if (fih.getRightArmMoveSet()) {
+//				i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(),
+//						fih.getLomoplatespeed());
+				i01.setArmVelocity("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(),
+						fih.getLomoplatespeed());
+			}
+			if (fih.getLeftHandMoveSet()) {
+//				i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(),
+//						fih.getRomoplatespeed());
+				i01.setArmVelocity("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(),
+						fih.getRomoplatespeed());
+			}
+			if (fih.getLeftArmMoveSet()) {
+//				i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(),
+//						fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
+				i01.setHandVelocity("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(),
+						fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
+			}
+			if (fih.getHeadMoveSet()) {
+//				i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(),
+//						fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
+				i01.setHandVelocity("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(),
+						fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
+			}
+			if (fih.getTorsoMoveSet()) {
+//				i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
+				i01.setTorsoVelocity(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
+			}
+		}
+		LOGGER.info("Finished testing of frame!");
+	}
+	public void frame_test(JList framelist) {
+		// Test selected frame
+		int selectedFrameIndex = framelist.getSelectedIndex();
+		if (i01 != null && selectedFrameIndex != -1) {
+			FrameItemHolder fih = frames.get(selectedFrameIndex);
+			frameTestFunction(fih);
+		} else {
+			if(selectedFrameIndex == -1) {
+				//this should go into some kind of message to the user
+				LOGGER.info("Please select a frame!");
+			}
+			else {
+				//this should go into some kind of message to the user
+				LOGGER.info("Testing of frame is not possible!");
+				LOGGER.info("Robot is not initialised!");
+			}
+		}
 	}
 
- /* public void frame_test(JList framelist) {
-    // Test this frame (execute)
-    int pos = framelist.getSelectedIndex();
-    if (i01 != null && pos != -1) {
-      FrameItemHolder fih = frameitemholder.get(pos);
-      
-      // sleep || speech || servo movement || speed setting
-      if (fih.getSleep() != -1) {
-        sleep(fih.getSleep());
-      } else if (fih.getSpeech() != null) {
-        try {
-          i01.mouth.speakBlocking(fih.getSpeech());
-        } catch (Exception e) {
-          Logging.logError(e);
-        }
-      } else if (fih.getName() != null) {
-        if (fih.getTabsMainCheckboxStates()[0]) {
-          i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-        }
-        if (fih.getTabsMainCheckboxStates()[1]) {
-          i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-        }
-        if (fih.getTabsMainCheckboxStates()[2]) {
-          i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-        }
-        if (fih.getTabsMainCheckboxStates()[3]) {
-          i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-        }
-        if (fih.getTabsMainCheckboxStates()[4]) {
-          i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-        }
-        if (fih.getTabsMainCheckboxStates()[5]) {
-          i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-        }
-      } else {
-        if (fih.getTabsMainCheckboxStates()[0]) {
-          i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[1]) {
-          i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[2]) {
-          i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[3]) {
-          i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[4]) {
-          i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[5]) {
-          i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-        }
-      }
-    }
-  }
-*/
-  public void frame_test(JList framelist) {
-	    // Test this frame (execute)
-	    int pos = framelist.getSelectedIndex();
-	    LOGGER.info("indeks je: " + framelist.getSelectedIndex() + "a i01 = "  + (i01 == null ? "null" : "nije_ null"));
-	    if (i01 != null && pos != -1) {
-		    for (int i = 0; i < frames.size(); i++) {
-		  	  FrameItemHolder fih = frames.get(i);
-		  	  //  FrameItemHolder fih = frameitemholder.get(pos);
-		      LOGGER.info("Trenutno se testira: " + fih.getName() + "\n");
-		      // sleep || speech || servo movement || speed setting
-		      if (fih.getSleep() != -1) {
-		        sleep(fih.getSleep());
-		      } else if (fih.getSpeech() != null) {
-		        try {
-		          i01.mouth.speakBlocking(fih.getSpeech());
-		        } catch (Exception e) {
-		          Logging.logError(e);
-		        }
-		      } else if (fih.getName() != null) {
-		        if (fih.getRightHandMoveSet()) {
-		          i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-		        }
-		        if (fih.getRightArmMoveSet()) {
-		          i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-		        }
-		        if (fih.getLeftHandMoveSet()) {
-		          i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-		        }
-		        if (fih.getLeftArmMoveSet()) {
-		          i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-		        }
-		        if (fih.getHeadMoveSet()) {
-		          i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-		        }
-		        if (fih.getTorsoMoveSet()) {
-		          i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-		        }
-		      } else {
-		        if (fih.getRightHandMoveSet()) {
-		          i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-		        }
-		        if (fih.getRightArmMoveSet()) {
-		          i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-		        }
-		        if (fih.getLeftHandMoveSet()) {
-		          i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-		        }
-		        if (fih.getLeftArmMoveSet()) {
-		          i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-		        }
-		        if (fih.getHeadMoveSet()) {
-		          i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-		        }
-		        if (fih.getTorsoMoveSet()) {
-		          i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-		        }
-		      }
-		    }
-	    }
-	  } 
+ 
   public void frame_up(JList framelist) {
     // Move this frame one up on the framelist (button bottom-right)
     int pos = framelist.getSelectedIndex();
