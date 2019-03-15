@@ -1711,50 +1711,114 @@ public static void main(String[] args) throws InterruptedException {
 						addSpeed = true;
 						if (splitString[0].contains("Head")) {
 							// setHeadSpeed(0.95,0.95)
-							fihSpeed.setHeadSpeedSet(true);
-							fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
-							fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
+							//it has to have 2 arguments
+							if(valuesString.length > 0) {
+								fihSpeed.setHeadSpeedSet(true);
+								fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihSpeed.setEyeXspeed(Double.parseDouble(valuesString[2].trim()));
+							}
+							if(valuesString.length > 3) {
+								fihSpeed.setEyeYspeed(Double.parseDouble(valuesString[3].trim()));
+							}
+							if(valuesString.length > 4) {
+								fihSpeed.setJawspeed(Double.parseDouble(valuesString[4].trim()));
+							}
 						} else if (splitString[0].contains("Torso")) {
 							// setTorsoSpeed(0.95,0.85,1.0)
-							fihSpeed.setTorsoSpeedSet(true);
-							fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
-							fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
-							fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
+							if(valuesString.length > 0) {
+								fihSpeed.setTorsoSpeedSet(true);
+								fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
+							}
 						} else if (splitString[0].contains("Arm")) {
-							if (valuesString[0].contains("left")) {
-								// setArmSpeed("left",1.0,0.85,0.95,0.95)
-								fihSpeed.setLeftArmSpeedSet(true);
-								fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[4].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// setArmSpeed("right",0.65,0.85,0.65,0.85)
-								fihSpeed.setRightArmSpeedSet(true);
-								fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setRomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// setArmSpeed("left",1.0,0.85,0.95,0.95)
+									fihSpeed.setLeftArmSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// setArmSpeed("right",0.65,0.85,0.65,0.85)
+									fihSpeed.setRightArmSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setRomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Hand")) {
-							if (valuesString[0].contains("left")) {
-								// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
-								fihSpeed.setLeftHandSpeedSet(true);
-								fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setLindexspeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setLringfingerspeed(Double.parseDouble(valuesString[4].trim()));
-								fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[5].trim()));
-								fihSpeed.setLwristspeed(Double.parseDouble(valuesString[6].trim()));
-							} else if (valuesString[0].contains("right")) {
-								fihSpeed.setRightHandSpeedSet(true);
-								// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
-								fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setRindexspeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setRmajeurespeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setRringfingerspeed(Double.parseDouble(valuesString[4].trim()));
-								fihSpeed.setRpinkyspeed(Double.parseDouble(valuesString[5].trim()));
-								fihSpeed.setRwristspeed(Double.parseDouble(valuesString[6].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
+									fihSpeed.setLeftHandSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setLindexspeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setLringfingerspeed(Double.parseDouble(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihSpeed.setLwristspeed(Double.parseDouble(valuesString[6].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									fihSpeed.setRightHandSpeedSet(true);
+									// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
+									if(valuesString.length > 1) {
+										fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setRindexspeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setRmajeurespeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setRringfingerspeed(Double.parseDouble(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihSpeed.setRpinkyspeed(Double.parseDouble(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihSpeed.setRwristspeed(Double.parseDouble(valuesString[6].trim()));
+									}
+								}
 							}
 						} else {
 
@@ -1763,48 +1827,108 @@ public static void main(String[] args) throws InterruptedException {
 						addMove = true;
 						if (splitString[0].contains("Head")) {
 							// moveHead(79,100,82,78,65)
-							fihMove.setNeck(Integer.parseInt(valuesString[0].trim()));
-							fihMove.setRothead(Integer.parseInt(valuesString[1].trim()));
-							fihMove.setEyeX(Integer.parseInt(valuesString[2].trim()));
-							fihMove.setEyeY(Integer.parseInt(valuesString[3].trim()));
-							fihMove.setJaw(Integer.parseInt(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								fihMove.setNeck(Integer.parseInt(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihMove.setRothead(Integer.parseInt(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihMove.setEyeX(Integer.parseInt(valuesString[2].trim()));
+							}
+							if(valuesString.length > 3) {
+								fihMove.setEyeY(Integer.parseInt(valuesString[3].trim()));
+							}
+							if(valuesString.length > 4) {	
+								fihMove.setJaw(Integer.parseInt(valuesString[4].trim()));
+							}
 						} else if (splitString[0].contains("Arm")) {
-							if (valuesString[0].contains("left")) {
-								// moveArm("left",5,84,28,15)
-								fihMove.setLbicep(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setLrotate(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setLshoulder(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setLomoplate(Integer.parseInt(valuesString[4].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// moveArm("right",5,82,28,15)
-								fihMove.setRbicep(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setRrotate(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setRshoulder(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setRomoplate(Integer.parseInt(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// moveArm("left",5,84,28,15)
+									if(valuesString.length > 1) {
+										fihMove.setLbicep(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setLrotate(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setLshoulder(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setLomoplate(Integer.parseInt(valuesString[4].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// moveArm("right",5,82,28,15)
+									if(valuesString.length > 1) {
+										fihMove.setRbicep(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setRrotate(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setRshoulder(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setRomoplate(Integer.parseInt(valuesString[4].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Hand")) {
-							if (valuesString[0].contains("left")) {
-								// moveHand("left",92,33,37,71,66,25)
-								fihMove.setLthumb(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setLindex(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setLmajeure(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setLringfinger(Integer.parseInt(valuesString[4].trim()));
-								fihMove.setLpinky(Integer.parseInt(valuesString[5].trim()));
-								fihMove.setLwrist(Integer.parseInt(valuesString[6].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// moveHand("right",81,66,82,60,105,113)
-								fihMove.setRthumb(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setRindex(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setRmajeure(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setRringfinger(Integer.parseInt(valuesString[4].trim()));
-								fihMove.setRpinky(Integer.parseInt(valuesString[5].trim()));
-								fihMove.setRwrist(Integer.parseInt(valuesString[6].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// moveHand("left",92,33,37,71,66,25)
+									if(valuesString.length > 1) {
+										fihMove.setLthumb(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setLindex(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setLmajeure(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setLringfinger(Integer.parseInt(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihMove.setLpinky(Integer.parseInt(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihMove.setLwrist(Integer.parseInt(valuesString[6].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// moveHand("right",81,66,82,60,105,113)
+									if(valuesString.length > 1) {
+										fihMove.setRthumb(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setRindex(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setRmajeure(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setRringfinger(Integer.parseInt(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihMove.setRpinky(Integer.parseInt(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihMove.setRwrist(Integer.parseInt(valuesString[6].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Torso")) {
 							// moveTorso(90,90,90)
-							fihMove.setTopStom(Integer.parseInt(valuesString[0].trim()));
-							fihMove.setMidStom(Integer.parseInt(valuesString[1].trim()));
-							fihMove.setLowStom(Integer.parseInt(valuesString[2].trim()));
+							if(valuesString.length > 0) {
+								fihMove.setTopStom(Integer.parseInt(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihMove.setMidStom(Integer.parseInt(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihMove.setLowStom(Integer.parseInt(valuesString[2].trim()));
+							}
 						} else {
 
 						}
