@@ -12,18 +12,18 @@ public class FrameItemHolder implements Serializable {
 
 	private FrameType frameType;  
 	     
-	private int rthumb, rindex, rmajeure, rringfinger, rpinky, rwrist;
-	private int rbicep, rrotate, rshoulder, romoplate;
-	private int lthumb, lindex, lmajeure, lringfinger, lpinky, lwrist;
-	private int lbicep, lrotate, lshoulder, lomoplate;
-	private int neck, rothead, eyeX, eyeY, jaw;
-	private int topStom, midStom, lowStom;
-	private double rthumbspeed, rindexspeed, rmajeurespeed, rringfingerspeed, rpinkyspeed, rwristspeed;
-	private double rbicepspeed, rrotatespeed, rshoulderspeed, romoplatespeed;
-	private double lthumbspeed, lindexspeed, lmajeurespeed, lringfingerspeed, lpinkyspeed, lwristspeed;
-	private double lbicepspeed, lrotatespeed, lshoulderspeed, lomoplatespeed;
-	private double neckspeed, rotheadspeed, eyeXspeed, eyeYspeed, jawspeed;
-	private double topStomspeed, midStomspeed, lowStomspeed;
+	private int rightThumbFingerMove, rightIndexFingerMove, rightMajeureFingerMove, rightRingFingerMove, rightPinkyFingerMove, rightWristMove;
+	private int rightBicepsMove, rightRotateMove, rightShoulderMove, rightOmoplateMove;
+	private int leftThumbFingerMove, leftIndexFingerMove, leftMajeureFingerMove, leftRingFingerMove, leftPinkyFingerMove, leftWristMove;
+	private int leftBicepsMove, leftRotateMove, leftShoulderMove, leftOmoplateMove;
+	private int neckMove, headRotateMove, eyeXMove, eyeYMove, jawMove;
+	private int topStomMove, midStomMove, lowStomMove;
+	private double rightThumbFingerSpeed, rightIndexFingerSpeed, rightMajeureFingerSpeed, rightRingFingerSpeed, rightPinkyFingerSpeed, rightWristSpeed;
+	private double rightBicepsSpeed, rightRotateSpeed, rightShoulderSpeed, rightOmoplateSpeed;
+	private double leftThumbFingerSpeed, leftIndexFingerSpeed, leftMajeureFingerSpeed, leftRingFingerSpeed, leftPinkyFingerSpeed, leftWristSpeed;
+	private double leftBicepsSpeed, leftRotateSpeed, leftShoulderSpeed, leftOmoplateSpeed;
+	private double neckSpeed, headRotateSpeed, eyeXSpeed, eyeYSpeed, jawSpeed;
+	private double topStomSpeed, midStomSpeed, lowStomSpeed;
 	private int sleep = -1;
 	private String speech;
 	private String name;
@@ -65,64 +65,64 @@ public class FrameItemHolder implements Serializable {
 			movements.append(this.name).append(": ");
 				// right hand
 				if(rightHandMoveSet) {
-					movements.append(this.rthumb).append(SPACE_SYMBOL)
-						.append(this.rindex).append(SPACE_SYMBOL)
-						.append(this.rmajeure).append(SPACE_SYMBOL)
-						.append(this.rringfinger).append(SPACE_SYMBOL)
-						.append(this.rpinky).append(SPACE_SYMBOL)
-						.append(this.rwrist).append(PIPE_SYMBOL);
+					movements.append(this.rightThumbFingerMove).append(SPACE_SYMBOL)
+						.append(this.rightIndexFingerMove).append(SPACE_SYMBOL)
+						.append(this.rightMajeureFingerMove).append(SPACE_SYMBOL)
+						.append(this.rightRingFingerMove).append(SPACE_SYMBOL)
+						.append(this.rightPinkyFingerMove).append(SPACE_SYMBOL)
+						.append(this.rightWristMove).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// right arm
 				if(rightArmMoveSet) {
-					movements.append(this.rbicep).append(SPACE_SYMBOL)
-						.append(this.rrotate).append(SPACE_SYMBOL)
-						.append(this.rshoulder).append(SPACE_SYMBOL)
-						.append(this.romoplate).append(PIPE_SYMBOL);
+					movements.append(this.rightBicepsMove).append(SPACE_SYMBOL)
+						.append(this.rightRotateMove).append(SPACE_SYMBOL)
+						.append(this.rightShoulderMove).append(SPACE_SYMBOL)
+						.append(this.rightOmoplateMove).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left hand
 				if(leftHandMoveSet) {
-					movements.append(this.lthumb).append(SPACE_SYMBOL)
-						.append(this.lindex).append(SPACE_SYMBOL)
-						.append(this.lmajeure).append(SPACE_SYMBOL)
-						.append(this.lringfinger).append(SPACE_SYMBOL)
-						.append(this.lpinky).append(SPACE_SYMBOL)
-						.append(this.lwrist).append(PIPE_SYMBOL);
+					movements.append(this.leftThumbFingerMove).append(SPACE_SYMBOL)
+						.append(this.leftIndexFingerMove).append(SPACE_SYMBOL)
+						.append(this.leftMajeureFingerMove).append(SPACE_SYMBOL)
+						.append(this.leftRingFingerMove).append(SPACE_SYMBOL)
+						.append(this.leftPinkyFingerMove).append(SPACE_SYMBOL)
+						.append(this.leftWristMove).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left arm
 				if(leftArmMoveSet) {
-					movements.append(this.lbicep).append(SPACE_SYMBOL)
-						.append(this.lrotate).append(SPACE_SYMBOL)
-						.append(this.lshoulder).append(SPACE_SYMBOL)
-						.append(this.lomoplate).append(PIPE_SYMBOL);
+					movements.append(this.leftBicepsMove).append(SPACE_SYMBOL)
+						.append(this.leftRotateMove).append(SPACE_SYMBOL)
+						.append(this.leftShoulderMove).append(SPACE_SYMBOL)
+						.append(this.leftOmoplateMove).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
 						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// head
 				if(headMoveSet) {
-					movements.append(this.neck).append(SPACE_SYMBOL)
-						.append(this.rothead).append(SPACE_SYMBOL)
-						.append(this.eyeX).append(SPACE_SYMBOL)
-						.append(this.eyeY).append(SPACE_SYMBOL)
-						.append(this.jaw).append(PIPE_SYMBOL);
+					movements.append(this.neckMove).append(SPACE_SYMBOL)
+						.append(this.headRotateMove).append(SPACE_SYMBOL)
+						.append(this.eyeXMove).append(SPACE_SYMBOL)
+						.append(this.eyeYMove).append(SPACE_SYMBOL)
+						.append(this.jawMove).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// torso
 				if(torsoMoveSet) {
-					movements.append(this.topStom).append(SPACE_SYMBOL)
-						.append(this.midStom).append(SPACE_SYMBOL)
-						.append(this.lowStom);
+					movements.append(this.topStomMove).append(SPACE_SYMBOL)
+						.append(this.midStomMove).append(SPACE_SYMBOL)
+						.append(this.lowStomMove);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 				}
@@ -133,64 +133,64 @@ public class FrameItemHolder implements Serializable {
 			speeds.append("SPEED").append(" ");
 				// right hand
 				if(rightHandSpeedSet) {
-					speeds.append(this.rthumbspeed).append(SPACE_SYMBOL)
-						.append(this.rindexspeed).append(SPACE_SYMBOL)
-						.append(this.rmajeurespeed).append(SPACE_SYMBOL)
-						.append(this.rringfingerspeed).append(SPACE_SYMBOL)
-						.append(this.rpinkyspeed).append(SPACE_SYMBOL)
-						.append(this.rwristspeed).append(PIPE_SYMBOL);
+					speeds.append(this.rightThumbFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.rightIndexFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.rightMajeureFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.rightRingFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.rightPinkyFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.rightWristSpeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// right arm
 				if(rightArmSpeedSet) {
-					speeds.append(this.rbicepspeed).append(SPACE_SYMBOL)
-						.append(this.rrotatespeed).append(SPACE_SYMBOL)
-						.append(this.rshoulderspeed).append(SPACE_SYMBOL)
-						.append(this.romoplatespeed).append(PIPE_SYMBOL);
+					speeds.append(this.rightBicepsSpeed).append(SPACE_SYMBOL)
+						.append(this.rightRotateSpeed).append(SPACE_SYMBOL)
+						.append(this.rightShoulderSpeed).append(SPACE_SYMBOL)
+						.append(this.rightOmoplateSpeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left hand
 				if(leftHandSpeedSet) {
-					speeds.append(this.lthumbspeed).append(SPACE_SYMBOL)
-						.append(this.lindexspeed).append(SPACE_SYMBOL)
-						.append(this.lmajeurespeed).append(SPACE_SYMBOL)
-						.append(this.lringfingerspeed).append(SPACE_SYMBOL)
-						.append(this.lpinkyspeed).append(SPACE_SYMBOL)
-						.append(this.lwristspeed).append(PIPE_SYMBOL);
+					speeds.append(this.leftThumbFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.leftIndexFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.leftMajeureFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.leftRingFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.leftPinkyFingerSpeed).append(SPACE_SYMBOL)
+						.append(this.leftWristSpeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// left arm
 				if(leftArmSpeedSet) {
-					speeds.append(this.lbicepspeed).append(SPACE_SYMBOL)
-						.append(this.lrotatespeed).append(SPACE_SYMBOL)
-						.append(this.lshoulderspeed).append(SPACE_SYMBOL)
-						.append(this.lomoplatespeed).append(PIPE_SYMBOL);
+					speeds.append(this.leftBicepsSpeed).append(SPACE_SYMBOL)
+						.append(this.leftRotateSpeed).append(SPACE_SYMBOL)
+						.append(this.leftShoulderSpeed).append(SPACE_SYMBOL)
+						.append(this.leftOmoplateSpeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
 						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// head
 				if(headSpeedSet) {
-					speeds.append(this.neckspeed).append(SPACE_SYMBOL)
-						.append(this.rotheadspeed).append(SPACE_SYMBOL)
-						.append(this.eyeXspeed).append(SPACE_SYMBOL)
-						.append(this.eyeYspeed).append(SPACE_SYMBOL)
-						.append(this.jawspeed).append(PIPE_SYMBOL);
+					speeds.append(this.neckSpeed).append(SPACE_SYMBOL)
+						.append(this.headRotateSpeed).append(SPACE_SYMBOL)
+						.append(this.eyeXSpeed).append(SPACE_SYMBOL)
+						.append(this.eyeYSpeed).append(SPACE_SYMBOL)
+						.append(this.jawSpeed).append(PIPE_SYMBOL);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
 							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
 				}
 				// torso
 				if(torsoSpeedSet) {
-					speeds.append(this.topStomspeed).append(SPACE_SYMBOL)
-						.append(this.midStomspeed).append(SPACE_SYMBOL)
-						.append(this.lowStomspeed);
+					speeds.append(this.topStomSpeed).append(SPACE_SYMBOL)
+						.append(this.midStomSpeed).append(SPACE_SYMBOL)
+						.append(this.lowStomSpeed);
 				} else {
 					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 				}
@@ -215,39 +215,39 @@ public class FrameItemHolder implements Serializable {
 		
 		this.sleep = -1;
 
-		this.rthumb = 90;
-		this.rindex = 90;
-		this.rmajeure = 90;
-		this.rringfinger = 90;
-		this.rpinky = 90;
-		this.rwrist = 90;
+		this.rightThumbFingerMove = 90;
+		this.rightIndexFingerMove = 90;
+		this.rightMajeureFingerMove = 90;
+		this.rightRingFingerMove = 90;
+		this.rightPinkyFingerMove = 90;
+		this.rightWristMove = 90;
 
-		this.rbicep = 90;
-		this.rrotate = 90;
-		this.rshoulder = 90;
-		this.romoplate = 90;
+		this.rightBicepsMove = 90;
+		this.rightRotateMove = 90;
+		this.rightShoulderMove = 90;
+		this.rightOmoplateMove = 90;
 
-		this.lthumb = 90;
-		this.lindex = 90;
-		this.lmajeure = 90;
-		this.lringfinger = 90;
-		this.lpinky = 90;
-		this.lwrist = 90;
+		this.leftThumbFingerMove = 90;
+		this.leftIndexFingerMove = 90;
+		this.leftMajeureFingerMove = 90;
+		this.leftRingFingerMove = 90;
+		this.leftPinkyFingerMove = 90;
+		this.leftWristMove = 90;
 
-		this.lbicep = 90;
-		this.lrotate = 90;
-		this.lshoulder = 90;
-		this.lomoplate = 90;
+		this.leftBicepsMove = 90;
+		this.leftRotateMove = 90;
+		this.leftShoulderMove = 90;
+		this.leftOmoplateMove = 90;
 
-		this.neck = 90;
-		this.rothead = 90;
-		this.eyeX = 90;
-		this.eyeY = 90;
-		this.jaw = 90;
+		this.neckMove = 90;
+		this.headRotateMove = 90;
+		this.eyeXMove = 90;
+		this.eyeYMove = 90;
+		this.jawMove = 90;
 
-		this.topStom = 90;
-		this.midStom = 90;
-		this.lowStom = 90;
+		this.topStomMove = 90;
+		this.midStomMove = 90;
+		this.lowStomMove = 90;
 	}
 
 	public boolean getRightHandSpeedSet() {
@@ -359,451 +359,451 @@ public class FrameItemHolder implements Serializable {
 //	}
 
 	public int getRthumb() {
-		return rthumb;
+		return rightThumbFingerMove;
 	}
 
 	public void setRthumb(int rthumb) {
-		this.rthumb = rthumb;
+		this.rightThumbFingerMove = rthumb;
 	}
 
 	public int getRindex() {
-		return rindex;
+		return rightIndexFingerMove;
 	}
 
 	public void setRindex(int rindex) {
-		this.rindex = rindex;
+		this.rightIndexFingerMove = rindex;
 	}
 
 	public int getRmajeure() {
-		return rmajeure;
+		return rightMajeureFingerMove;
 	}
 
 	public void setRmajeure(int rmajeure) {
-		this.rmajeure = rmajeure;
+		this.rightMajeureFingerMove = rmajeure;
 	}
 
 	public int getRringfinger() {
-		return rringfinger;
+		return rightRingFingerMove;
 	}
 
 	public void setRringfinger(int rringfinger) {
-		this.rringfinger = rringfinger;
+		this.rightRingFingerMove = rringfinger;
 	}
 
 	public int getRpinky() {
-		return rpinky;
+		return rightPinkyFingerMove;
 	}
 
 	public void setRpinky(int rpinky) {
-		this.rpinky = rpinky;
+		this.rightPinkyFingerMove = rpinky;
 	}
 
 	public int getRwrist() {
-		return rwrist;
+		return rightWristMove;
 	}
 
 	public void setRwrist(int rwrist) {
-		this.rwrist = rwrist;
+		this.rightWristMove = rwrist;
 	}
 
 	public int getRbicep() {
-		return rbicep;
+		return rightBicepsMove;
 	}
 
 	public void setRbicep(int rbicep) {
-		this.rbicep = rbicep;
+		this.rightBicepsMove = rbicep;
 	}
 
 	public int getRrotate() {
-		return rrotate;
+		return rightRotateMove;
 	}
 
 	public void setRrotate(int rrotate) {
-		this.rrotate = rrotate;
+		this.rightRotateMove = rrotate;
 	}
 
 	public int getRshoulder() {
-		return rshoulder;
+		return rightShoulderMove;
 	}
 
 	public void setRshoulder(int rshoulder) {
-		this.rshoulder = rshoulder;
+		this.rightShoulderMove = rshoulder;
 	}
 
 	public int getRomoplate() {
-		return romoplate;
+		return rightOmoplateMove;
 	}
 
 	public void setRomoplate(int romoplate) {
-		this.romoplate = romoplate;
+		this.rightOmoplateMove = romoplate;
 	}
 
 	public int getLthumb() {
-		return lthumb;
+		return leftThumbFingerMove;
 	}
 
 	public void setLthumb(int lthumb) {
-		this.lthumb = lthumb;
+		this.leftThumbFingerMove = lthumb;
 	}
 
 	public int getLindex() {
-		return lindex;
+		return leftIndexFingerMove;
 	}
 
 	public void setLindex(int lindex) {
-		this.lindex = lindex;
+		this.leftIndexFingerMove = lindex;
 	}
 
 	public int getLmajeure() {
-		return lmajeure;
+		return leftMajeureFingerMove;
 	}
 
 	public void setLmajeure(int lmajeure) {
-		this.lmajeure = lmajeure;
+		this.leftMajeureFingerMove = lmajeure;
 	}
 
 	public int getLringfinger() {
-		return lringfinger;
+		return leftRingFingerMove;
 	}
 
 	public void setLringfinger(int lringfinger) {
-		this.lringfinger = lringfinger;
+		this.leftRingFingerMove = lringfinger;
 	}
 
 	public int getLpinky() {
-		return lpinky;
+		return leftPinkyFingerMove;
 	}
 
 	public void setLpinky(int lpinky) {
-		this.lpinky = lpinky;
+		this.leftPinkyFingerMove = lpinky;
 	}
 
 	public int getLwrist() {
-		return lwrist;
+		return leftWristMove;
 	}
 
 	public void setLwrist(int lwrist) {
-		this.lwrist = lwrist;
+		this.leftWristMove = lwrist;
 	}
 
 	public int getLbicep() {
-		return lbicep;
+		return leftBicepsMove;
 	}
 
 	public void setLbicep(int lbicep) {
-		this.lbicep = lbicep;
+		this.leftBicepsMove = lbicep;
 	}
 
 	public int getLrotate() {
-		return lrotate;
+		return leftRotateMove;
 	}
 
 	public void setLrotate(int lrotate) {
-		this.lrotate = lrotate;
+		this.leftRotateMove = lrotate;
 	}
 
 	public int getLshoulder() {
-		return lshoulder;
+		return leftShoulderMove;
 	}
 
 	public void setLshoulder(int lshoulder) {
-		this.lshoulder = lshoulder;
+		this.leftShoulderMove = lshoulder;
 	}
 
 	public int getLomoplate() {
-		return lomoplate;
+		return leftOmoplateMove;
 	}
 
 	public void setLomoplate(int lomoplate) {
-		this.lomoplate = lomoplate;
+		this.leftOmoplateMove = lomoplate;
 	}
 
 	public int getNeck() {
-		return neck;
+		return neckMove;
 	}
 
 	public void setNeck(int neck) {
-		this.neck = neck;
+		this.neckMove = neck;
 	}
 
 	public int getRothead() {
-		return rothead;
+		return headRotateMove;
 	}
 
 	public void setRothead(int rothead) {
-		this.rothead = rothead;
+		this.headRotateMove = rothead;
 	}
 
 	public int getEyeX() {
-		return eyeX;
+		return eyeXMove;
 	}
 
 	public void setEyeX(int eyeX) {
-		this.eyeX = eyeX;
+		this.eyeXMove = eyeX;
 	}
 
 	public int getEyeY() {
-		return eyeY;
+		return eyeYMove;
 	}
 
 	public void setEyeY(int eyeY) {
-		this.eyeY = eyeY;
+		this.eyeYMove = eyeY;
 	}
 
 	public int getJaw() {
-		return jaw;
+		return jawMove;
 	}
 
 	public void setJaw(int jaw) {
-		this.jaw = jaw;
+		this.jawMove = jaw;
 	}
 
 	public int getTopStom() {
-		return topStom;
+		return topStomMove;
 	}
 
 	public void setTopStom(int topStom) {
-		this.topStom = topStom;
+		this.topStomMove = topStom;
 	}
 
 	public int getMidStom() {
-		return midStom;
+		return midStomMove;
 	}
 
 	public void setMidStom(int midStom) {
-		this.midStom = midStom;
+		this.midStomMove = midStom;
 	}
 
 	public int getLowStom() {
-		return lowStom;
+		return lowStomMove;
 	}
 
 	public void setLowStom(int lowStom) {
-		this.lowStom = lowStom;
+		this.lowStomMove = lowStom;
 	}
 
 	public double getRthumbspeed() {
-		return rthumbspeed;
+		return rightThumbFingerSpeed;
 	}
 
 	public void setRthumbspeed(double rthumbspeed) {
-		this.rthumbspeed = rthumbspeed;
+		this.rightThumbFingerSpeed = rthumbspeed;
 	}
 
 	public double getRindexspeed() {
-		return rindexspeed;
+		return rightIndexFingerSpeed;
 	}
 
 	public void setRindexspeed(double rindexspeed) {
-		this.rindexspeed = rindexspeed;
+		this.rightIndexFingerSpeed = rindexspeed;
 	}
 
 	public double getRmajeurespeed() {
-		return rmajeurespeed;
+		return rightMajeureFingerSpeed;
 	}
 
 	public void setRmajeurespeed(double rmajeurespeed) {
-		this.rmajeurespeed = rmajeurespeed;
+		this.rightMajeureFingerSpeed = rmajeurespeed;
 	}
 
 	public double getRringfingerspeed() {
-		return rringfingerspeed;
+		return rightRingFingerSpeed;
 	}
 
 	public void setRringfingerspeed(double rringfingerspeed) {
-		this.rringfingerspeed = rringfingerspeed;
+		this.rightRingFingerSpeed = rringfingerspeed;
 	}
 
 	public double getRpinkyspeed() {
-		return rpinkyspeed;
+		return rightPinkyFingerSpeed;
 	}
 
 	public void setRpinkyspeed(double rpinkyspeed) {
-		this.rpinkyspeed = rpinkyspeed;
+		this.rightPinkyFingerSpeed = rpinkyspeed;
 	}
 
 	public double getRwristspeed() {
-		return rwristspeed;
+		return rightWristSpeed;
 	}
 
 	public void setRwristspeed(double rwristspeed) {
-		this.rwristspeed = rwristspeed;
+		this.rightWristSpeed = rwristspeed;
 	}
 
 	public double getRbicepspeed() {
-		return rbicepspeed;
+		return rightBicepsSpeed;
 	}
 
 	public void setRbicepspeed(double rbicepspeed) {
-		this.rbicepspeed = rbicepspeed;
+		this.rightBicepsSpeed = rbicepspeed;
 	}
 
 	public double getRrotatespeed() {
-		return rrotatespeed;
+		return rightRotateSpeed;
 	}
 
 	public void setRrotatespeed(double rrotatespeed) {
-		this.rrotatespeed = rrotatespeed;
+		this.rightRotateSpeed = rrotatespeed;
 	}
 
 	public double getRshoulderspeed() {
-		return rshoulderspeed;
+		return rightShoulderSpeed;
 	}
 
 	public void setRshoulderspeed(double rshoulderspeed) {
-		this.rshoulderspeed = rshoulderspeed;
+		this.rightShoulderSpeed = rshoulderspeed;
 	}
 
 	public double getRomoplatespeed() {
-		return romoplatespeed;
+		return rightOmoplateSpeed;
 	}
 
 	public void setRomoplatespeed(double romoplatespeed) {
-		this.romoplatespeed = romoplatespeed;
+		this.rightOmoplateSpeed = romoplatespeed;
 	}
 
 	public double getLthumbspeed() {
-		return lthumbspeed;
+		return leftThumbFingerSpeed;
 	}
 
 	public void setLthumbspeed(double lthumbspeed) {
-		this.lthumbspeed = lthumbspeed;
+		this.leftThumbFingerSpeed = lthumbspeed;
 	}
 
 	public double getLindexspeed() {
-		return lindexspeed;
+		return leftIndexFingerSpeed;
 	}
 
 	public void setLindexspeed(double lindexspeed) {
-		this.lindexspeed = lindexspeed;
+		this.leftIndexFingerSpeed = lindexspeed;
 	}
 
 	public double getLmajeurespeed() {
-		return lmajeurespeed;
+		return leftMajeureFingerSpeed;
 	}
 
 	public void setLmajeurespeed(double lmajeurespeed) {
-		this.lmajeurespeed = lmajeurespeed;
+		this.leftMajeureFingerSpeed = lmajeurespeed;
 	}
 
 	public double getLringfingerspeed() {
-		return lringfingerspeed;
+		return leftRingFingerSpeed;
 	}
 
 	public void setLringfingerspeed(double lringfingerspeed) {
-		this.lringfingerspeed = lringfingerspeed;
+		this.leftRingFingerSpeed = lringfingerspeed;
 	}
 
 	public double getLpinkyspeed() {
-		return lpinkyspeed;
+		return leftPinkyFingerSpeed;
 	}
 
 	public void setLpinkyspeed(double lpinkyspeed) {
-		this.lpinkyspeed = lpinkyspeed;
+		this.leftPinkyFingerSpeed = lpinkyspeed;
 	}
 
 	public double getLwristspeed() {
-		return lwristspeed;
+		return leftWristSpeed;
 	}
 
 	public void setLwristspeed(double lwristspeed) {
-		this.lwristspeed = lwristspeed;
+		this.leftWristSpeed = lwristspeed;
 	}
 
 	public double getLbicepspeed() {
-		return lbicepspeed;
+		return leftBicepsSpeed;
 	}
 
 	public void setLbicepspeed(double lbicepspeed) {
-		this.lbicepspeed = lbicepspeed;
+		this.leftBicepsSpeed = lbicepspeed;
 	}
 
 	public double getLrotatespeed() {
-		return lrotatespeed;
+		return leftRotateSpeed;
 	}
 
 	public void setLrotatespeed(double lrotatespeed) {
-		this.lrotatespeed = lrotatespeed;
+		this.leftRotateSpeed = lrotatespeed;
 	}
 
 	public double getLshoulderspeed() {
-		return lshoulderspeed;
+		return leftShoulderSpeed;
 	}
 
 	public void setLshoulderspeed(double lshoulderspeed) {
-		this.lshoulderspeed = lshoulderspeed;
+		this.leftShoulderSpeed = lshoulderspeed;
 	}
 
 	public double getLomoplatespeed() {
-		return lomoplatespeed;
+		return leftOmoplateSpeed;
 	}
 
 	public void setLomoplatespeed(double lomoplatespeed) {
-		this.lomoplatespeed = lomoplatespeed;
+		this.leftOmoplateSpeed = lomoplatespeed;
 	}
 
 	public double getNeckspeed() {
-		return neckspeed;
+		return neckSpeed;
 	}
 
 	public void setNeckspeed(double neckspeed) {
-		this.neckspeed = neckspeed;
+		this.neckSpeed = neckspeed;
 	}
 
 	public double getRotheadspeed() {
-		return rotheadspeed;
+		return headRotateSpeed;
 	}
 
 	public void setRotheadspeed(double rotheadspeed) {
-		this.rotheadspeed = rotheadspeed;
+		this.headRotateSpeed = rotheadspeed;
 	}
 
 	public double getEyeXspeed() {
-		return eyeXspeed;
+		return eyeXSpeed;
 	}
 
 	public void setEyeXspeed(double eyeXspeed) {
-		this.eyeXspeed = eyeXspeed;
+		this.eyeXSpeed = eyeXspeed;
 	}
 
 	public double getEyeYspeed() {
-		return eyeYspeed;
+		return eyeYSpeed;
 	}
 
 	public void setEyeYspeed(double eyeYspeed) {
-		this.eyeYspeed = eyeYspeed;
+		this.eyeYSpeed = eyeYspeed;
 	}
 
 	public double getJawspeed() {
-		return jawspeed;
+		return jawSpeed;
 	}
 
 	public void setJawspeed(double jawspeed) {
-		this.jawspeed = jawspeed;
+		this.jawSpeed = jawspeed;
 	}
 
 	public double getTopStomspeed() {
-		return topStomspeed;
+		return topStomSpeed;
 	}
 
 	public void setTopStomspeed(double topStomspeed) {
-		this.topStomspeed = topStomspeed;
+		this.topStomSpeed = topStomspeed;
 	}
 
 	public double getMidStomspeed() {
-		return midStomspeed;
+		return midStomSpeed;
 	}
 
 	public void setMidStomspeed(double midStomspeed) {
-		this.midStomspeed = midStomspeed;
+		this.midStomSpeed = midStomspeed;
 	}
 
 	public double getLowStomspeed() {
-		return lowStomspeed;
+		return lowStomSpeed;
 	}
 
 	public void setLowStomspeed(double lowStomspeed) {
-		this.lowStomspeed = lowStomspeed;
+		this.lowStomSpeed = lowStomspeed;
 	}
 
 	public int getSleep() {
