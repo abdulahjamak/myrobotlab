@@ -45,6 +45,7 @@ import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.logging.Logging;
 import org.myrobotlab.logging.LoggingFactory;
 import org.myrobotlab.service.model.FrameItemHolder;
+import org.myrobotlab.service.model.FrameItemHolder.FrameType;
 import org.slf4j.Logger;
 
 /**
@@ -226,7 +227,11 @@ public class InMoovGestureCreator extends Service {
         referencename = "i01";
       }
       i01 = (InMoov) Runtime.getService(referencename);
-      control_connect.setText("Disconnect");
+      if(i01 != null) {
+    	  control_connect.setText("Disconnect");
+      } else {
+    	  LOGGER.info("Failed to connect!"); // should be a message to the user
+      }
     } else {
       i01 = null;
       control_connect.setText("Connect");
@@ -778,60 +783,24 @@ public class InMoovGestureCreator extends Service {
 	}
   }
 
-  public void control_testgest() {
-    // test (execute) the created gesture (button bottom-left)
-    if (i01 != null) {
-      for (FrameItemHolder fih : frames) {
-        if (fih.getSleep() != -1) {
-          sleep(fih.getSleep());
-        } else if (fih.getSpeech() != null) {
-          try {
-            i01.mouth.speakBlocking(fih.getSpeech());
-          } catch (Exception e) {
-            Logging.logError(e);
-          }
-        } else if (fih.getName() != null) {
-          if (fih.getRightHandMoveSet()) {
-            i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-          }
-          if (fih.getRightArmMoveSet()) {
-            i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-          }
-          if (fih.getLeftHandMoveSet()) {
-            i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-          }
-          if (fih.getLeftArmMoveSet()) {
-            i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-          }
-          if (fih.getHeadMoveSet()) {
-            i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-          }
-          if (fih.getTorsoMoveSet()) {
-            i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-          }
-        } else {
-          if (fih.getRightHandMoveSet()) {
-            i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-          }
-          if (fih.getRightArmMoveSet()) {
-            i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-          }
-          if (fih.getLeftHandMoveSet()) {
-            i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-          }
-          if (fih.getLeftArmMoveSet()) {
-            i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-          }
-          if (fih.getHeadMoveSet()) {
-            i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-          }
-          if (fih.getTorsoMoveSet()) {
-            i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-          }
-        }
-      }
-    }
-  }
+	public void control_testgest() {
+		// test the gesture
+		if (i01 != null && frames.size() != 0) {
+			LOGGER.info("Starting the test.");
+			for (FrameItemHolder fih : frames) {
+				frameTestFunction(fih);
+			}
+		}
+		else {
+			if(i01 == null) {
+				//this should go into some kind of message to the user
+				LOGGER.info("Testing of gesture is not possible!");
+				LOGGER.info("Robot is not initialised!");
+			} else {
+				LOGGER.info("No gestures loaded!");
+			}
+		}
+	}
 
   public void control_updategest(JList control_list, JTextField control_gestname, JTextField control_funcname) {
     // Update the current gesture in the script (button bottom-left)
@@ -1215,125 +1184,104 @@ public class InMoovGestureCreator extends Service {
 
 			framelistact(framelist);
 		}
+	} 
+
+	private void frameTestFunction(FrameItemHolder fih) {
+		if (fih.getFrameType() == FrameType.SLEEP) {
+			LOGGER.info("Starting testing of sleep frame! Sleep for: " + fih.getSleep() + "!");
+			// sleep frame
+			sleep(fih.getSleep());
+		} else if (fih.getFrameType() == FrameType.SPEECH) {
+			// speech frame
+			try {
+				i01.mouth.speakBlocking(fih.getSpeech());
+				LOGGER.info("Starting testing of speech frame! Speech: " + fih.getSpeech() + "!");
+			} catch (Exception e) {
+				Logging.logError(e);
+			}
+		} else if (fih.getFrameType() == FrameType.MOVE) {
+			// move frame
+			LOGGER.info("Starting testing of frame: " + fih.getName() + "!");
+			if (fih.getRightHandMoveSet()) {
+				i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
+			}
+			if (fih.getRightArmMoveSet()) {
+				i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
+			}
+			if (fih.getLeftHandMoveSet()) {
+				i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
+			}
+			if (fih.getLeftArmMoveSet()) {
+				i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(),
+						fih.getLpinky(), (double) fih.getLwrist());
+			}
+			if (fih.getHeadMoveSet()) {
+				i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(),
+						fih.getRpinky(), (double) fih.getRwrist());
+			}
+			if (fih.getTorsoMoveSet()) {
+				i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
+			}
+		} else {
+			// speed frame
+			LOGGER.info("Starting testing of speed frame!");
+			if (fih.getRightHandMoveSet()) {
+//				i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(),
+//						fih.getJawspeed());
+				i01.setHeadVelocity(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(),
+						fih.getJawspeed());
+			}
+			if (fih.getRightArmMoveSet()) {
+//				i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(),
+//						fih.getLomoplatespeed());
+				i01.setArmVelocity("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(),
+						fih.getLomoplatespeed());
+			}
+			if (fih.getLeftHandMoveSet()) {
+//				i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(),
+//						fih.getRomoplatespeed());
+				i01.setArmVelocity("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(),
+						fih.getRomoplatespeed());
+			}
+			if (fih.getLeftArmMoveSet()) {
+//				i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(),
+//						fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
+				i01.setHandVelocity("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(),
+						fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
+			}
+			if (fih.getHeadMoveSet()) {
+//				i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(),
+//						fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
+				i01.setHandVelocity("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(),
+						fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
+			}
+			if (fih.getTorsoMoveSet()) {
+//				i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
+				i01.setTorsoVelocity(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
+			}
+		}
+		LOGGER.info("Finished testing of frame!");
+	}
+	public void frame_test(JList framelist) {
+		// Test selected frame
+		int selectedFrameIndex = framelist.getSelectedIndex();
+		if (i01 != null && selectedFrameIndex != -1) {
+			FrameItemHolder fih = frames.get(selectedFrameIndex);
+			frameTestFunction(fih);
+		} else {
+			if(selectedFrameIndex == -1) {
+				//this should go into some kind of message to the user
+				LOGGER.info("Please select a frame!");
+			}
+			else {
+				//this should go into some kind of message to the user
+				LOGGER.info("Testing of frame is not possible!");
+				LOGGER.info("Robot is not initialised!");
+			}
+		}
 	}
 
- /* public void frame_test(JList framelist) {
-    // Test this frame (execute)
-    int pos = framelist.getSelectedIndex();
-    if (i01 != null && pos != -1) {
-      FrameItemHolder fih = frameitemholder.get(pos);
-      
-      // sleep || speech || servo movement || speed setting
-      if (fih.getSleep() != -1) {
-        sleep(fih.getSleep());
-      } else if (fih.getSpeech() != null) {
-        try {
-          i01.mouth.speakBlocking(fih.getSpeech());
-        } catch (Exception e) {
-          Logging.logError(e);
-        }
-      } else if (fih.getName() != null) {
-        if (fih.getTabsMainCheckboxStates()[0]) {
-          i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-        }
-        if (fih.getTabsMainCheckboxStates()[1]) {
-          i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-        }
-        if (fih.getTabsMainCheckboxStates()[2]) {
-          i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-        }
-        if (fih.getTabsMainCheckboxStates()[3]) {
-          i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-        }
-        if (fih.getTabsMainCheckboxStates()[4]) {
-          i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-        }
-        if (fih.getTabsMainCheckboxStates()[5]) {
-          i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-        }
-      } else {
-        if (fih.getTabsMainCheckboxStates()[0]) {
-          i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[1]) {
-          i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[2]) {
-          i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[3]) {
-          i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[4]) {
-          i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-        }
-        if (fih.getTabsMainCheckboxStates()[5]) {
-          i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-        }
-      }
-    }
-  }
-*/
-  public void frame_test(JList framelist) {
-	    // Test this frame (execute)
-	    int pos = framelist.getSelectedIndex();
-	    LOGGER.info("indeks je: " + framelist.getSelectedIndex() + "a i01 = "  + (i01 == null ? "null" : "nije_ null"));
-	    if (i01 != null && pos != -1) {
-		    for (int i = 0; i < frames.size(); i++) {
-		  	  FrameItemHolder fih = frames.get(i);
-		  	  //  FrameItemHolder fih = frameitemholder.get(pos);
-		      LOGGER.info("Trenutno se testira: " + fih.getName() + "\n");
-		      // sleep || speech || servo movement || speed setting
-		      if (fih.getSleep() != -1) {
-		        sleep(fih.getSleep());
-		      } else if (fih.getSpeech() != null) {
-		        try {
-		          i01.mouth.speakBlocking(fih.getSpeech());
-		        } catch (Exception e) {
-		          Logging.logError(e);
-		        }
-		      } else if (fih.getName() != null) {
-		        if (fih.getRightHandMoveSet()) {
-		          i01.moveHead(fih.getNeck(), fih.getRothead(), fih.getEyeX(), fih.getEyeY(), fih.getJaw());
-		        }
-		        if (fih.getRightArmMoveSet()) {
-		          i01.moveArm("left", fih.getLbicep(), fih.getLrotate(), fih.getLshoulder(), fih.getLomoplate());
-		        }
-		        if (fih.getLeftHandMoveSet()) {
-		          i01.moveArm("right", fih.getRbicep(), fih.getRrotate(), fih.getRshoulder(), fih.getRomoplate());
-		        }
-		        if (fih.getLeftArmMoveSet()) {
-		          i01.moveHand("left", fih.getLthumb(), fih.getLindex(), fih.getLmajeure(), fih.getLringfinger(), fih.getLpinky(), (double) fih.getLwrist());
-		        }
-		        if (fih.getHeadMoveSet()) {
-		          i01.moveHand("right", fih.getRthumb(), fih.getRindex(), fih.getRmajeure(), fih.getRringfinger(), fih.getRpinky(), (double) fih.getRwrist());
-		        }
-		        if (fih.getTorsoMoveSet()) {
-		          i01.moveTorso(fih.getTopStom(), fih.getMidStom(), fih.getLowStom());
-		        }
-		      } else {
-		        if (fih.getRightHandMoveSet()) {
-		          i01.setHeadSpeed(fih.getNeckspeed(), fih.getRotheadspeed(), fih.getEyeXspeed(), fih.getEyeYspeed(), fih.getJawspeed());
-		        }
-		        if (fih.getRightArmMoveSet()) {
-		          i01.setArmSpeed("left", fih.getLbicepspeed(), fih.getLrotatespeed(), fih.getLshoulderspeed(), fih.getLomoplatespeed());
-		        }
-		        if (fih.getLeftHandMoveSet()) {
-		          i01.setArmSpeed("right", fih.getRbicepspeed(), fih.getRrotatespeed(), fih.getRshoulderspeed(), fih.getRomoplatespeed());
-		        }
-		        if (fih.getLeftArmMoveSet()) {
-		          i01.setHandSpeed("left", fih.getLthumbspeed(), fih.getLindexspeed(), fih.getLmajeurespeed(), fih.getLringfingerspeed(), fih.getLpinkyspeed(), fih.getLwristspeed());
-		        }
-		        if (fih.getHeadMoveSet()) {
-		          i01.setHandSpeed("right", fih.getRthumbspeed(), fih.getRindexspeed(), fih.getRmajeurespeed(), fih.getRringfingerspeed(), fih.getRpinkyspeed(), fih.getRwristspeed());
-		        }
-		        if (fih.getTorsoMoveSet()) {
-		          i01.setTorsoSpeed(fih.getTopStomspeed(), fih.getMidStomspeed(), fih.getLowStomspeed());
-		        }
-		      }
-		    }
-	    }
-	  } 
+ 
   public void frame_up(JList framelist) {
     // Move this frame one up on the framelist (button bottom-right)
     int pos = framelist.getSelectedIndex();
@@ -1718,50 +1666,114 @@ public class InMoovGestureCreator extends Service {
 						addSpeed = true;
 						if (splitString[0].contains("Head")) {
 							// setHeadSpeed(0.95,0.95)
-							fihSpeed.setHeadSpeedSet(true);
-							fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
-							fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
+							//it has to have 2 arguments
+							if(valuesString.length > 0) {
+								fihSpeed.setHeadSpeedSet(true);
+								fihSpeed.setRotheadspeed(Double.parseDouble(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihSpeed.setNeckspeed(Double.parseDouble(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihSpeed.setEyeXspeed(Double.parseDouble(valuesString[2].trim()));
+							}
+							if(valuesString.length > 3) {
+								fihSpeed.setEyeYspeed(Double.parseDouble(valuesString[3].trim()));
+							}
+							if(valuesString.length > 4) {
+								fihSpeed.setJawspeed(Double.parseDouble(valuesString[4].trim()));
+							}
 						} else if (splitString[0].contains("Torso")) {
 							// setTorsoSpeed(0.95,0.85,1.0)
-							fihSpeed.setTorsoSpeedSet(true);
-							fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
-							fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
-							fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
+							if(valuesString.length > 0) {
+								fihSpeed.setTorsoSpeedSet(true);
+								fihSpeed.setTopStomspeed(Double.parseDouble(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihSpeed.setMidStomspeed(Double.parseDouble(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihSpeed.setLowStomspeed(Double.parseDouble(valuesString[2].trim()));
+							}
 						} else if (splitString[0].contains("Arm")) {
-							if (valuesString[0].contains("left")) {
-								// setArmSpeed("left",1.0,0.85,0.95,0.95)
-								fihSpeed.setLeftArmSpeedSet(true);
-								fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[4].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// setArmSpeed("right",0.65,0.85,0.65,0.85)
-								fihSpeed.setRightArmSpeedSet(true);
-								fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setRomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// setArmSpeed("left",1.0,0.85,0.95,0.95)
+									fihSpeed.setLeftArmSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setLbicepspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setLrotatespeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setLshoulderspeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setLomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// setArmSpeed("right",0.65,0.85,0.65,0.85)
+									fihSpeed.setRightArmSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setRbicepspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setRrotatespeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setRshoulderspeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setRomoplatespeed(Double.parseDouble(valuesString[4].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Hand")) {
-							if (valuesString[0].contains("left")) {
-								// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
-								fihSpeed.setLeftHandSpeedSet(true);
-								fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setLindexspeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setLringfingerspeed(Double.parseDouble(valuesString[4].trim()));
-								fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[5].trim()));
-								fihSpeed.setLwristspeed(Double.parseDouble(valuesString[6].trim()));
-							} else if (valuesString[0].contains("right")) {
-								fihSpeed.setRightHandSpeedSet(true);
-								// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
-								fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[1].trim()));
-								fihSpeed.setRindexspeed(Double.parseDouble(valuesString[2].trim()));
-								fihSpeed.setRmajeurespeed(Double.parseDouble(valuesString[3].trim()));
-								fihSpeed.setRringfingerspeed(Double.parseDouble(valuesString[4].trim()));
-								fihSpeed.setRpinkyspeed(Double.parseDouble(valuesString[5].trim()));
-								fihSpeed.setRwristspeed(Double.parseDouble(valuesString[6].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
+									fihSpeed.setLeftHandSpeedSet(true);
+									if(valuesString.length > 1) {
+										fihSpeed.setLthumbspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setLindexspeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setLmajeurespeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setLringfingerspeed(Double.parseDouble(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihSpeed.setLpinkyspeed(Double.parseDouble(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihSpeed.setLwristspeed(Double.parseDouble(valuesString[6].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									fihSpeed.setRightHandSpeedSet(true);
+									// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
+									if(valuesString.length > 1) {
+										fihSpeed.setRthumbspeed(Double.parseDouble(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihSpeed.setRindexspeed(Double.parseDouble(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihSpeed.setRmajeurespeed(Double.parseDouble(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihSpeed.setRringfingerspeed(Double.parseDouble(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihSpeed.setRpinkyspeed(Double.parseDouble(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihSpeed.setRwristspeed(Double.parseDouble(valuesString[6].trim()));
+									}
+								}
 							}
 						} else {
 
@@ -1770,48 +1782,108 @@ public class InMoovGestureCreator extends Service {
 						addMove = true;
 						if (splitString[0].contains("Head")) {
 							// moveHead(79,100,82,78,65)
-							fihMove.setNeck(Integer.parseInt(valuesString[0].trim()));
-							fihMove.setRothead(Integer.parseInt(valuesString[1].trim()));
-							fihMove.setEyeX(Integer.parseInt(valuesString[2].trim()));
-							fihMove.setEyeY(Integer.parseInt(valuesString[3].trim()));
-							fihMove.setJaw(Integer.parseInt(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								fihMove.setNeck(Integer.parseInt(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihMove.setRothead(Integer.parseInt(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihMove.setEyeX(Integer.parseInt(valuesString[2].trim()));
+							}
+							if(valuesString.length > 3) {
+								fihMove.setEyeY(Integer.parseInt(valuesString[3].trim()));
+							}
+							if(valuesString.length > 4) {	
+								fihMove.setJaw(Integer.parseInt(valuesString[4].trim()));
+							}
 						} else if (splitString[0].contains("Arm")) {
-							if (valuesString[0].contains("left")) {
-								// moveArm("left",5,84,28,15)
-								fihMove.setLbicep(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setLrotate(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setLshoulder(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setLomoplate(Integer.parseInt(valuesString[4].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// moveArm("right",5,82,28,15)
-								fihMove.setRbicep(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setRrotate(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setRshoulder(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setRomoplate(Integer.parseInt(valuesString[4].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// moveArm("left",5,84,28,15)
+									if(valuesString.length > 1) {
+										fihMove.setLbicep(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setLrotate(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setLshoulder(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setLomoplate(Integer.parseInt(valuesString[4].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// moveArm("right",5,82,28,15)
+									if(valuesString.length > 1) {
+										fihMove.setRbicep(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setRrotate(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setRshoulder(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setRomoplate(Integer.parseInt(valuesString[4].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Hand")) {
-							if (valuesString[0].contains("left")) {
-								// moveHand("left",92,33,37,71,66,25)
-								fihMove.setLthumb(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setLindex(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setLmajeure(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setLringfinger(Integer.parseInt(valuesString[4].trim()));
-								fihMove.setLpinky(Integer.parseInt(valuesString[5].trim()));
-								fihMove.setLwrist(Integer.parseInt(valuesString[6].trim()));
-							} else if (valuesString[0].contains("right")) {
-								// moveHand("right",81,66,82,60,105,113)
-								fihMove.setRthumb(Integer.parseInt(valuesString[1].trim()));
-								fihMove.setRindex(Integer.parseInt(valuesString[2].trim()));
-								fihMove.setRmajeure(Integer.parseInt(valuesString[3].trim()));
-								fihMove.setRringfinger(Integer.parseInt(valuesString[4].trim()));
-								fihMove.setRpinky(Integer.parseInt(valuesString[5].trim()));
-								fihMove.setRwrist(Integer.parseInt(valuesString[6].trim()));
+							if(valuesString.length > 0) {
+								if (valuesString[0].contains("left")) {
+									// moveHand("left",92,33,37,71,66,25)
+									if(valuesString.length > 1) {
+										fihMove.setLthumb(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setLindex(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setLmajeure(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setLringfinger(Integer.parseInt(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihMove.setLpinky(Integer.parseInt(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihMove.setLwrist(Integer.parseInt(valuesString[6].trim()));
+									}
+								} else if (valuesString[0].contains("right")) {
+									// moveHand("right",81,66,82,60,105,113)
+									if(valuesString.length > 1) {
+										fihMove.setRthumb(Integer.parseInt(valuesString[1].trim()));
+									}
+									if(valuesString.length > 2) {
+										fihMove.setRindex(Integer.parseInt(valuesString[2].trim()));
+									}
+									if(valuesString.length > 3) {
+										fihMove.setRmajeure(Integer.parseInt(valuesString[3].trim()));
+									}
+									if(valuesString.length > 4) {
+										fihMove.setRringfinger(Integer.parseInt(valuesString[4].trim()));
+									}
+									if(valuesString.length > 5) {
+										fihMove.setRpinky(Integer.parseInt(valuesString[5].trim()));
+									}
+									if(valuesString.length > 6) {
+										fihMove.setRwrist(Integer.parseInt(valuesString[6].trim()));
+									}
+								}
 							}
 						} else if (splitString[0].contains("Torso")) {
 							// moveTorso(90,90,90)
-							fihMove.setTopStom(Integer.parseInt(valuesString[0].trim()));
-							fihMove.setMidStom(Integer.parseInt(valuesString[1].trim()));
-							fihMove.setLowStom(Integer.parseInt(valuesString[2].trim()));
+							if(valuesString.length > 0) {
+								fihMove.setTopStom(Integer.parseInt(valuesString[0].trim()));
+							}
+							if(valuesString.length > 1) {
+								fihMove.setMidStom(Integer.parseInt(valuesString[1].trim()));
+							}
+							if(valuesString.length > 2) {
+								fihMove.setLowStom(Integer.parseInt(valuesString[2].trim()));
+							}
 						} else {
 
 						}
