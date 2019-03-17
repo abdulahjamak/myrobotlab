@@ -12,35 +12,35 @@ public class FrameItemHolder implements Serializable {
 
 	private FrameType frameType;  
 	     
-	private int rightThumbFingerMove, rightIndexFingerMove, rightMajeureFingerMove, rightRingFingerMove, rightPinkyFingerMove, rightWristMove;
-	private int rightBicepsMove, rightRotateMove, rightShoulderMove, rightOmoplateMove;
-	private int leftThumbFingerMove, leftIndexFingerMove, leftMajeureFingerMove, leftRingFingerMove, leftPinkyFingerMove, leftWristMove;
-	private int leftBicepsMove, leftRotateMove, leftShoulderMove, leftOmoplateMove;
-	private int neckMove, headRotateMove, eyeXMove, eyeYMove, jawMove;
-	private int topStomMove, midStomMove, lowStomMove;
-	private double rightThumbFingerSpeed, rightIndexFingerSpeed, rightMajeureFingerSpeed, rightRingFingerSpeed, rightPinkyFingerSpeed, rightWristSpeed;
-	private double rightBicepsSpeed, rightRotateSpeed, rightShoulderSpeed, rightOmoplateSpeed;
-	private double leftThumbFingerSpeed, leftIndexFingerSpeed, leftMajeureFingerSpeed, leftRingFingerSpeed, leftPinkyFingerSpeed, leftWristSpeed;
-	private double leftBicepsSpeed, leftRotateSpeed, leftShoulderSpeed, leftOmoplateSpeed;
-	private double neckSpeed, headRotateSpeed, eyeXSpeed, eyeYSpeed, jawSpeed;
-	private double topStomSpeed, midStomSpeed, lowStomSpeed;
-	private int sleep = -1;
+	private Integer rightThumbFingerMove, rightIndexFingerMove, rightMajeureFingerMove, rightRingFingerMove, rightPinkyFingerMove, rightWristMove;
+	private Integer rightBicepsMove, rightRotateMove, rightShoulderMove, rightOmoplateMove;
+	private Integer leftThumbFingerMove, leftIndexFingerMove, leftMajeureFingerMove, leftRingFingerMove, leftPinkyFingerMove, leftWristMove;
+	private Integer leftBicepsMove, leftRotateMove, leftShoulderMove, leftOmoplateMove;
+	private Integer neckMove, headRotateMove, eyeXMove, eyeYMove, jawMove;
+	private Integer topStomMove, midStomMove, lowStomMove;
+	private Double rightThumbFingerSpeed, rightIndexFingerSpeed, rightMajeureFingerSpeed, rightRingFingerSpeed, rightPinkyFingerSpeed, rightWristSpeed;
+	private Double rightBicepsSpeed, rightRotateSpeed, rightShoulderSpeed, rightOmoplateSpeed;
+	private Double leftThumbFingerSpeed, leftIndexFingerSpeed, leftMajeureFingerSpeed, leftRingFingerSpeed, leftPinkyFingerSpeed, leftWristSpeed;
+	private Double leftBicepsSpeed, leftRotateSpeed, leftShoulderSpeed, leftOmoplateSpeed;
+	private Double neckSpeed, headRotateSpeed, eyeXSpeed, eyeYSpeed, jawSpeed;
+	private Double topStomSpeed, midStomSpeed, lowStomSpeed;
+	private Integer sleep = -1;
 	private String speech;
 	private String name;
 
-	private boolean rightHandSpeedSet = false;
-	private boolean rightArmSpeedSet = false;
-	private boolean leftHandSpeedSet = false;
-	private boolean leftArmSpeedSet = false;
-	private boolean headSpeedSet = false;
-	private boolean torsoSpeedSet = false;
+	private Boolean rightHandSpeedSet = false;
+	private Boolean rightArmSpeedSet = false;
+	private Boolean leftHandSpeedSet = false;
+	private Boolean leftArmSpeedSet = false;
+	private Boolean headSpeedSet = false;
+	private Boolean torsoSpeedSet = false;
 	
-	private boolean rightHandMoveSet = true;
-	private boolean rightArmMoveSet = true;
-	private boolean leftHandMoveSet = true;
-	private boolean leftArmMoveSet = true;
-	private boolean headMoveSet = true;
-	private boolean torsoMoveSet = true;
+	private Boolean rightHandMoveSet = true;
+	private Boolean rightArmMoveSet = true;
+	private Boolean leftHandMoveSet = true;
+	private Boolean leftArmMoveSet = true;
+	private Boolean headMoveSet = true;
+	private Boolean torsoMoveSet = true;
 
 	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
@@ -250,99 +250,99 @@ public class FrameItemHolder implements Serializable {
 		this.lowStomMove = 90;
 	}
 
-	public boolean getRightHandSpeedSet() {
+	public Boolean getRightHandSpeedSet() {
 		return rightHandSpeedSet;
 	}
 
-	public void setRightHandSpeedSet(boolean rightHandSpeedSet) {
+	public void setRightHandSpeedSet(Boolean rightHandSpeedSet) {
 		this.rightHandSpeedSet = rightHandSpeedSet;
 	}
 
-	public boolean getRightArmSpeedSet() {
+	public Boolean getRightArmSpeedSet() {
 		return rightArmSpeedSet;
 	}
 
-	public void setRightArmSpeedSet(boolean rightArmSpeedSet) {
+	public void setRightArmSpeedSet(Boolean rightArmSpeedSet) {
 		this.rightArmSpeedSet = rightArmSpeedSet;
 	}
 
-	public boolean getLeftHandSpeedSet() {
+	public Boolean getLeftHandSpeedSet() {
 		return leftHandSpeedSet;
 	}
 
-	public void setLeftHandSpeedSet(boolean leftHandSpeedSet) {
+	public void setLeftHandSpeedSet(Boolean leftHandSpeedSet) {
 		this.leftHandSpeedSet = leftHandSpeedSet;
 	}
 
-	public boolean getLeftArmSpeedSet() {
+	public Boolean getLeftArmSpeedSet() {
 		return leftArmSpeedSet;
 	}
 
-	public void setLeftArmSpeedSet(boolean leftArmSpeedSet) {
+	public void setLeftArmSpeedSet(Boolean leftArmSpeedSet) {
 		this.leftArmSpeedSet = leftArmSpeedSet;
 	}
 
-	public boolean getHeadSpeedSet() {
+	public Boolean getHeadSpeedSet() {
 		return headSpeedSet;
 	}
 
-	public void setHeadSpeedSet(boolean headSpeedSet) {
+	public void setHeadSpeedSet(Boolean headSpeedSet) {
 		this.headSpeedSet = headSpeedSet;
 	}
 
-	public boolean getTorsoSpeedSet() {
+	public Boolean getTorsoSpeedSet() {
 		return torsoSpeedSet;
 	}
 
-	public void setTorsoSpeedSet(boolean torsoSpeedSet) {
+	public void setTorsoSpeedSet(Boolean torsoSpeedSet) {
 		this.torsoSpeedSet = torsoSpeedSet;
 	}
 
-	public boolean getRightHandMoveSet() {
+	public Boolean getRightHandMoveSet() {
 		return rightHandMoveSet;
 	}
 
-	public void setRightHandMoveSet(boolean rightHandMoveSet) {
+	public void setRightHandMoveSet(Boolean rightHandMoveSet) {
 		this.rightHandMoveSet = rightHandMoveSet;
 	}
 
-	public boolean getRightArmMoveSet() {
+	public Boolean getRightArmMoveSet() {
 		return rightArmMoveSet;
 	}
 
-	public void setRightArmMoveSet(boolean rightArmMoveSet) {
+	public void setRightArmMoveSet(Boolean rightArmMoveSet) {
 		this.rightArmMoveSet = rightArmMoveSet;
 	}
 
-	public boolean getLeftHandMoveSet() {
+	public Boolean getLeftHandMoveSet() {
 		return leftHandMoveSet;
 	}
 
-	public void setLeftHandMoveSet(boolean leftHandMoveSet) {
+	public void setLeftHandMoveSet(Boolean leftHandMoveSet) {
 		this.leftHandMoveSet = leftHandMoveSet;
 	}
 
-	public boolean getLeftArmMoveSet() {
+	public Boolean getLeftArmMoveSet() {
 		return leftArmMoveSet;
 	}
 
-	public void setLeftArmMoveSet(boolean leftArmMoveSet) {
+	public void setLeftArmMoveSet(Boolean leftArmMoveSet) {
 		this.leftArmMoveSet = leftArmMoveSet;
 	}
 
-	public boolean getHeadMoveSet() {
+	public Boolean getHeadMoveSet() {
 		return headMoveSet;
 	}
 
-	public void setHeadMoveSet(boolean headMoveSet) {
+	public void setHeadMoveSet(Boolean headMoveSet) {
 		this.headMoveSet = headMoveSet;
 	}
 
-	public boolean getTorsoMoveSet() {
+	public Boolean getTorsoMoveSet() {
 		return torsoMoveSet;
 	}
 
-	public void setTorsoMoveSet(boolean torsoMoveSet) {
+	public void setTorsoMoveSet(Boolean torsoMoveSet) {
 		this.torsoMoveSet = torsoMoveSet;
 	}
 
@@ -354,480 +354,465 @@ public class FrameItemHolder implements Serializable {
 		this.frameType = frameType;
 	}
 
-//	public boolean[] getMovesSet() {
-//		return movesSet;
-//	}
-
-	public int getRthumb() {
+	public Integer getRightThumbFingerMove() {
 		return rightThumbFingerMove;
 	}
 
-	public void setRthumb(int rthumb) {
+	public void setRightThumbFingerMove(Integer rthumb) {
 		this.rightThumbFingerMove = rthumb;
 	}
 
-	public int getRindex() {
+	public Integer getRightIndexFingerMove() {
 		return rightIndexFingerMove;
 	}
 
-	public void setRindex(int rindex) {
+	public void setRightIndexFingerMove(Integer rindex) {
 		this.rightIndexFingerMove = rindex;
 	}
 
-	public int getRmajeure() {
+	public Integer getRightMajeureFingerMove() {
 		return rightMajeureFingerMove;
 	}
 
-	public void setRmajeure(int rmajeure) {
+	public void setRightMajeureFingerMove(Integer rmajeure) {
 		this.rightMajeureFingerMove = rmajeure;
 	}
 
-	public int getRringfinger() {
+	public Integer getRightRingFingerMove() {
 		return rightRingFingerMove;
 	}
 
-	public void setRringfinger(int rringfinger) {
+	public void setRightRingFingerMove(Integer rringfinger) {
 		this.rightRingFingerMove = rringfinger;
 	}
 
-	public int getRpinky() {
+	public Integer getRightPinkyFingerMove() {
 		return rightPinkyFingerMove;
 	}
 
-	public void setRpinky(int rpinky) {
+	public void setRightPinkyFingerMove(Integer rpinky) {
 		this.rightPinkyFingerMove = rpinky;
 	}
 
-	public int getRwrist() {
+	public Integer getRightWristMove() {
 		return rightWristMove;
 	}
 
-	public void setRwrist(int rwrist) {
+	public void setRightWristMove(Integer rwrist) {
 		this.rightWristMove = rwrist;
 	}
 
-	public int getRbicep() {
+	public Integer getRightBicepsMove() {
 		return rightBicepsMove;
 	}
 
-	public void setRbicep(int rbicep) {
+	public void setRightBicepsMove(Integer rbicep) {
 		this.rightBicepsMove = rbicep;
 	}
 
-	public int getRrotate() {
+	public Integer getRightRotateMove() {
 		return rightRotateMove;
 	}
 
-	public void setRrotate(int rrotate) {
+	public void setRightRotateMove(Integer rrotate) {
 		this.rightRotateMove = rrotate;
 	}
 
-	public int getRshoulder() {
+	public Integer getRightShoulderMove() {
 		return rightShoulderMove;
 	}
 
-	public void setRshoulder(int rshoulder) {
+	public void setRightShoulderMove(Integer rshoulder) {
 		this.rightShoulderMove = rshoulder;
 	}
 
-	public int getRomoplate() {
+	public Integer getRightOmoplateMove() {
 		return rightOmoplateMove;
 	}
 
-	public void setRomoplate(int romoplate) {
+	public void setRightOmoplateMove(Integer romoplate) {
 		this.rightOmoplateMove = romoplate;
 	}
 
-	public int getLthumb() {
+	public Integer getLeftThumbFingerMove() {
 		return leftThumbFingerMove;
 	}
 
-	public void setLthumb(int lthumb) {
+	public void setLeftThumbFingerMove(Integer lthumb) {
 		this.leftThumbFingerMove = lthumb;
 	}
 
-	public int getLindex() {
+	public Integer getLeftIndexFingerMove() {
 		return leftIndexFingerMove;
 	}
 
-	public void setLindex(int lindex) {
+	public void setLeftIndexFingerMove(Integer lindex) {
 		this.leftIndexFingerMove = lindex;
 	}
 
-	public int getLmajeure() {
+	public Integer getLeftMajeureFingerMove() {
 		return leftMajeureFingerMove;
 	}
 
-	public void setLmajeure(int lmajeure) {
+	public void setLeftMajeureFingerMove(Integer lmajeure) {
 		this.leftMajeureFingerMove = lmajeure;
 	}
 
-	public int getLringfinger() {
+	public Integer getLeftRingFingerMove() {
 		return leftRingFingerMove;
 	}
 
-	public void setLringfinger(int lringfinger) {
+	public void setLeftRingFingerMove(Integer lringfinger) {
 		this.leftRingFingerMove = lringfinger;
 	}
 
-	public int getLpinky() {
+	public Integer getLeftPinkyFingerMove() {
 		return leftPinkyFingerMove;
 	}
 
-	public void setLpinky(int lpinky) {
+	public void setLeftPinkyFingerMove(Integer lpinky) {
 		this.leftPinkyFingerMove = lpinky;
 	}
 
-	public int getLwrist() {
+	public Integer getLeftWristMove() {
 		return leftWristMove;
 	}
 
-	public void setLwrist(int lwrist) {
+	public void setLeftWristMove(Integer lwrist) {
 		this.leftWristMove = lwrist;
 	}
 
-	public int getLbicep() {
+	public Integer getLeftBicepsMove() {
 		return leftBicepsMove;
 	}
 
-	public void setLbicep(int lbicep) {
+	public void setLeftBicepsMove(Integer lbicep) {
 		this.leftBicepsMove = lbicep;
 	}
 
-	public int getLrotate() {
+	public Integer getLeftRotateMove() {
 		return leftRotateMove;
 	}
 
-	public void setLrotate(int lrotate) {
+	public void setLeftRotateMove(Integer lrotate) {
 		this.leftRotateMove = lrotate;
 	}
 
-	public int getLshoulder() {
+	public Integer getLeftShoulderMove() {
 		return leftShoulderMove;
 	}
 
-	public void setLshoulder(int lshoulder) {
+	public void setLeftShoulderMove(Integer lshoulder) {
 		this.leftShoulderMove = lshoulder;
 	}
 
-	public int getLomoplate() {
+	public Integer getLeftOmoplateMove() {
 		return leftOmoplateMove;
 	}
 
-	public void setLomoplate(int lomoplate) {
+	public void setLeftOmoplateMove(Integer lomoplate) {
 		this.leftOmoplateMove = lomoplate;
 	}
 
-	public int getNeck() {
+	public Integer getNeckMove() {
 		return neckMove;
 	}
 
-	public void setNeck(int neck) {
+	public void setNeckMove(Integer neck) {
 		this.neckMove = neck;
 	}
 
-	public int getRothead() {
+	public Integer getHeadRotateMove() {
 		return headRotateMove;
 	}
 
-	public void setRothead(int rothead) {
+	public void setHeadRotateMove(Integer rothead) {
 		this.headRotateMove = rothead;
 	}
 
-	public int getEyeX() {
+	public Integer getEyeXMove() {
 		return eyeXMove;
 	}
 
-	public void setEyeX(int eyeX) {
+	public void setEyeXMove(Integer eyeX) {
 		this.eyeXMove = eyeX;
 	}
 
-	public int getEyeY() {
+	public Integer getEyeYMove() {
 		return eyeYMove;
 	}
 
-	public void setEyeY(int eyeY) {
+	public void setEyeYMove(Integer eyeY) {
 		this.eyeYMove = eyeY;
 	}
 
-	public int getJaw() {
+	public Integer getJawMove() {
 		return jawMove;
 	}
 
-	public void setJaw(int jaw) {
+	public void setJawMove(Integer jaw) {
 		this.jawMove = jaw;
 	}
 
-	public int getTopStom() {
+	public Integer getTopStomMove() {
 		return topStomMove;
 	}
 
-	public void setTopStom(int topStom) {
+	public void setTopStomMove(Integer topStom) {
 		this.topStomMove = topStom;
 	}
 
-	public int getMidStom() {
+	public Integer getMidStomMove() {
 		return midStomMove;
 	}
 
-	public void setMidStom(int midStom) {
+	public void setMidStomMove(Integer midStom) {
 		this.midStomMove = midStom;
 	}
 
-	public int getLowStom() {
+	public Integer getLowStomMove() {
 		return lowStomMove;
 	}
 
-	public void setLowStom(int lowStom) {
+	public void setLowStomMove(Integer lowStom) {
 		this.lowStomMove = lowStom;
 	}
 
-	public double getRthumbspeed() {
+	public Double getRightThumbFingerSpeed() {
 		return rightThumbFingerSpeed;
 	}
 
-	public void setRthumbspeed(double rthumbspeed) {
+	public void setRightThumbFingerSpeed(Double rthumbspeed) {
 		this.rightThumbFingerSpeed = rthumbspeed;
 	}
 
-	public double getRindexspeed() {
+	public Double getRightIndexFingerSpeed() {
 		return rightIndexFingerSpeed;
 	}
 
-	public void setRindexspeed(double rindexspeed) {
+	public void setRightIndexFingerSpeed(Double rindexspeed) {
 		this.rightIndexFingerSpeed = rindexspeed;
 	}
 
-	public double getRmajeurespeed() {
+	public Double getRightMajeureFingerSpeed() {
 		return rightMajeureFingerSpeed;
 	}
 
-	public void setRmajeurespeed(double rmajeurespeed) {
+	public void setRightMajeureFingerSpeed(Double rmajeurespeed) {
 		this.rightMajeureFingerSpeed = rmajeurespeed;
 	}
 
-	public double getRringfingerspeed() {
+	public Double getRightRingFingerSpeed() {
 		return rightRingFingerSpeed;
 	}
 
-	public void setRringfingerspeed(double rringfingerspeed) {
+	public void setRightRingFingerSpeed(Double rringfingerspeed) {
 		this.rightRingFingerSpeed = rringfingerspeed;
 	}
 
-	public double getRpinkyspeed() {
+	public Double getRightPinkyFingerSpeed() {
 		return rightPinkyFingerSpeed;
 	}
 
-	public void setRpinkyspeed(double rpinkyspeed) {
+	public void setRightPinkyFingerSpeed(Double rpinkyspeed) {
 		this.rightPinkyFingerSpeed = rpinkyspeed;
 	}
 
-	public double getRwristspeed() {
+	public Double getRightWristSpeed() {
 		return rightWristSpeed;
 	}
 
-	public void setRwristspeed(double rwristspeed) {
+	public void setRightWristSpeed(Double rwristspeed) {
 		this.rightWristSpeed = rwristspeed;
 	}
 
-	public double getRbicepspeed() {
+	public Double getRightBicepsSpeed() {
 		return rightBicepsSpeed;
 	}
 
-	public void setRbicepspeed(double rbicepspeed) {
+	public void setRightBicepsSpeed(Double rbicepspeed) {
 		this.rightBicepsSpeed = rbicepspeed;
 	}
 
-	public double getRrotatespeed() {
+	public Double getRightRotateSpeed() {
 		return rightRotateSpeed;
 	}
 
-	public void setRrotatespeed(double rrotatespeed) {
+	public void setRightRotateSpeed(Double rrotatespeed) {
 		this.rightRotateSpeed = rrotatespeed;
 	}
 
-	public double getRshoulderspeed() {
+	public Double getRightShoulderSpeed() {
 		return rightShoulderSpeed;
 	}
 
-	public void setRshoulderspeed(double rshoulderspeed) {
+	public void setRightShoulderSpeed(Double rshoulderspeed) {
 		this.rightShoulderSpeed = rshoulderspeed;
 	}
 
-	public double getRomoplatespeed() {
+	public Double getRightOmoplateSpeed() {
 		return rightOmoplateSpeed;
 	}
 
-	public void setRomoplatespeed(double romoplatespeed) {
+	public void setRightOmoplateSpeed(Double romoplatespeed) {
 		this.rightOmoplateSpeed = romoplatespeed;
 	}
 
-	public double getLthumbspeed() {
+	public Double getLeftThumbFingerSpeed() {
 		return leftThumbFingerSpeed;
 	}
 
-	public void setLthumbspeed(double lthumbspeed) {
+	public void setLeftThumbFingerSpeed(Double lthumbspeed) {
 		this.leftThumbFingerSpeed = lthumbspeed;
 	}
 
-	public double getLindexspeed() {
+	public Double getLeftIndexFingerSpeed() {
 		return leftIndexFingerSpeed;
 	}
 
-	public void setLindexspeed(double lindexspeed) {
+	public void setLeftIndexFingerSpeed(Double lindexspeed) {
 		this.leftIndexFingerSpeed = lindexspeed;
 	}
 
-	public double getLmajeurespeed() {
+	public Double getLeftMajeureFingerSpeed() {
 		return leftMajeureFingerSpeed;
 	}
 
-	public void setLmajeurespeed(double lmajeurespeed) {
+	public void setLeftMajeureFingerSpeed(Double lmajeurespeed) {
 		this.leftMajeureFingerSpeed = lmajeurespeed;
 	}
 
-	public double getLringfingerspeed() {
+	public Double getLeftRingFingerSpeed() {
 		return leftRingFingerSpeed;
 	}
 
-	public void setLringfingerspeed(double lringfingerspeed) {
+	public void setLeftRingFingerSpeed(Double lringfingerspeed) {
 		this.leftRingFingerSpeed = lringfingerspeed;
 	}
 
-	public double getLpinkyspeed() {
+	public Double getLeftPinkyFingerSpeed() {
 		return leftPinkyFingerSpeed;
 	}
 
-	public void setLpinkyspeed(double lpinkyspeed) {
+	public void setLeftPinkyFingerSpeed(Double lpinkyspeed) {
 		this.leftPinkyFingerSpeed = lpinkyspeed;
 	}
 
-	public double getLwristspeed() {
+	public Double getLeftWristSpeed() {
 		return leftWristSpeed;
 	}
 
-	public void setLwristspeed(double lwristspeed) {
+	public void setLeftWristSpeed(Double lwristspeed) {
 		this.leftWristSpeed = lwristspeed;
 	}
 
-	public double getLbicepspeed() {
+	public Double getLeftBicepsSpeed() {
 		return leftBicepsSpeed;
 	}
 
-	public void setLbicepspeed(double lbicepspeed) {
+	public void setLeftBicepsSpeed(Double lbicepspeed) {
 		this.leftBicepsSpeed = lbicepspeed;
 	}
 
-	public double getLrotatespeed() {
+	public Double getLeftRotateSpeed() {
 		return leftRotateSpeed;
 	}
 
-	public void setLrotatespeed(double lrotatespeed) {
+	public void setLeftRotateSpeed(Double lrotatespeed) {
 		this.leftRotateSpeed = lrotatespeed;
 	}
 
-	public double getLshoulderspeed() {
+	public Double getLeftShoulderSpeed() {
 		return leftShoulderSpeed;
 	}
 
-	public void setLshoulderspeed(double lshoulderspeed) {
+	public void setLeftShoulderSpeed(Double lshoulderspeed) {
 		this.leftShoulderSpeed = lshoulderspeed;
 	}
 
-	public double getLomoplatespeed() {
+	public Double getLeftOmoplateSpeed() {
 		return leftOmoplateSpeed;
 	}
 
-	public void setLomoplatespeed(double lomoplatespeed) {
+	public void setLeftOmoplateSpeed(Double lomoplatespeed) {
 		this.leftOmoplateSpeed = lomoplatespeed;
 	}
 
-	public double getNeckspeed() {
+	public Double getNeckSpeed() {
 		return neckSpeed;
 	}
 
-	public void setNeckspeed(double neckspeed) {
+	public void setNeckSpeed(Double neckspeed) {
 		this.neckSpeed = neckspeed;
 	}
 
-	public double getRotheadspeed() {
+	public Double getHeadRotateSpeed() {
 		return headRotateSpeed;
 	}
 
-	public void setRotheadspeed(double rotheadspeed) {
+	public void setHeadRotateSpeed(Double rotheadspeed) {
 		this.headRotateSpeed = rotheadspeed;
 	}
 
-	public double getEyeXspeed() {
+	public Double getEyeXSpeed() {
 		return eyeXSpeed;
 	}
 
-	public void setEyeXspeed(double eyeXspeed) {
+	public void setEyeXSpeed(Double eyeXspeed) {
 		this.eyeXSpeed = eyeXspeed;
 	}
 
-	public double getEyeYspeed() {
+	public Double getEyeYSpeed() {
 		return eyeYSpeed;
 	}
 
-	public void setEyeYspeed(double eyeYspeed) {
+	public void setEyeYSpeed(Double eyeYspeed) {
 		this.eyeYSpeed = eyeYspeed;
 	}
 
-	public double getJawspeed() {
+	public Double getJawSpeed() {
 		return jawSpeed;
 	}
 
-	public void setJawspeed(double jawspeed) {
+	public void setJawSpeed(Double jawspeed) {
 		this.jawSpeed = jawspeed;
 	}
 
-	public double getTopStomspeed() {
+	public Double getTopStomSpeed() {
 		return topStomSpeed;
 	}
 
-	public void setTopStomspeed(double topStomspeed) {
+	public void setTopStomSpeed(Double topStomspeed) {
 		this.topStomSpeed = topStomspeed;
 	}
-
-	public double getMidStomspeed() {
+	public Double getMidStomSpeed() {
 		return midStomSpeed;
 	}
-
-	public void setMidStomspeed(double midStomspeed) {
+	public void setMidStomSpeed(Double midStomspeed) {
 		this.midStomSpeed = midStomspeed;
 	}
-
-	public double getLowStomspeed() {
+	public Double getLowStomSpeed() {
 		return lowStomSpeed;
 	}
-
-	public void setLowStomspeed(double lowStomspeed) {
+	public void setLowStomSpeed(Double lowStomspeed) {
 		this.lowStomSpeed = lowStomspeed;
 	}
-
-	public int getSleep() {
+	public Integer getSleep() {
 		return sleep;
 	}
-
-	public void setSleep(int sleep) {
+	public void setSleep(Integer sleep) {
 		this.sleep = sleep;
 	}
-
 	public String getSpeech() {
 		return speech;
 	}
-
 	public void setSpeech(String speech) {
 		this.speech = speech;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }
