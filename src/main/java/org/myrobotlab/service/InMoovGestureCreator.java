@@ -1,5 +1,6 @@
 package org.myrobotlab.service;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -11,13 +12,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -71,6 +76,8 @@ public class InMoovGestureCreator extends Service {
 	private static final long serialVersionUID = 1L;
 
 	public final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
+	
+	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.getDefault());
 
 	transient ServoItemHolder[][] servoitemholder;
 
@@ -104,19 +111,19 @@ public class InMoovGestureCreator extends Service {
 		this.frameListGlobal = frameListGlobal;
 	}
 
-public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException {
 
-    LoggingFactory.init(Level.INFO);
-    try {
+		LoggingFactory.init(Level.INFO);
+		try {
 
-      Runtime.start("gui", "SwingGui");
-      Runtime.start("inmoovgesturecreator", "InMoovGestureCreator");
+			Runtime.start("gui", "SwingGui");
+			Runtime.start("inmoovgesturecreator", "InMoovGestureCreator");
 
-    } catch (Exception e) {
-      Logging.logError(e);
-    }
+		} catch (Exception e) {
+			Logging.logError(e);
+		}
 
-  }
+	}
 
   public InMoovGestureCreator(String n) {
     super(n);
@@ -124,6 +131,7 @@ public static void main(String[] args) throws InterruptedException {
     servoitemholder = new ServoItemHolder[6][];
     frames = new ArrayList<FrameItemHolder>();
     pythonitemholder = new ArrayList<PythonItemHolder>();
+	decimalFormat.setGroupingUsed(false);
   }
 
 
@@ -2192,7 +2200,32 @@ public static void main(String[] args) throws InterruptedException {
 		initializeBottomPaneTabs(bottom, frames.get(frameItemHolderIndex));
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
-
+	private void addSpeedTextToSectionPane(JPanel panel, FrameItemHolder frameItemHolder) {
+		JFormattedTextField rThumbSpeed = new JFormattedTextField(decimalFormat);
+		rThumbSpeed.setColumns(4);
+		rThumbSpeed.setValue(frameItemHolder.getRthumbspeed());
+		panel.add(rThumbSpeed);
+		JFormattedTextField rIndexSpeed = new JFormattedTextField(decimalFormat);
+		rIndexSpeed.setColumns(4);
+		rIndexSpeed.setValue(frameItemHolder.getRindexspeed());
+		panel.add(rIndexSpeed);
+		JFormattedTextField rMajeureSpeed = new JFormattedTextField(decimalFormat);
+		rMajeureSpeed.setColumns(4);
+		rMajeureSpeed.setValue(frameItemHolder.getRmajeurespeed());
+		panel.add(rMajeureSpeed);
+		JFormattedTextField rRingSpeed = new JFormattedTextField(decimalFormat);
+		rRingSpeed.setColumns(4);
+		rRingSpeed.setValue(frameItemHolder.getRringfingerspeed());
+		panel.add(rRingSpeed);
+		JFormattedTextField rPinkySpeed = new JFormattedTextField(decimalFormat);
+		rPinkySpeed.setColumns(4);
+		rPinkySpeed.setValue(frameItemHolder.getRpinkyspeed());
+		panel.add(rPinkySpeed);
+		JFormattedTextField rWristSpeed = new JFormattedTextField(decimalFormat);
+		rWristSpeed.setColumns(4);
+		rWristSpeed.setValue(frameItemHolder.getRwristspeed());
+		panel.add(rWristSpeed);
+	}
 	private void addEnableCheckBoxesToSectionPane(JPanel panel, FrameItemHolder frameItemHolder, String title) {
 		// checkboxes
 		final JCheckBox checkbox = new JCheckBox(title);
@@ -2230,11 +2263,17 @@ public static void main(String[] args) throws InterruptedException {
 
 			// JPanels for the JTabbedPane
 			final JPanel rightHandPanel = new JPanel();
+			rightHandPanel.setLayout(new BorderLayout());
 			final JPanel rightArmPanel = new JPanel();
+			rightArmPanel.setLayout(new BorderLayout());
 			final JPanel leftHandPanel = new JPanel();
+			leftHandPanel.setLayout(new BorderLayout());
 			final JPanel leftArmPanel = new JPanel();
+			leftArmPanel.setLayout(new BorderLayout());
 			final JPanel headPanel = new JPanel();
+			headPanel.setLayout(new BorderLayout());
 			final JPanel torsoPanel = new JPanel();
+			torsoPanel.setLayout(new BorderLayout());
 			// JPanels for the JTabbedPane
 			final JPanel rightHandMovePanel = new JPanel();
 			final JPanel rightArmMovePanel = new JPanel();
@@ -2244,37 +2283,19 @@ public static void main(String[] args) throws InterruptedException {
 			final JPanel torsoMovePanel = new JPanel();
 			// JPanels for the JTabbedPane
 			final JPanel rightHandSpeedPanel = new JPanel();
+			rightHandSpeedPanel.setLayout(new BoxLayout(rightHandSpeedPanel, BoxLayout.Y_AXIS));
 			final JPanel rightArmSpeedPanel = new JPanel();
 			final JPanel leftHandSpeedPanel = new JPanel();
 			final JPanel leftArmSpeedPanel = new JPanel();
 			final JPanel headSpeedPanel = new JPanel();
 			final JPanel torsoSpeedPanel = new JPanel();
 			// Titles
-			rightHandPanel.add(new JLabel("Right Hand"));
-			rightHandPanel.setLayout(new BoxLayout(rightHandPanel, BoxLayout.Y_AXIS));
-			rightArmPanel.add(new JLabel("Right Arm"));
-			rightArmPanel.setLayout(new BoxLayout(rightArmPanel, BoxLayout.Y_AXIS));
-			leftHandPanel.add(new JLabel("Left Hand"));
-			leftHandPanel.setLayout(new BoxLayout(leftHandPanel, BoxLayout.Y_AXIS));
-			leftArmPanel.add(new JLabel("Left Arm"));
-			leftArmPanel.setLayout(new BoxLayout(leftArmPanel, BoxLayout.Y_AXIS));
-			headPanel.add(new JLabel("Head"));
-			headPanel.setLayout(new BoxLayout(headPanel, BoxLayout.Y_AXIS));
-			torsoPanel.add(new JLabel("Torso"));
-			torsoPanel.setLayout(new BoxLayout(torsoPanel, BoxLayout.Y_AXIS));
-			// layouts
-			rightHandPanel.add(rightHandMovePanel);
-			rightHandPanel.add(rightHandSpeedPanel);
-			rightArmPanel.add(rightArmMovePanel);
-			rightArmPanel.add(rightArmSpeedPanel);
-			leftHandPanel.add(leftHandMovePanel);
-			leftHandPanel.add(leftHandSpeedPanel);
-			leftArmPanel.add(leftArmMovePanel);
-			leftArmPanel.add(leftArmSpeedPanel);
-			headPanel.add(headMovePanel);
-			headPanel.add(headSpeedPanel);
-			torsoPanel.add(torsoMovePanel);
-			torsoPanel.add(torsoSpeedPanel);
+			rightHandPanel.add(BorderLayout.NORTH,new JLabel("Right Hand"));
+			rightArmPanel.add(BorderLayout.NORTH,new JLabel("Right Arm"));
+			leftHandPanel.add(BorderLayout.NORTH,new JLabel("Left Hand"));
+			leftArmPanel.add(BorderLayout.NORTH,new JLabel("Left Arm"));
+			headPanel.add(BorderLayout.NORTH,new JLabel("Head"));
+			torsoPanel.add(BorderLayout.NORTH,new JLabel("Torso"));
 			// movecheckboxes
 			addEnableCheckBoxesToSectionPane(rightHandMovePanel, frameItemHolder, "Move?");
 			addEnableCheckBoxesToSectionPane(rightArmMovePanel, frameItemHolder, "Move?");
@@ -2289,6 +2310,18 @@ public static void main(String[] args) throws InterruptedException {
 			addEnableCheckBoxesToSectionPane(leftArmSpeedPanel, frameItemHolder, "Set Speed?");
 			addEnableCheckBoxesToSectionPane(headSpeedPanel, frameItemHolder, "Set Speed?");
 			addEnableCheckBoxesToSectionPane(torsoSpeedPanel, frameItemHolder, "Set Speed?");
+			// JPanels for the JTabbedPane
+			final JPanel rightHandSpeedNumberBoxesPanel = new JPanel();
+			rightHandSpeedNumberBoxesPanel.setLayout(new BoxLayout(rightHandSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel rightArmSpeedNumberBoxesPanel = new JPanel();
+			final JPanel leftHandSpeedNumberBoxesPanel = new JPanel();
+			final JPanel leftArmSpeedNumberBoxesPanel = new JPanel();
+			final JPanel headSpeedNumberBoxesPanel = new JPanel();
+			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
+			// add speed text boxes
+			addSpeedTextToSectionPane(rightHandSpeedNumberBoxesPanel, frameItemHolder);
+			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
+			// ENABLE / DISABLE logic
 			if(frameItemHolder.getFrameType() == FrameItemHolder.FrameType.MOVE) {
 				// disable SPEED panels
 				setPanelEnabled(rightHandSpeedPanel,false);
@@ -2319,7 +2352,23 @@ public static void main(String[] args) throws InterruptedException {
 				setPanelEnabled(leftArmMovePanel,false);
 				setPanelEnabled(headMovePanel,false);
 				setPanelEnabled(torsoMovePanel,false);
+			} else {
+				// disable SPEED panels
+				setPanelEnabled(rightHandSpeedPanel,false);
+				setPanelEnabled(rightArmSpeedPanel,false);
+				setPanelEnabled(leftHandSpeedPanel,false);
+				setPanelEnabled(leftArmSpeedPanel,false);
+				setPanelEnabled(headSpeedPanel,false);
+				setPanelEnabled(torsoSpeedPanel,false);
+				// disable MOVE panels
+				setPanelEnabled(rightHandMovePanel,false);
+				setPanelEnabled(rightArmMovePanel,false);
+				setPanelEnabled(leftHandMovePanel,false);
+				setPanelEnabled(leftArmMovePanel,false);
+				setPanelEnabled(headMovePanel,false);
+				setPanelEnabled(torsoMovePanel,false);
 			}
+			
 			
 			// JPanels for the JTabbedPane
 			final JPanel mainpanel = new JPanel();
@@ -2533,6 +2582,20 @@ public static void main(String[] args) throws InterruptedException {
 			bottomTabs.addTab("Left Side", c2panel);
 			bottomTabs.addTab("Head + Torso", c3panel);
 			//
+			// layouts
+			rightHandPanel.add(BorderLayout.CENTER,rightHandMovePanel);
+			rightHandPanel.add(BorderLayout.SOUTH,rightHandSpeedPanel);
+			rightArmPanel.add(BorderLayout.CENTER,rightArmMovePanel);
+			rightArmPanel.add(BorderLayout.SOUTH,rightArmSpeedPanel);
+			leftHandPanel.add(BorderLayout.CENTER,leftHandMovePanel);
+			leftHandPanel.add(BorderLayout.SOUTH,leftHandSpeedPanel);
+			leftArmPanel.add(BorderLayout.CENTER,leftArmMovePanel);
+			leftArmPanel.add(BorderLayout.SOUTH,leftArmSpeedPanel);
+			headPanel.add(BorderLayout.CENTER,headMovePanel);
+			headPanel.add(BorderLayout.SOUTH,headSpeedPanel);
+			torsoPanel.add(BorderLayout.CENTER,torsoMovePanel);
+			torsoPanel.add(BorderLayout.SOUTH,torsoSpeedPanel);
+			//
 			bottom.removeAll();
 			bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
 //			bottom.add(BorderLayout.CENTER, bottomTabs);
@@ -2551,7 +2614,8 @@ public static void main(String[] args) throws InterruptedException {
 		}
 	}
 
-	private void gridbaglayout_addComponent(Container cont, GridBagLayout gbl, Component c, int x, int y, int width,
+	private void gridbaglayout_addComponent(Container cont, GridBagLayout gbl, Component c, 
+			int x, int y, int width,
 			int height, double weightx, double weighty) {
 		// function for easier gridbaglayout's
 		GridBagConstraints gbc = new GridBagConstraints();
