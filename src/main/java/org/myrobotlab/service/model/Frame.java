@@ -2,7 +2,7 @@ package org.myrobotlab.service.model;
 
 import java.io.Serializable;
 
-public class FrameItemHolder implements Serializable {
+public class Frame implements Serializable {
 
 	private static final long serialVersionUID = -7038574417962603966L;
 	
@@ -46,7 +46,7 @@ public class FrameItemHolder implements Serializable {
 	private static final String SPACE_SYMBOL = " ";
 	private static final String PIPE_SYMBOL = " | ";
 
-	public FrameItemHolder(FrameType frameType) {
+	public Frame(FrameType frameType) {
 		this.frameType = frameType;
 		resetValues();
 	}

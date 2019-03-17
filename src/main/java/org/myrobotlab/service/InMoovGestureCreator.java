@@ -44,8 +44,9 @@ import org.myrobotlab.logging.Level;
 import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.logging.Logging;
 import org.myrobotlab.logging.LoggingFactory;
-import org.myrobotlab.service.model.FrameItemHolder;
-import org.myrobotlab.service.model.FrameItemHolder.FrameType;
+import org.myrobotlab.service.model.Frame;
+import org.myrobotlab.service.model.Frame.FrameType;
+import org.myrobotlab.service.model.Gesture;
 import org.slf4j.Logger;
 
 /**
@@ -79,10 +80,12 @@ public class InMoovGestureCreator extends Service {
 	public final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
 	
 	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.getDefault());
+	
+	private Gesture gesture = new Gesture();
+	private List<Frame> frames = gesture.getFrames();
 
 	transient ServoItemHolder[][] servoitemholder;
-
-	transient ArrayList<FrameItemHolder> frames;
+	
 	private final List<File> pythonFiles = new ArrayList<File>();
 
 	transient ArrayList<PythonItemHolder> pythonitemholder;
@@ -130,7 +133,6 @@ public class InMoovGestureCreator extends Service {
     super(n);
     // intializing variables
     servoitemholder = new ServoItemHolder[6][];
-    frames = new ArrayList<FrameItemHolder>();
     pythonitemholder = new ArrayList<PythonItemHolder>();
 	decimalFormat.setGroupingUsed(false);
   }
@@ -142,7 +144,7 @@ public class InMoovGestureCreator extends Service {
     String gestname = ime_gest = control_gestname.getText();
 
     String code = "";
-    for (FrameItemHolder fih : frames) {
+    for (Frame fih : frames) {
       String code1;
       if (fih.getSleep() != -1) {
         code1 = "    sleep(" + fih.getSleep() + ")\n";
@@ -250,7 +252,7 @@ public class InMoovGestureCreator extends Service {
 
         String code = pythonitemholder.get(posl).code;
         String[] codesplit = code.split("\n");
-        FrameItemHolder fih = null;
+        Frame fih = null;
         boolean ismove = false;
         boolean isspeed = false;
         boolean head = false;
@@ -263,7 +265,7 @@ public class InMoovGestureCreator extends Service {
         int pos = 0;
         while (keepgoing) {
           if (fih == null) {
-            fih = new FrameItemHolder(FrameItemHolder.FrameType.SLEEP);
+            fih = new Frame(Frame.FrameType.SLEEP);
           }
           String line;
           if (pos < codesplit.length) {
@@ -787,7 +789,7 @@ public class InMoovGestureCreator extends Service {
 		// test the gesture
 		if (i01 != null && frames.size() != 0) {
 			LOGGER.info("Starting the test.");
-			for (FrameItemHolder fih : frames) {
+			for (Frame fih : frames) {
 				frameTestFunction(fih);
 			}
 		}
@@ -817,7 +819,7 @@ public class InMoovGestureCreator extends Service {
         String gestname = control_gestname.getText();
 
         String code = "";
-        for (FrameItemHolder fih : frames) {
+        for (Frame fih : frames) {
           String code1;
           if (fih.getSleep() != -1) {
             code1 = "    sleep(" + fih.getSleep() + ")\n";
@@ -906,7 +908,7 @@ public class InMoovGestureCreator extends Service {
 
   public void frame_addsleep(JList framelist, JTextField frame_addsleep_textfield) {
     // Add a sleep frame to the framelist (button bottom-right)
-    FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.SLEEP);
+    Frame fih = new Frame(Frame.FrameType.SLEEP);
 
     fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
     fih.setSpeech(null);
@@ -919,7 +921,7 @@ public class InMoovGestureCreator extends Service {
 
   public void frame_addspeech(JList framelist, JTextField frame_addspeech_textfield) {
     // Add a speech frame to the framelist (button bottom-right)
-    FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.SPEECH);
+    Frame fih = new Frame(Frame.FrameType.SPEECH);
 
     fih.setSleep(-1);
     fih.setSpeech(frame_addspeech_textfield.getText());
@@ -932,7 +934,7 @@ public class InMoovGestureCreator extends Service {
 
   public void frame_addspeed(JList framelist) {
     // Add a speed setting frame to the framelist (button bottom-right)
-    FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.SPEED);
+    Frame fih = new Frame(Frame.FrameType.SPEED);
 
     fih.setRightThumbFingerSpeed(Double.parseDouble(servoitemholder[0][0].spe.getText()));
     fih.setRightIndexFingerSpeed(Double.parseDouble(servoitemholder[0][1].spe.getText()));
@@ -982,7 +984,7 @@ public class InMoovGestureCreator extends Service {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frames.get(pos);
+      Frame fih = frames.get(pos);
       frames.add(fih);
 
       framelistact(framelist);
@@ -994,7 +996,7 @@ public class InMoovGestureCreator extends Service {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frames.remove(pos);
+      Frame fih = frames.remove(pos);
       frames.add(pos + 1, fih);
 
       framelistact(framelist);
@@ -1186,7 +1188,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	} 
 
-	private void frameTestFunction(FrameItemHolder fih) {
+	private void frameTestFunction(Frame fih) {
 		if (fih.getFrameType() == FrameType.SLEEP) {
 			LOGGER.info("Starting testing of sleep frame! Sleep for: " + fih.getSleep() + "!");
 			// sleep frame
@@ -1266,7 +1268,7 @@ public class InMoovGestureCreator extends Service {
 		// Test selected frame
 		int selectedFrameIndex = framelist.getSelectedIndex();
 		if (i01 != null && selectedFrameIndex != -1) {
-			FrameItemHolder fih = frames.get(selectedFrameIndex);
+			Frame fih = frames.get(selectedFrameIndex);
 			frameTestFunction(fih);
 		} else {
 			if(selectedFrameIndex == -1) {
@@ -1287,7 +1289,7 @@ public class InMoovGestureCreator extends Service {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = frames.remove(pos);
+      Frame fih = frames.remove(pos);
       frames.add(pos - 1, fih);
 
       framelistact(framelist);
@@ -1300,21 +1302,21 @@ public class InMoovGestureCreator extends Service {
     int pos = framelist.getSelectedIndex();
 
     if (pos != -1) {
-      FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.SLEEP);
+      Frame fih = new Frame(Frame.FrameType.SLEEP);
 
       // sleep || speech || servo movement || speed setting
       if (frames.get(pos).getSleep() != -1) {
-          fih.setFrameType(FrameItemHolder.FrameType.SLEEP);
+          fih.setFrameType(Frame.FrameType.SLEEP);
         fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
         fih.setSpeech(null);
         fih.setName(null);
       } else if (frames.get(pos).getSpeech() != null) {
-          fih.setFrameType(FrameItemHolder.FrameType.SPEECH);
+          fih.setFrameType(Frame.FrameType.SPEECH);
         fih.setSleep(-1);
         fih.setSpeech(frame_addspeech_textfield.getText());
         fih.setName(null);
       } else if (frames.get(pos).getName() != null) {
-        fih.setFrameType(FrameItemHolder.FrameType.MOVE);
+        fih.setFrameType(Frame.FrameType.MOVE);
         fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
         fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
         fih.setRightMajeureFingerMove(servoitemholder[0][2].sli.getValue());
@@ -1353,7 +1355,7 @@ public class InMoovGestureCreator extends Service {
         fih.setSpeech(null);
         fih.setName(frame_add_textfield.getText());
       } else {
-        fih.setFrameType(FrameItemHolder.FrameType.SPEED);
+        fih.setFrameType(Frame.FrameType.SPEED);
         fih.setRightThumbFingerSpeed(Double.parseDouble(servoitemholder[0][0].spe.getText()));
         fih.setRightIndexFingerSpeed(Double.parseDouble(servoitemholder[0][1].spe.getText()));
         fih.setRightMajeureFingerSpeed(Double.parseDouble(servoitemholder[0][2].spe.getText()));
@@ -1404,7 +1406,7 @@ public class InMoovGestureCreator extends Service {
     String[] listdata = new String[frames.size()];
 
     for (int i = 0; i < frames.size(); i++) {
-      FrameItemHolder fih = frames.get(i);
+      Frame fih = frames.get(i);
 
       String displaytext = "";
 
@@ -1533,14 +1535,14 @@ public class InMoovGestureCreator extends Service {
 			}
 		}
 		try {
-			List<FrameItemHolder> fihList = parseScriptToFrame(scriptLines);
-			if (fihList != null) {
+			List<Frame> frameList = parseScriptToFrame(scriptLines);
+			if (frameList != null) {
 				// loading parsed frames into GUI list
-				LOGGER.trace("Existing FRAME count \"" + fihList.size() + "\"");
+				LOGGER.trace("Existing FRAME count \"" + frameList.size() + "\"");
 				// reload GUI now
 				frames.clear();
-				frames.addAll(fihList);
-				controlListReload(framelist, fihList);
+				frames.addAll(frameList);
+				controlListReload(framelist, frameList);
 				LOGGER.trace("Reload GUI finished");
 			}
 		} catch (Exception e) {
@@ -1548,20 +1550,29 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void controlListReload(JList framelist, List<FrameItemHolder> fihList) {
+	public void controlListReload(JList framelist, List<Frame> frameList) {
 		List<String> listdata = new ArrayList<String>();
-		for (FrameItemHolder fih : fihList) {
+		for (Frame fih : frameList) {
 			listdata.add(fih.toString());
 		}
 		framelist.setListData(listdata.toArray());
 	}
 
-	private List<FrameItemHolder> parseScriptToFrame(List<String> scriptLines) throws Exception {
+	private List<Frame> parseScriptToFrame(List<String> scriptLines) throws Exception {
 		// TODO add complete file list from folder
-		List<FrameItemHolder> fihList = new ArrayList<FrameItemHolder>();
+		List<Frame> frameList = new ArrayList<Frame>();
 		try {
 			// parse start
-			// step #1: find gesture start
+			// step #1: find gesture name
+			for (String singleScriptLine : scriptLines) {
+				if (singleScriptLine.trim().startsWith("def ")) {
+					// we have a gesture name
+					gesture.setGestureName(singleScriptLine.trim().substring(4, singleScriptLine.indexOf('(')));
+					break;
+				}
+			}
+			LOGGER.trace("gesture.getGestureName() \"" + gesture.getGestureName() + "\"");
+			// step #2: find gesture start
 			boolean gestureStartFound = false;
 			int counter = 0;
 			for (String singleScriptLine : scriptLines) {
@@ -1580,7 +1591,7 @@ public class InMoovGestureCreator extends Service {
 			// at this point the first gesture is starting
 			List<String> frameLines = new ArrayList<String>();
 			for (String singleScriptLine : scriptLines) {
-				LOGGER.trace("fihList.size() \"" + fihList.size() + "\"");
+				LOGGER.trace("frameList.size() \"" + frameList.size() + "\"");
 				// ' sleep(4)'
 				singleScriptLine = singleScriptLine.trim();
 				LOGGER.trace("singleScriptLine \"" + singleScriptLine + "\"");
@@ -1604,8 +1615,8 @@ public class InMoovGestureCreator extends Service {
 				/// at this point we have frame command
 				if (singleScriptLine.contains("finishedGesture")) {
 					// we are finished
-					LOGGER.info("Parsed FRAME count \"" + fihList.size() + "\"");
-					return fihList;
+					LOGGER.info("Parsed FRAME count \"" + frameList.size() + "\"");
+					return frameList;
 				} else if (singleScriptLine.contains("speech")) {
 					// ignore
 					continue;
@@ -1613,9 +1624,9 @@ public class InMoovGestureCreator extends Service {
 					// sleep means the end of the frame
 					try {
 						// parse the frame and add it
-						parseScriptFragmentIntoSingleFrame(fihList, frameLines, counter);
+						parseScriptFragmentIntoSingleFrame(frameList, frameLines, counter);
 						// finish it with a sleep
-						parseScriptSleepToFrameSleep(fihList, singleScriptLine);
+						parseScriptSleepToFrameSleep(frameList, singleScriptLine);
 						// reset framelines
 						frameLines.clear();
 					} catch (Exception e) {
@@ -1630,19 +1641,19 @@ public class InMoovGestureCreator extends Service {
 		} catch (Exception e) {
 			LOGGER.warn("parseScriptToFrame error", e);
 		}
-		return fihList;
+		return frameList;
 	}
 
-	private void parseScriptFragmentIntoSingleFrame(List<FrameItemHolder> fihList, 
+	private void parseScriptFragmentIntoSingleFrame(List<Frame> frameList, 
 			List<String> frameLines, int frameCounter) throws Exception {
 		try {
 			boolean addSpeed = false;
 			boolean addMove = false;
-			FrameItemHolder fihSpeed = new FrameItemHolder(FrameItemHolder.FrameType.SPEED);
+			Frame fihSpeed = new Frame(Frame.FrameType.SPEED);
 			fihSpeed.setSpeech(null);
 			fihSpeed.setName(null);
 			fihSpeed.setSleep(-1);
-			FrameItemHolder fihMove = new FrameItemHolder(FrameItemHolder.FrameType.MOVE);
+			Frame fihMove = new Frame(Frame.FrameType.MOVE);
 			fihMove.setName("Frame#" + frameCounter);
 
 			for (String singleScriptLine : frameLines) {
@@ -1895,29 +1906,29 @@ public class InMoovGestureCreator extends Service {
 				}
 			}
 			if (addSpeed) {
-				fihList.add(fihSpeed);
+				frameList.add(fihSpeed);
 			}
 			if (addMove) {
-				fihList.add(fihMove);
+				frameList.add(fihMove);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("Frame line parsing error", e);
 		}
 	}
 	
-	private void parseScriptSleepToFrameSleep(List<FrameItemHolder> fihList, String sleepLine) {
+	private void parseScriptSleepToFrameSleep(List<Frame> frameList, String sleepLine) {
 		try {
 			// sleep line: sleep(3)
 			sleepLine = sleepLine.substring(sleepLine.indexOf('(')+1, sleepLine.indexOf(')'));
 			Double sleepTime = Double.parseDouble(sleepLine);
-			FrameItemHolder fihSleep = new FrameItemHolder(FrameItemHolder.FrameType.SLEEP);
+			Frame fihSleep = new Frame(Frame.FrameType.SLEEP);
 			fihSleep.resetValues();
 
 			fihSleep.setName(null); // sleep frame has Name and Speech as null and Sleep as int
 			fihSleep.setSpeech(null);
 			fihSleep.setSleep(sleepTime.intValue());
 
-			fihList.add(fihSleep);
+			frameList.add(fihSleep);
 		} catch (Exception e) {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
@@ -1926,7 +1937,7 @@ public class InMoovGestureCreator extends Service {
   public void parse_frame_to_script() {
 	  String code = "def " + /*ime_funkcije*/"test" + "():\n  i01.startedGesture()\n  "; //def + ime plus () + enter i dva spejsa + i01.
 	  for (int i = 0; i < frames.size(); i++) {
-	      FrameItemHolder fih = frames.get(i);
+	      Frame fih = frames.get(i);
 	      
 	      if(fih.getName() == null && fih.getSleep() == -1) {
 	    	  String speeds[] = {"","","","","",""};
@@ -1964,7 +1975,7 @@ public class InMoovGestureCreator extends Service {
  
   public void frame_add(JList framelist, JTextField frame_add_textfield) {
 	    // Add a servo movement frame to the framelist (button bottom-right)
-	    FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.MOVE);
+	    Frame fih = new Frame(Frame.FrameType.MOVE);
 
 	    fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
 	    fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
@@ -2186,7 +2197,7 @@ public class InMoovGestureCreator extends Service {
     servoitemholder[t1][t2].akt.setText(servoitemholder[t1][t2].sli.getValue() + "");
     // Move the Servos in "Real-Time"
     if (moverealtime && i01 != null) {
-      FrameItemHolder fih = new FrameItemHolder(FrameItemHolder.FrameType.MOVE);
+      Frame fih = new Frame(Frame.FrameType.MOVE);
 
       fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
       fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
@@ -2272,44 +2283,44 @@ public class InMoovGestureCreator extends Service {
 		initializeBottomPaneTabs(bottom, frames.get(frameItemHolderIndex));
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
-	private void addSpeedTextToSectionPane(JPanel panel, FrameItemHolder frameItemHolder) {
+	private void addSpeedTextToSectionPane(JPanel panel, Frame frame) {
 		JFormattedTextField rThumbSpeed = new JFormattedTextField(decimalFormat);
 		rThumbSpeed.setColumns(4);
-		rThumbSpeed.setValue(frameItemHolder.getRightThumbFingerSpeed());
+		rThumbSpeed.setValue(frame.getRightThumbFingerSpeed());
 		panel.add(rThumbSpeed);
 		JFormattedTextField rIndexSpeed = new JFormattedTextField(decimalFormat);
 		rIndexSpeed.setColumns(4);
-		rIndexSpeed.setValue(frameItemHolder.getRightIndexFingerSpeed());
+		rIndexSpeed.setValue(frame.getRightIndexFingerSpeed());
 		panel.add(rIndexSpeed);
 		JFormattedTextField rMajeureSpeed = new JFormattedTextField(decimalFormat);
 		rMajeureSpeed.setColumns(4);
-		rMajeureSpeed.setValue(frameItemHolder.getRightMajeureFingerSpeed());
+		rMajeureSpeed.setValue(frame.getRightMajeureFingerSpeed());
 		panel.add(rMajeureSpeed);
 		JFormattedTextField rRingSpeed = new JFormattedTextField(decimalFormat);
 		rRingSpeed.setColumns(4);
-		rRingSpeed.setValue(frameItemHolder.getRightRingFingerSpeed());
+		rRingSpeed.setValue(frame.getRightRingFingerSpeed());
 		panel.add(rRingSpeed);
 		JFormattedTextField rPinkySpeed = new JFormattedTextField(decimalFormat);
 		rPinkySpeed.setColumns(4);
-		rPinkySpeed.setValue(frameItemHolder.getRightPinkyFingerSpeed());
+		rPinkySpeed.setValue(frame.getRightPinkyFingerSpeed());
 		panel.add(rPinkySpeed);
 		JFormattedTextField rWristSpeed = new JFormattedTextField(decimalFormat);
 		rWristSpeed.setColumns(4);
-		rWristSpeed.setValue(frameItemHolder.getRightWristSpeed());
+		rWristSpeed.setValue(frame.getRightWristSpeed());
 		panel.add(rWristSpeed);
 	}
-	private void addEnableCheckBoxesToSectionPane(JPanel panel, FrameItemHolder frameItemHolder, String title) {
+	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title) {
 		// checkboxes
 		final JCheckBox checkbox = new JCheckBox(title);
 		checkbox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				// TODO
-				frameItemHolder.setRightHandMoveSet(checkbox.isSelected());
+				frame.setRightHandMoveSet(checkbox.isSelected());
 			}
 		});
 		// TODO
-		checkbox.setSelected(frameItemHolder.getRightHandMoveSet());
+		checkbox.setSelected(frame.getRightHandMoveSet());
 		panel.add(checkbox);
 	}
 
@@ -2328,7 +2339,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 	
-	public void initializeBottomPaneTabs(JPanel bottom, FrameItemHolder frameItemHolder) {
+	public void initializeBottomPaneTabs(JPanel bottom, Frame frame) {
 		LOGGER.trace("initializeBottomPaneTabs [START]");
 		try {
 			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
@@ -2369,19 +2380,19 @@ public class InMoovGestureCreator extends Service {
 			headPanel.add(BorderLayout.NORTH,new JLabel("Head"));
 			torsoPanel.add(BorderLayout.NORTH,new JLabel("Torso"));
 			// movecheckboxes
-			addEnableCheckBoxesToSectionPane(rightHandMovePanel, frameItemHolder, "Move?");
-			addEnableCheckBoxesToSectionPane(rightArmMovePanel, frameItemHolder, "Move?");
-			addEnableCheckBoxesToSectionPane(leftHandMovePanel, frameItemHolder, "Move?");
-			addEnableCheckBoxesToSectionPane(leftArmMovePanel, frameItemHolder, "Move?");
-			addEnableCheckBoxesToSectionPane(headMovePanel, frameItemHolder, "Move?");
-			addEnableCheckBoxesToSectionPane(torsoMovePanel, frameItemHolder, "Move?");
+			addEnableCheckBoxesToSectionPane(rightHandMovePanel, frame, "Move?");
+			addEnableCheckBoxesToSectionPane(rightArmMovePanel, frame, "Move?");
+			addEnableCheckBoxesToSectionPane(leftHandMovePanel, frame, "Move?");
+			addEnableCheckBoxesToSectionPane(leftArmMovePanel, frame, "Move?");
+			addEnableCheckBoxesToSectionPane(headMovePanel, frame, "Move?");
+			addEnableCheckBoxesToSectionPane(torsoMovePanel, frame, "Move?");
 			// speed checkBoxes
-			addEnableCheckBoxesToSectionPane(rightHandSpeedPanel, frameItemHolder, "Set Speed?");
-			addEnableCheckBoxesToSectionPane(rightArmSpeedPanel, frameItemHolder, "Set Speed?");
-			addEnableCheckBoxesToSectionPane(leftHandSpeedPanel, frameItemHolder, "Set Speed?");
-			addEnableCheckBoxesToSectionPane(leftArmSpeedPanel, frameItemHolder, "Set Speed?");
-			addEnableCheckBoxesToSectionPane(headSpeedPanel, frameItemHolder, "Set Speed?");
-			addEnableCheckBoxesToSectionPane(torsoSpeedPanel, frameItemHolder, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(rightHandSpeedPanel, frame, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(rightArmSpeedPanel, frame, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(leftHandSpeedPanel, frame, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(leftArmSpeedPanel, frame, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(headSpeedPanel, frame, "Set Speed?");
+			addEnableCheckBoxesToSectionPane(torsoSpeedPanel, frame, "Set Speed?");
 			// JPanels for the JTabbedPane
 			final JPanel rightHandSpeedNumberBoxesPanel = new JPanel();
 			rightHandSpeedNumberBoxesPanel.setLayout(new BoxLayout(rightHandSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
@@ -2391,10 +2402,10 @@ public class InMoovGestureCreator extends Service {
 			final JPanel headSpeedNumberBoxesPanel = new JPanel();
 			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
 			// add speed text boxes
-			addSpeedTextToSectionPane(rightHandSpeedNumberBoxesPanel, frameItemHolder);
+			addSpeedTextToSectionPane(rightHandSpeedNumberBoxesPanel, frame);
 			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
 			// ENABLE / DISABLE logic
-			if(frameItemHolder.getFrameType() == FrameItemHolder.FrameType.MOVE) {
+			if(frame.getFrameType() == Frame.FrameType.MOVE) {
 				// disable SPEED panels
 				setPanelEnabled(rightHandSpeedPanel,false);
 				setPanelEnabled(rightArmSpeedPanel,false);
@@ -2409,7 +2420,7 @@ public class InMoovGestureCreator extends Service {
 				setPanelEnabled(leftArmMovePanel,true);
 				setPanelEnabled(headMovePanel,true);
 				setPanelEnabled(torsoMovePanel,true);
-			} else if(frameItemHolder.getFrameType() == FrameItemHolder.FrameType.SPEED) {
+			} else if(frame.getFrameType() == Frame.FrameType.SPEED) {
 				// enable SPEED panels
 				setPanelEnabled(rightHandSpeedPanel,true);
 				setPanelEnabled(rightArmSpeedPanel,true);
@@ -2551,44 +2562,44 @@ public class InMoovGestureCreator extends Service {
 					if (i1 == 0 || i1 == 2) {
 						if (i2 == 0) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightThumbFingerMove();
+								value = frame.getRightThumbFingerMove();
 							}else {
-								value = frameItemHolder.getLeftThumbFingerMove();
+								value = frame.getLeftThumbFingerMove();
 							}
 							servoname = "thumb";
 						} else if (i2 == 1) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightIndexFingerMove();
+								value = frame.getRightIndexFingerMove();
 							}else {
-								value = frameItemHolder.getLeftIndexFingerMove();
+								value = frame.getLeftIndexFingerMove();
 							}
 							servoname = "index";
 						} else if (i2 == 2) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightMajeureFingerMove();
+								value = frame.getRightMajeureFingerMove();
 							}else {
-								value = frameItemHolder.getLeftMajeureFingerMove();
+								value = frame.getLeftMajeureFingerMove();
 							}
 							servoname = "majeure";
 						} else if (i2 == 3) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightRingFingerMove();
+								value = frame.getRightRingFingerMove();
 							}else {
-								value = frameItemHolder.getLeftRingFingerMove();
+								value = frame.getLeftRingFingerMove();
 							}
 							servoname = "ringfinger";
 						} else if (i2 == 4) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightPinkyFingerMove();
+								value = frame.getRightPinkyFingerMove();
 							}else {
-								value = frameItemHolder.getLeftPinkyFingerMove();
+								value = frame.getLeftPinkyFingerMove();
 							}
 							servoname = "pinky";
 						} else if (i2 == 5) {
 							if(i1 == 0) {
-								value = frameItemHolder.getRightWristMove();
+								value = frame.getRightWristMove();
 							}else {
-								value = frameItemHolder.getLeftWristMove();
+								value = frame.getLeftWristMove();
 							}
 							servoname = "wrist";
 						}

@@ -23,7 +23,7 @@ import javax.swing.event.ListSelectionListener;
 import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.service.InMoovGestureCreator;
 import org.myrobotlab.service.SwingGui;
-import org.myrobotlab.service.model.FrameItemHolder;
+import org.myrobotlab.service.model.Frame;
 import org.slf4j.Logger;
 
 /**
@@ -119,8 +119,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 
 			JPanel bottom = new JPanel();
-			FrameItemHolder frameItemHolder = new FrameItemHolder(FrameItemHolder.FrameType.SLEEP);
-			myService.send(boundServiceName, "initializeBottomPaneTabs", bottom, frameItemHolder);
+			Frame frame = new Frame(Frame.FrameType.SLEEP);
+			myService.send(boundServiceName, "initializeBottomPaneTabs", bottom, frame);
 //			initializeBottomPaneTabs(bottom, myService);
 
 			JPanel top = new JPanel();
