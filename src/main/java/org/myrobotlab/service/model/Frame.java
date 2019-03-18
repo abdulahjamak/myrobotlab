@@ -6,10 +6,25 @@ import java.util.Arrays;
 public class Frame implements Serializable {
 
 	private static final long serialVersionUID = -7038574417962603966L;
-	
+
 	public enum FrameType {
-	       SPEED, SPEECH, SLEEP, MOVE;
-	     };
+		SPEED, SPEECH, SLEEP, MOVE;
+	};
+	public enum RobotSection {
+		RIGHT_HAND, RIGHT_ARM, LEFT_HAND, LEFT_ARM, HEAD, TORSO;
+	};
+	public enum HandSection {
+		THUMB_FINGER, INDEX_FINGER, MAJEURE_FINGER, RING_FINGER, PINKY_FINGER, WRIST;
+	};
+	public enum ArmSection {
+		BICEPS, ROTATE, SHOULDER, OMOPLATE;
+	};
+	public enum HeadSection {
+		NECK, HEAD, EYE_X, EYE_Y, JAW;
+	};
+	public enum TorsoSection {
+		TOP, MID, LOW;
+	};
 
 	private FrameType frameType;  
 	/**
@@ -242,6 +257,80 @@ public class Frame implements Serializable {
 		Arrays.fill(torsoSpeeds, 0d);
 		
 		this.sleep = -1;
+	}
+
+	public Boolean getMoveSet(RobotSection robotSection) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return moveSets[0];
+		case RIGHT_ARM:
+			return moveSets[1];
+		case LEFT_HAND:
+			return moveSets[2];
+		case LEFT_ARM:
+			return moveSets[3];
+		case HEAD:
+			return moveSets[4];
+		case TORSO:
+			return moveSets[5];
+		default:
+			return null;
+		}
+	}
+
+	public void setMoveSet(RobotSection robotSection, Boolean moveSet) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			this.moveSets[0] = moveSet;
+		case RIGHT_ARM:
+			this.moveSets[1] = moveSet;
+		case LEFT_HAND:
+			this.moveSets[2] = moveSet;
+		case LEFT_ARM:
+			this.moveSets[3] = moveSet;
+		case HEAD:
+			this.moveSets[4] = moveSet;
+		case TORSO:
+			this.moveSets[5] = moveSet;
+		default:
+		}
+	}
+
+	public Boolean getSpeedSet(RobotSection robotSection) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return speedSets[0];
+		case RIGHT_ARM:
+			return speedSets[1];
+		case LEFT_HAND:
+			return speedSets[2];
+		case LEFT_ARM:
+			return speedSets[3];
+		case HEAD:
+			return speedSets[4];
+		case TORSO:
+			return speedSets[5];
+		default:
+			return null;
+		}
+	}
+
+	public void setSpeedSet(RobotSection robotSection, Boolean speedSet) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			this.speedSets[0] = speedSet;
+		case RIGHT_ARM:
+			this.speedSets[1] = speedSet;
+		case LEFT_HAND:
+			this.speedSets[2] = speedSet;
+		case LEFT_ARM:
+			this.speedSets[3] = speedSet;
+		case HEAD:
+			this.speedSets[4] = speedSet;
+		case TORSO:
+			this.speedSets[5] = speedSet;
+		default:
+		}
 	}
 
 	public Boolean getRightHandSpeedSet() {
