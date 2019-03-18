@@ -81,7 +81,7 @@ public class InMoovGestureCreator extends Service {
 	
 	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getNumberInstance(Locale.getDefault());
 	
-	private Gesture gesture = new Gesture();
+	private final Gesture gesture = new Gesture();
 	private List<Frame> frames = gesture.getFrames();
 
 	transient ServoItemHolder[][] servoitemholder;
@@ -787,20 +787,17 @@ public class InMoovGestureCreator extends Service {
 
 	public void control_testgest() {
 		// test the gesture
-		if (i01 != null && frames.size() != 0) {
-			LOGGER.info("Starting the test.");
-			for (Frame fih : frames) {
-				frameTestFunction(fih);
+		if(i01 == null) {
+			//this should go into some kind of message to the user
+			LOGGER.info("Testing of gesture is not possible! Because robot is not initialized!");
+			return;
+		} else if (frames.size() > 0) {
+			LOGGER.info("Running gesture \"" + gesture.getGestureName() + "\"");
+			for (Frame frame : frames) {
+				executeFrameOnRobot(frame);
 			}
-		}
-		else {
-			if(i01 == null) {
-				//this should go into some kind of message to the user
-				LOGGER.info("Testing of gesture is not possible!");
-				LOGGER.info("Robot is not initialised!");
-			} else {
-				LOGGER.info("No gestures loaded!");
-			}
+		} else {
+			LOGGER.info("No frames to execute.");
 		}
 	}
 
@@ -1188,15 +1185,15 @@ public class InMoovGestureCreator extends Service {
 		}
 	} 
 
-	private void frameTestFunction(Frame fih) {
+	private void executeFrameOnRobot(Frame fih) {
 		if (fih.getFrameType() == FrameType.SLEEP) {
-			LOGGER.info("Running [SLEEP] frame. Sleep for: " + fih.getSleep() + " seconds...");
+			LOGGER.info("Running [SLEEP] frame for \"" + fih.getSleep() + "\" seconds...");
 			// sleep frame
 			sleep(fih.getSleep());
 		} else if (fih.getFrameType() == FrameType.SPEECH) {
 			// speech frame
 			try {
-				LOGGER.info("Running [SPEECH] frame frame! Speech text: \"" + fih.getSpeech() + "\"...");
+				LOGGER.info("Running [SPEECH] frame with text: \"" + fih.getSpeech() + "\"...");
 				i01.mouth.speakBlocking(fih.getSpeech());
 			} catch (Exception e) {
 				LOGGER.warn("Speech frame test error", e);
@@ -1273,7 +1270,7 @@ public class InMoovGestureCreator extends Service {
 		int selectedFrameIndex = framelist.getSelectedIndex();
 		if (i01 != null && selectedFrameIndex != -1) {
 			Frame fih = frames.get(selectedFrameIndex);
-			frameTestFunction(fih);
+			executeFrameOnRobot(fih);
 		} else {
 			if(selectedFrameIndex == -1) {
 				//this should go into some kind of message to the user

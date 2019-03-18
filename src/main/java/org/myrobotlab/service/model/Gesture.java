@@ -9,7 +9,7 @@ public class Gesture implements Serializable {
 	private static final long serialVersionUID = -7246573963404596295L;
 	
 	private String gestureName;
-	private List<Frame> frames = new ArrayList<Frame>();
+	private final List<Frame> frames = new ArrayList<Frame>();
 	
 	public String getGestureName() {
 		return gestureName;
@@ -20,7 +20,4 @@ public class Gesture implements Serializable {
 	public List<Frame> getFrames() {
 		return frames;
 	}
-	public void setFrames(List<Frame> frames) {
-		this.frames = frames;
-	}	
 }
