@@ -55,7 +55,7 @@ public class Frame implements Serializable {
 	 */
 	final private Integer[] rightArmMoves = new Integer[6];
 	final private Integer[] leftHandMoves = new Integer[6];
-	final private Integer[] lefttArmMoves = new Integer[6];
+	final private Integer[] leftArmMoves = new Integer[6];
 	/**
 	 * 0: neck
 	 * 1: head
@@ -139,10 +139,10 @@ public class Frame implements Serializable {
 				}
 				// left arm
 				if(moveSets[3]) {
-					movements.append(this.lefttArmMoves[0]).append(SPACE_SYMBOL)
-						.append(this.lefttArmMoves[1]).append(SPACE_SYMBOL)
-						.append(this.lefttArmMoves[2]).append(SPACE_SYMBOL)
-						.append(this.lefttArmMoves[3]).append(PIPE_SYMBOL);
+					movements.append(this.leftArmMoves[0]).append(SPACE_SYMBOL)
+						.append(this.leftArmMoves[1]).append(SPACE_SYMBOL)
+						.append(this.leftArmMoves[2]).append(SPACE_SYMBOL)
+						.append(this.leftArmMoves[3]).append(PIPE_SYMBOL);
 				} else {
 					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
 						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
@@ -245,7 +245,7 @@ public class Frame implements Serializable {
 		Arrays.fill(rightHandMoves, 90);
 		Arrays.fill(rightArmMoves, 90);
 		Arrays.fill(leftHandMoves, 90);
-		Arrays.fill(lefttArmMoves, 90);
+		Arrays.fill(leftArmMoves, 90);
 		Arrays.fill(headMoves, 90);
 		Arrays.fill(torsoMoves, 90);
 		
@@ -257,6 +257,99 @@ public class Frame implements Serializable {
 		Arrays.fill(torsoSpeeds, 0d);
 		
 		this.sleep = -1;
+	}
+
+	public int getSubSectionSize(RobotSection robotSection) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return 6;
+		case RIGHT_ARM:
+			return 4;
+		case LEFT_HAND:
+			return 6;
+		case LEFT_ARM:
+			return 4;
+		case HEAD:
+			return 5;
+		case TORSO:
+			return 3;
+		default:
+			return 0;
+		}
+	}
+
+	public Integer getMoveValue(RobotSection robotSection, int sectionIndex) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return rightHandMoves[sectionIndex];
+		case RIGHT_ARM:
+			return rightArmMoves[sectionIndex];
+		case LEFT_HAND:
+			return leftHandMoves[sectionIndex];
+		case LEFT_ARM:
+			return leftArmMoves[sectionIndex];
+		case HEAD:
+			return headMoves[sectionIndex];
+		case TORSO:
+			return torsoMoves[sectionIndex];
+		default:
+			return null;
+		}
+	}
+
+	public void setMoveValue(RobotSection robotSection, int sectionIndex, Integer moveValue) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			this.rightHandMoves[sectionIndex] = moveValue;
+		case RIGHT_ARM:
+			this.rightArmMoves[sectionIndex] = moveValue;
+		case LEFT_HAND:
+			this.leftHandMoves[sectionIndex] = moveValue;
+		case LEFT_ARM:
+			this.leftArmMoves[sectionIndex] = moveValue;
+		case HEAD:
+			this.headMoves[sectionIndex] = moveValue;
+		case TORSO:
+			this.torsoMoves[sectionIndex] = moveValue;
+		default:
+		}
+	}
+
+	public Double getSpeedValue(RobotSection robotSection, int sectionIndex) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return rightHandSpeeds[sectionIndex];
+		case RIGHT_ARM:
+			return rightArmSpeeds[sectionIndex];
+		case LEFT_HAND:
+			return leftHandSpeeds[sectionIndex];
+		case LEFT_ARM:
+			return leftArmSpeeds[sectionIndex];
+		case HEAD:
+			return headSpeeds[sectionIndex];
+		case TORSO:
+			return torsoSpeeds[sectionIndex];
+		default:
+			return null;
+		}
+	}
+
+	public void setSpeedValue(RobotSection robotSection, int sectionIndex, Double speedValue) {
+		switch (robotSection) {
+		case RIGHT_HAND:
+			this.rightHandSpeeds[sectionIndex] = speedValue;
+		case RIGHT_ARM:
+			this.rightArmSpeeds[sectionIndex] = speedValue;
+		case LEFT_HAND:
+			this.leftHandSpeeds[sectionIndex] = speedValue;
+		case LEFT_ARM:
+			this.leftArmSpeeds[sectionIndex] = speedValue;
+		case HEAD:
+			this.headSpeeds[sectionIndex] = speedValue;
+		case TORSO:
+			this.torsoSpeeds[sectionIndex] = speedValue;
+		default:
+		}
 	}
 
 	public Boolean getMoveSet(RobotSection robotSection) {
@@ -566,35 +659,35 @@ public class Frame implements Serializable {
 	}
 
 	public Integer getLeftBicepsMove() {
-		return lefttArmMoves[0];
+		return leftArmMoves[0];
 	}
 
 	public void setLeftBicepsMove(Integer lbicep) {
-		this.lefttArmMoves[0] = lbicep;
+		this.leftArmMoves[0] = lbicep;
 	}
 
 	public Integer getLeftRotateMove() {
-		return lefttArmMoves[1];
+		return leftArmMoves[1];
 	}
 
 	public void setLeftRotateMove(Integer lrotate) {
-		this.lefttArmMoves[1] = lrotate;
+		this.leftArmMoves[1] = lrotate;
 	}
 
 	public Integer getLeftShoulderMove() {
-		return lefttArmMoves[2];
+		return leftArmMoves[2];
 	}
 
 	public void setLeftShoulderMove(Integer lshoulder) {
-		this.lefttArmMoves[2] = lshoulder;
+		this.leftArmMoves[2] = lshoulder;
 	}
 
 	public Integer getLeftOmoplateMove() {
-		return lefttArmMoves[3];
+		return leftArmMoves[3];
 	}
 
 	public void setLeftOmoplateMove(Integer lomoplate) {
-		this.lefttArmMoves[3] = lomoplate;
+		this.leftArmMoves[3] = lomoplate;
 	}
 
 	public Integer getNeckMove() {

@@ -5,8 +5,12 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -2393,31 +2397,56 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
 
-	private void addSpeedTextToSectionPane(JPanel panel, Frame frame) {
-		JFormattedTextField rThumbSpeed = new JFormattedTextField(decimalFormat);
-		rThumbSpeed.setColumns(4);
-		rThumbSpeed.setValue(frame.getRightThumbFingerSpeed());
-		panel.add(rThumbSpeed);
-		JFormattedTextField rIndexSpeed = new JFormattedTextField(decimalFormat);
-		rIndexSpeed.setColumns(4);
-		rIndexSpeed.setValue(frame.getRightIndexFingerSpeed());
-		panel.add(rIndexSpeed);
-		JFormattedTextField rMajeureSpeed = new JFormattedTextField(decimalFormat);
-		rMajeureSpeed.setColumns(4);
-		rMajeureSpeed.setValue(frame.getRightMajeureFingerSpeed());
-		panel.add(rMajeureSpeed);
-		JFormattedTextField rRingSpeed = new JFormattedTextField(decimalFormat);
-		rRingSpeed.setColumns(4);
-		rRingSpeed.setValue(frame.getRightRingFingerSpeed());
-		panel.add(rRingSpeed);
-		JFormattedTextField rPinkySpeed = new JFormattedTextField(decimalFormat);
-		rPinkySpeed.setColumns(4);
-		rPinkySpeed.setValue(frame.getRightPinkyFingerSpeed());
-		panel.add(rPinkySpeed);
-		JFormattedTextField rWristSpeed = new JFormattedTextField(decimalFormat);
-		rWristSpeed.setColumns(4);
-		rWristSpeed.setValue(frame.getRightWristSpeed());
-		panel.add(rWristSpeed);
+	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
+		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
+			JFormattedTextField speed = new JFormattedTextField(decimalFormat);
+			speed.setColumns(4);
+			final int sectionIndex = i;
+//			speed.addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent arg0) {
+//					frame.setSpeedValue(robotSection, sectionIndex, Double.valueOf(""+speed.getValue()));				
+//				}
+//			});
+			PropertyChangeListener l = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+					frame.setSpeedValue(robotSection, sectionIndex, Double.valueOf(text));	
+		        }
+		    };
+		    speed.addPropertyChangeListener("value", l);
+			speed.setValue(frame.getSpeedValue(robotSection, i));
+			panel.add(speed);
+		}
+		
+		
+		
+		
+//		JFormattedTextField rThumbSpeed = new JFormattedTextField(decimalFormat);
+//		rThumbSpeed.setColumns(4);
+//		rThumbSpeed.setValue(frame.getRightThumbFingerSpeed());
+//		panel.add(rThumbSpeed);
+//		JFormattedTextField rIndexSpeed = new JFormattedTextField(decimalFormat);
+//		rIndexSpeed.setColumns(4);
+//		rIndexSpeed.setValue(frame.getRightIndexFingerSpeed());
+//		panel.add(rIndexSpeed);
+//		JFormattedTextField rMajeureSpeed = new JFormattedTextField(decimalFormat);
+//		rMajeureSpeed.setColumns(4);
+//		rMajeureSpeed.setValue(frame.getRightMajeureFingerSpeed());
+//		panel.add(rMajeureSpeed);
+//		JFormattedTextField rRingSpeed = new JFormattedTextField(decimalFormat);
+//		rRingSpeed.setColumns(4);
+//		rRingSpeed.setValue(frame.getRightRingFingerSpeed());
+//		panel.add(rRingSpeed);
+//		JFormattedTextField rPinkySpeed = new JFormattedTextField(decimalFormat);
+//		rPinkySpeed.setColumns(4);
+//		rPinkySpeed.setValue(frame.getRightPinkyFingerSpeed());
+//		panel.add(rPinkySpeed);
+//		JFormattedTextField rWristSpeed = new JFormattedTextField(decimalFormat);
+//		rWristSpeed.setColumns(4);
+//		rWristSpeed.setValue(frame.getRightWristSpeed());
+//		panel.add(rWristSpeed);
 	}
 
 	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, RobotSection robotSection,
@@ -2535,8 +2564,18 @@ public class InMoovGestureCreator extends Service {
 			headSpeedNumberBoxesPanel.setLayout(new BoxLayout(headSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
 			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
 			torsoSpeedNumberBoxesPanel.setLayout(new BoxLayout(torsoSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			//
+			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_HAND, leftHandSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_ARM, leftArmSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.HEAD, headSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.TORSO, torsoSpeedNumberBoxesPanel);
 			// add speed text boxes
-			addSpeedTextToSectionPane(rightHandSpeedNumberBoxesPanel, frame);
+			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionSpeedPanels.entrySet()) {
+				addSpeedTextToSectionPane(robotSectionPanel.getValue(), frame, robotSectionPanel.getKey());
+			}
 			//
 			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
 			rightArmSpeedPanel.add(rightArmSpeedNumberBoxesPanel);
