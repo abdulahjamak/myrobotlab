@@ -2398,16 +2398,11 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
+		LOGGER.info("addSpeedTextToSectionPane subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
 		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
 			JFormattedTextField speed = new JFormattedTextField(decimalFormat);
 			speed.setColumns(4);
 			final int sectionIndex = i;
-//			speed.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent arg0) {
-//					frame.setSpeedValue(robotSection, sectionIndex, Double.valueOf(""+speed.getValue()));				
-//				}
-//			});
 			PropertyChangeListener l = new PropertyChangeListener() {
 		        @Override
 		        public void propertyChange(PropertyChangeEvent evt) {
@@ -2419,38 +2414,10 @@ public class InMoovGestureCreator extends Service {
 			speed.setValue(frame.getSpeedValue(robotSection, i));
 			panel.add(speed);
 		}
-		
-		
-		
-		
-//		JFormattedTextField rThumbSpeed = new JFormattedTextField(decimalFormat);
-//		rThumbSpeed.setColumns(4);
-//		rThumbSpeed.setValue(frame.getRightThumbFingerSpeed());
-//		panel.add(rThumbSpeed);
-//		JFormattedTextField rIndexSpeed = new JFormattedTextField(decimalFormat);
-//		rIndexSpeed.setColumns(4);
-//		rIndexSpeed.setValue(frame.getRightIndexFingerSpeed());
-//		panel.add(rIndexSpeed);
-//		JFormattedTextField rMajeureSpeed = new JFormattedTextField(decimalFormat);
-//		rMajeureSpeed.setColumns(4);
-//		rMajeureSpeed.setValue(frame.getRightMajeureFingerSpeed());
-//		panel.add(rMajeureSpeed);
-//		JFormattedTextField rRingSpeed = new JFormattedTextField(decimalFormat);
-//		rRingSpeed.setColumns(4);
-//		rRingSpeed.setValue(frame.getRightRingFingerSpeed());
-//		panel.add(rRingSpeed);
-//		JFormattedTextField rPinkySpeed = new JFormattedTextField(decimalFormat);
-//		rPinkySpeed.setColumns(4);
-//		rPinkySpeed.setValue(frame.getRightPinkyFingerSpeed());
-//		panel.add(rPinkySpeed);
-//		JFormattedTextField rWristSpeed = new JFormattedTextField(decimalFormat);
-//		rWristSpeed.setColumns(4);
-//		rWristSpeed.setValue(frame.getRightWristSpeed());
-//		panel.add(rWristSpeed);
 	}
 
-	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, RobotSection robotSection,
-			boolean move) {
+	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, 
+			RobotSection robotSection, boolean move) {
 		// checkboxes
 		final JCheckBox checkbox = new JCheckBox(title);
 		checkbox.addItemListener(new ItemListener() {
@@ -2489,9 +2456,7 @@ public class InMoovGestureCreator extends Service {
 	public void initializeBottomPaneTabs(JPanel bottom, Frame frame) {
 		LOGGER.trace("initializeBottomPaneTabs [START]");
 		try {
-			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
-
-			// JPanels for the JTabbedPane
+			// main 6 panels for robor sections
 			final JPanel rightHandPanel = new JPanel();
 			rightHandPanel.setLayout(new BorderLayout());
 			final JPanel rightArmPanel = new JPanel();
@@ -2504,21 +2469,6 @@ public class InMoovGestureCreator extends Service {
 			headPanel.setLayout(new BorderLayout());
 			final JPanel torsoPanel = new JPanel();
 			torsoPanel.setLayout(new BorderLayout());
-			// JPanels for the JTabbedPane
-			final JPanel rightHandMovePanel = new JPanel();
-			final JPanel rightArmMovePanel = new JPanel();
-			final JPanel leftHandMovePanel = new JPanel();
-			final JPanel leftArmMovePanel = new JPanel();
-			final JPanel headMovePanel = new JPanel();
-			final JPanel torsoMovePanel = new JPanel();
-			// JPanels for the JTabbedPane
-			final JPanel rightHandSpeedPanel = new JPanel();
-			rightHandSpeedPanel.setLayout(new BoxLayout(rightHandSpeedPanel, BoxLayout.Y_AXIS));
-			final JPanel rightArmSpeedPanel = new JPanel();
-			final JPanel leftHandSpeedPanel = new JPanel();
-			final JPanel leftArmSpeedPanel = new JPanel();
-			final JPanel headSpeedPanel = new JPanel();
-			final JPanel torsoSpeedPanel = new JPanel();
 			// Titles
 			rightHandPanel.add(BorderLayout.NORTH, new JLabel("Right Hand"));
 			rightArmPanel.add(BorderLayout.NORTH, new JLabel("Right Arm"));
@@ -2526,7 +2476,20 @@ public class InMoovGestureCreator extends Service {
 			leftArmPanel.add(BorderLayout.NORTH, new JLabel("Left Arm"));
 			headPanel.add(BorderLayout.NORTH, new JLabel("Head"));
 			torsoPanel.add(BorderLayout.NORTH, new JLabel("Torso"));
-			//
+			// panels for MOVE controls
+			final JPanel rightHandMovePanel = new JPanel();
+			rightHandMovePanel.setLayout(new BoxLayout(rightHandMovePanel, BoxLayout.Y_AXIS));
+			final JPanel rightArmMovePanel = new JPanel();
+			rightArmMovePanel.setLayout(new BoxLayout(rightArmMovePanel, BoxLayout.Y_AXIS));
+			final JPanel leftHandMovePanel = new JPanel();
+			leftHandMovePanel.setLayout(new BoxLayout(leftHandMovePanel, BoxLayout.Y_AXIS));
+			final JPanel leftArmMovePanel = new JPanel();
+			leftArmMovePanel.setLayout(new BoxLayout(leftArmMovePanel, BoxLayout.Y_AXIS));
+			final JPanel headMovePanel = new JPanel();
+			headMovePanel.setLayout(new BoxLayout(headMovePanel, BoxLayout.Y_AXIS));
+			final JPanel torsoMovePanel = new JPanel();
+			torsoMovePanel.setLayout(new BoxLayout(torsoMovePanel, BoxLayout.Y_AXIS));
+			// add to map
 			Map<RobotSection, JPanel> robotSectionMovePanels = new HashMap<RobotSection, JPanel>();
 			robotSectionMovePanels.put(RobotSection.RIGHT_HAND, rightHandMovePanel);
 			robotSectionMovePanels.put(RobotSection.RIGHT_ARM, rightArmMovePanel);
@@ -2534,12 +2497,41 @@ public class InMoovGestureCreator extends Service {
 			robotSectionMovePanels.put(RobotSection.LEFT_ARM, leftArmMovePanel);
 			robotSectionMovePanels.put(RobotSection.HEAD, headMovePanel);
 			robotSectionMovePanels.put(RobotSection.TORSO, torsoMovePanel);
-			// movecheckboxes
-			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionMovePanels.entrySet()) {
-				addEnableCheckBoxesToSectionPane(robotSectionPanel.getValue(), frame, "Move?",
-						robotSectionPanel.getKey(), true);
-			}
-			// speed checkBoxes
+			// add panels for sliders
+			final JPanel rightHandSlidersPanel = new JPanel();
+			rightHandSlidersPanel.setLayout(new BoxLayout(rightHandSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel rightArmSlidersPanel = new JPanel();
+			rightArmSlidersPanel.setLayout(new BoxLayout(rightArmSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel leftHandSlidersPanel = new JPanel();
+			leftHandSlidersPanel.setLayout(new BoxLayout(leftHandSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel leftArmSlidersPanel = new JPanel();
+			leftArmSlidersPanel.setLayout(new BoxLayout(leftArmSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel headSlidersPanel = new JPanel();
+			headSlidersPanel.setLayout(new BoxLayout(headSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel torsoSlidersPanel = new JPanel();
+			torsoSlidersPanel.setLayout(new BoxLayout(torsoSlidersPanel, BoxLayout.X_AXIS));
+			// add to map
+			Map<RobotSection, JPanel> robotSectionSlidersPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSlidersPanels.put(RobotSection.RIGHT_HAND, rightHandSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.RIGHT_ARM, rightArmSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.LEFT_HAND, leftHandSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.LEFT_ARM, leftArmSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.HEAD, headSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.TORSO, torsoSlidersPanel);
+			// panels for SPEED controls
+			final JPanel rightHandSpeedPanel = new JPanel();
+			rightHandSpeedPanel.setLayout(new BoxLayout(rightHandSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel rightArmSpeedPanel = new JPanel();
+			rightArmSpeedPanel.setLayout(new BoxLayout(rightArmSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel leftHandSpeedPanel = new JPanel();
+			leftHandSpeedPanel.setLayout(new BoxLayout(leftHandSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel leftArmSpeedPanel = new JPanel();
+			leftArmSpeedPanel.setLayout(new BoxLayout(leftArmSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel headSpeedPanel = new JPanel();
+			headSpeedPanel.setLayout(new BoxLayout(headSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel torsoSpeedPanel = new JPanel();
+			headSpeedPanel.setLayout(new BoxLayout(headSpeedPanel, BoxLayout.Y_AXIS));
+			// add to map
 			Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
 			robotSectionSpeedPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedPanel);
 			robotSectionSpeedPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedPanel);
@@ -2547,11 +2539,7 @@ public class InMoovGestureCreator extends Service {
 			robotSectionSpeedPanels.put(RobotSection.LEFT_ARM, leftArmSpeedPanel);
 			robotSectionSpeedPanels.put(RobotSection.HEAD, headSpeedPanel);
 			robotSectionSpeedPanels.put(RobotSection.TORSO, torsoSpeedPanel);
-			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionSpeedPanels.entrySet()) {
-				addEnableCheckBoxesToSectionPane(robotSectionPanel.getValue(), frame, "Set Speed?",
-						robotSectionPanel.getKey(), false);
-			}
-			// JPanels for the JTabbedPane
+			// panels for SPEED text boxes
 			final JPanel rightHandSpeedNumberBoxesPanel = new JPanel();
 			rightHandSpeedNumberBoxesPanel.setLayout(new BoxLayout(rightHandSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
 			final JPanel rightArmSpeedNumberBoxesPanel = new JPanel();
@@ -2564,7 +2552,7 @@ public class InMoovGestureCreator extends Service {
 			headSpeedNumberBoxesPanel.setLayout(new BoxLayout(headSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
 			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
 			torsoSpeedNumberBoxesPanel.setLayout(new BoxLayout(torsoSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
-			//
+			// add to map
 			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedNumberBoxesPanel);
@@ -2572,17 +2560,34 @@ public class InMoovGestureCreator extends Service {
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_ARM, leftArmSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.HEAD, headSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.TORSO, torsoSpeedNumberBoxesPanel);
-			// add speed text boxes
-			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionSpeedPanels.entrySet()) {
-				addSpeedTextToSectionPane(robotSectionPanel.getValue(), frame, robotSectionPanel.getKey());
+			// add elements and listeners, and make panel hierarchy
+			for (RobotSection robotSection : RobotSection.values()) {
+				LOGGER.info("robotSection: \"" + robotSection + "\"");
+				// adding MOVE elements
+				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
+				addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
+				robotSectionMovePanel.add(robotSectionSlidersPanels.get(robotSection));
+				// adding SPEED elements
+				JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
+				addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
+				addSpeedTextToSectionPane(robotSectionSpeedPanel, frame, robotSection);
+				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanels.get(robotSection));
 			}
+//			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionMovePanels.entrySet()) {
+//				addEnableCheckBoxesToSectionPane(robotSectionPanel.getValue(), frame, "Move?",
+//						robotSectionPanel.getKey(), true);
+//			}
+//			for (Map.Entry<RobotSection, JPanel> robotSectionSpeedPanel : robotSectionSpeedPanels.entrySet()) {
+//				addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel.getValue(), frame, "Set Speed?",
+//						robotSectionSpeedPanel.getKey(), false);
+//			}
 			//
-			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
-			rightArmSpeedPanel.add(rightArmSpeedNumberBoxesPanel);
-			leftHandSpeedPanel.add(leftHandSpeedNumberBoxesPanel);
-			leftArmSpeedPanel.add(leftArmSpeedNumberBoxesPanel);
-			headSpeedPanel.add(headSpeedNumberBoxesPanel);
-			torsoSpeedPanel.add(torsoSpeedNumberBoxesPanel);
+//			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
+//			rightArmSpeedPanel.add(rightArmSpeedNumberBoxesPanel);
+//			leftHandSpeedPanel.add(leftHandSpeedNumberBoxesPanel);
+//			leftArmSpeedPanel.add(leftArmSpeedNumberBoxesPanel);
+//			headSpeedPanel.add(headSpeedNumberBoxesPanel);
+//			torsoSpeedPanel.add(torsoSpeedNumberBoxesPanel);
 			// ENABLE / DISABLE logic
 			if (frame.getFrameType() == Frame.FrameType.MOVE) {
 				// disable SPEED panels
@@ -2630,6 +2635,10 @@ public class InMoovGestureCreator extends Service {
 				setPanelEnabled(headMovePanel, false);
 				setPanelEnabled(torsoMovePanel, false);
 			}
+
+			
+			
+			JTabbedPane bottomTabs = new JTabbedPane(SwingConstants.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
 			// JPanels for the JTabbedPane
 			final JPanel mainpanel = new JPanel();
