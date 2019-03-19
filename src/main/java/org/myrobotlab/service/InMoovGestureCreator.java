@@ -1589,7 +1589,6 @@ public class InMoovGestureCreator extends Service {
 			while ((line = bufferedReader.readLine()) != null) {
 				scriptLines.add(line);
 			}
-			bufferedReader.close();
 		} catch (Exception e) {
 			LOGGER.warn("Exception occurred trying to read script", e);
 		} finally {
@@ -1610,8 +1609,8 @@ public class InMoovGestureCreator extends Service {
 		}
 		try {
 			frames.clear();
-			parseScriptToFrame(scriptLines);
-			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" with FRAME count \"" + frames.size() + "\"");
+			parseScriptToGesture(scriptLines);
+			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
 			// loading parsed frames into GUI list
 			controlListReload(frameListGui);
 			LOGGER.trace("Reload GUI finished");
@@ -1628,11 +1627,9 @@ public class InMoovGestureCreator extends Service {
 		framelist.setListData(listdata.toArray());
 	}
 
-	private void parseScriptToFrame(List<String> scriptLines) throws Exception {
-		// TODO add complete file list from folder
-//		List<Frame> frameList = new ArrayList<Frame>();
+	private void parseScriptToGesture(List<String> scriptLines) throws Exception {
+		// parse start
 		try {
-			// parse start
 			// step #1: find gesture name
 			for (String singleScriptLine : scriptLines) {
 				if (singleScriptLine.trim().startsWith("def ")) {
@@ -1849,8 +1846,6 @@ public class InMoovGestureCreator extends Service {
 									}
 								}
 							}
-						} else {
-
 						}
 					} else if (splitString[0].contains("move")) {
 						addMove = true;
@@ -1958,11 +1953,7 @@ public class InMoovGestureCreator extends Service {
 							if (valuesString.length > 2) {
 								fihMove.setLowStomMove(Integer.parseInt(valuesString[2].trim()));
 							}
-						} else {
-
 						}
-					} else {
-						// we should never get here
 					}
 				} catch (Exception e) {
 					LOGGER.warn("Frame line parsing error on frame: " + frameCounter + "! ", e);
