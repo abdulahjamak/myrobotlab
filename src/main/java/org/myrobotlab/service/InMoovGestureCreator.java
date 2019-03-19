@@ -2402,6 +2402,11 @@ public class InMoovGestureCreator extends Service {
 	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, 
 			RobotSection robotSection, boolean move) {
 		final JCheckBox checkbox = new JCheckBox(title);
+		if (move) {
+			checkbox.setSelected(frame.getMoveSet(robotSection));
+		} else {
+			checkbox.setSelected(frame.getSpeedSet(robotSection));
+		}
 		checkbox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
@@ -2412,11 +2417,6 @@ public class InMoovGestureCreator extends Service {
 				}
 			}
 		});
-		if (move) {
-			checkbox.setSelected(frame.getMoveSet(robotSection));
-		} else {
-			checkbox.setSelected(frame.getSpeedSet(robotSection));
-		}
 		panel.add(checkbox);
 	}
 
