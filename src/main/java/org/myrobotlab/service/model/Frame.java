@@ -3,9 +3,13 @@ package org.myrobotlab.service.model;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.myrobotlab.logging.LoggerFactory;
+import org.slf4j.Logger;
+
 public class Frame implements Serializable {
 
 	private static final long serialVersionUID = -7038574417962603966L;
+	private final static Logger LOGGER = LoggerFactory.getLogger(Frame.class);
 
 	public enum FrameType {
 		SPEED, SPEECH, SLEEP, MOVE;
@@ -279,6 +283,7 @@ public class Frame implements Serializable {
 	}
 
 	public Integer getMoveValue(RobotSection robotSection, int sectionIndex) {
+		LOGGER.debug("getMoveValue robotSection: [{}] sectionIndex: [{}]", robotSection, sectionIndex);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			return rightHandMoves[sectionIndex];
@@ -298,6 +303,8 @@ public class Frame implements Serializable {
 	}
 
 	public void setMoveValue(RobotSection robotSection, int sectionIndex, Integer moveValue) {
+		LOGGER.debug("setMoveValue robotSection: [{}] sectionIndex: [{}] moveValue: [{}]", 
+				robotSection, sectionIndex, moveValue);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.rightHandMoves[sectionIndex] = moveValue;
@@ -316,6 +323,7 @@ public class Frame implements Serializable {
 	}
 
 	public Double getSpeedValue(RobotSection robotSection, int sectionIndex) {
+		LOGGER.debug("getSpeedValue robotSection: [{}] and sectionIndex: [{}]", robotSection, sectionIndex);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			return rightHandSpeeds[sectionIndex];
@@ -335,6 +343,8 @@ public class Frame implements Serializable {
 	}
 
 	public void setSpeedValue(RobotSection robotSection, int sectionIndex, Double speedValue) {
+		LOGGER.debug("setSpeedValue robotSection: [{}] sectionIndex: [{}] speedValue: [{}]", 
+				robotSection, sectionIndex, speedValue);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.rightHandSpeeds[sectionIndex] = speedValue;
@@ -353,6 +363,7 @@ public class Frame implements Serializable {
 	}
 
 	public Boolean getMoveSet(RobotSection robotSection) {
+		LOGGER.info("getMoveSet robotSection: [{}]", robotSection);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			return moveSets[0];
@@ -372,6 +383,7 @@ public class Frame implements Serializable {
 	}
 
 	public void setMoveSet(RobotSection robotSection, Boolean moveSet) {
+		LOGGER.info("setMoveSet robotSection: [{}] moveSet: [{}]", robotSection, moveSet);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.moveSets[0] = moveSet;
@@ -390,6 +402,7 @@ public class Frame implements Serializable {
 	}
 
 	public Boolean getSpeedSet(RobotSection robotSection) {
+		LOGGER.info("getSpeedSet robotSection: [{}]", robotSection);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			return speedSets[0];
@@ -409,6 +422,7 @@ public class Frame implements Serializable {
 	}
 
 	public void setSpeedSet(RobotSection robotSection, Boolean speedSet) {
+		LOGGER.info("setSpeedSet robotSection: [{}] speedSet: [{}]", robotSection, speedSet);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.speedSets[0] = speedSet;

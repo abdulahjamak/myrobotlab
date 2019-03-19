@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -84,13 +82,13 @@ public class InMoovGestureCreator extends Service {
 
 	private static final long serialVersionUID = 1L;
 
-	public final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
 
 	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat
 			.getNumberInstance(Locale.getDefault());
 
 	private final Gesture gesture = new Gesture();
-	private List<Frame> frames = gesture.getFrames();
+	private final List<Frame> frames = gesture.getFrames();
 
 	transient ServoItemHolder[][] servoitemholder;
 
@@ -1576,7 +1574,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void control_loadscri(JList control_list, JList framelist) {
+	public void control_loadscri(JList control_list, JList frameListGui) {
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
@@ -1593,7 +1591,7 @@ public class InMoovGestureCreator extends Service {
 			}
 			bufferedReader.close();
 		} catch (Exception e) {
-			LOGGER.warn("Exception occurred trying to read /home/abe/balance.py", e);
+			LOGGER.warn("Exception occurred trying to read script", e);
 		} finally {
 			if (fileReader != null) {
 				try {
@@ -1611,32 +1609,28 @@ public class InMoovGestureCreator extends Service {
 			}
 		}
 		try {
-			List<Frame> frameList = parseScriptToFrame(scriptLines);
-			if (frameList != null) {
-				// loading parsed frames into GUI list
-				LOGGER.trace("Existing FRAME count \"" + frameList.size() + "\"");
-				// reload GUI now
-				frames.clear();
-				frames.addAll(frameList);
-				controlListReload(framelist, frameList);
-				LOGGER.trace("Reload GUI finished");
-			}
+			frames.clear();
+			parseScriptToFrame(scriptLines);
+			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" with FRAME count \"" + frames.size() + "\"");
+			// loading parsed frames into GUI list
+			controlListReload(frameListGui);
+			LOGGER.trace("Reload GUI finished");
 		} catch (Exception e) {
 			LOGGER.warn("Loading parsed frames", e);
 		}
 	}
 
-	public void controlListReload(JList framelist, List<Frame> frameList) {
+	public void controlListReload(JList framelist) {
 		List<String> listdata = new ArrayList<String>();
-		for (Frame fih : frameList) {
+		for (Frame fih : frames) {
 			listdata.add(fih.toString());
 		}
 		framelist.setListData(listdata.toArray());
 	}
 
-	private List<Frame> parseScriptToFrame(List<String> scriptLines) throws Exception {
+	private void parseScriptToFrame(List<String> scriptLines) throws Exception {
 		// TODO add complete file list from folder
-		List<Frame> frameList = new ArrayList<Frame>();
+//		List<Frame> frameList = new ArrayList<Frame>();
 		try {
 			// parse start
 			// step #1: find gesture name
@@ -1667,7 +1661,7 @@ public class InMoovGestureCreator extends Service {
 			// at this point the first gesture is starting
 			List<String> frameLines = new ArrayList<String>();
 			for (String singleScriptLine : scriptLines) {
-				LOGGER.trace("frameList.size() \"" + frameList.size() + "\"");
+				LOGGER.trace("frameList.size() \"" + frames.size() + "\"");
 				// ' sleep(4)'
 				singleScriptLine = singleScriptLine.trim();
 				LOGGER.trace("singleScriptLine \"" + singleScriptLine + "\"");
@@ -1685,8 +1679,7 @@ public class InMoovGestureCreator extends Service {
 				/// at this point we have frame command
 				if (singleScriptLine.contains("finishedGesture")) {
 					// we are finished
-					LOGGER.info("Parsed FRAME count \"" + frameList.size() + "\"");
-					return frameList;
+					return;
 				} else if (singleScriptLine.contains("speech")) {
 					// ignore
 					continue;
@@ -1694,9 +1687,9 @@ public class InMoovGestureCreator extends Service {
 					// sleep means the end of the frame
 					try {
 						// parse the frame and add it
-						parseScriptFragmentIntoSingleFrame(frameList, frameLines, counter);
+						parseScriptFragmentIntoSingleFrame(frameLines, counter);
 						// finish it with a sleep
-						parseScriptSleepToFrameSleep(frameList, singleScriptLine);
+						parseScriptSleepToFrameSleep(singleScriptLine);
 						// reset framelines
 						frameLines.clear();
 					} catch (Exception e) {
@@ -1711,10 +1704,9 @@ public class InMoovGestureCreator extends Service {
 		} catch (Exception e) {
 			LOGGER.warn("parseScriptToFrame error", e);
 		}
-		return frameList;
 	}
 
-	private void parseScriptFragmentIntoSingleFrame(List<Frame> frameList, List<String> frameLines, int frameCounter)
+	private void parseScriptFragmentIntoSingleFrame(List<String> frameLines, int frameCounter)
 			throws Exception {
 		try {
 			boolean addSpeed = false;
@@ -1977,17 +1969,17 @@ public class InMoovGestureCreator extends Service {
 				}
 			}
 			if (addSpeed) {
-				frameList.add(fihSpeed);
+				frames.add(fihSpeed);
 			}
 			if (addMove) {
-				frameList.add(fihMove);
+				frames.add(fihMove);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("Frame line parsing error", e);
 		}
 	}
 
-	private void parseScriptSleepToFrameSleep(List<Frame> frameList, String sleepLine) {
+	private void parseScriptSleepToFrameSleep(String sleepLine) {
 		try {
 			// sleep line: sleep(3)
 			sleepLine = sleepLine.substring(sleepLine.indexOf('(') + 1, sleepLine.indexOf(')'));
@@ -1999,7 +1991,7 @@ public class InMoovGestureCreator extends Service {
 			fihSleep.setSpeech(null);
 			fihSleep.setSleep(sleepTime.intValue());
 
-			frameList.add(fihSleep);
+			frames.add(fihSleep);
 		} catch (Exception e) {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
@@ -2398,7 +2390,7 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
-		LOGGER.info("addSpeedTextToSectionPane subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
+		LOGGER.trace("addSpeedTextToSectionPane subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
 		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
 			JFormattedTextField speed = new JFormattedTextField(decimalFormat);
 			speed.setColumns(4);
@@ -2410,15 +2402,14 @@ public class InMoovGestureCreator extends Service {
 					frame.setSpeedValue(robotSection, sectionIndex, Double.valueOf(text));	
 		        }
 		    };
-		    speed.addPropertyChangeListener("value", l);
 			speed.setValue(frame.getSpeedValue(robotSection, i));
+		    speed.addPropertyChangeListener("value", l);
 			panel.add(speed);
 		}
 	}
 
 	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, 
 			RobotSection robotSection, boolean move) {
-		// checkboxes
 		final JCheckBox checkbox = new JCheckBox(title);
 		checkbox.addItemListener(new ItemListener() {
 			@Override

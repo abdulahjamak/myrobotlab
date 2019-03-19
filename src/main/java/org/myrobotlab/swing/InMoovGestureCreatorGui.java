@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 public class InMoovGestureCreatorGui extends ServiceGui implements ActionListener, ItemListener {
 
   static final long serialVersionUID = 1L;
-  public final static Logger log = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
 
   JTextField control_gestname;
   JTextField control_funcname;
@@ -75,7 +75,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 	public InMoovGestureCreatorGui(final String boundServiceName, final SwingGui myService) {
 		super(boundServiceName, myService);
-		log.info("InMoovGestureCreatorGui constructor [START]");
+		LOGGER.info("InMoovGestureCreatorGui constructor [START]");
 		try {
 
 			// display:
@@ -302,10 +302,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			display.add(splitpanetopbottom);
 		} catch (Exception e) {
-			log.warn("Exception occured", e);
+			LOGGER.warn("Exception occured", e);
 		}
 
-		log.info("InMoovGestureCreatorGui constructor [END]");
+		LOGGER.info("InMoovGestureCreatorGui constructor [END]");
 	}
 	
 	@Override
