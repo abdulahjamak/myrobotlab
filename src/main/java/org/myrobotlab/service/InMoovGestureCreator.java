@@ -839,6 +839,7 @@ public class InMoovGestureCreator extends Service {
 			for (Frame frame : frames) {
 				executeFrameOnRobot(frame);
 			}
+			 robotRelax();
 		} else {
 			LOGGER.info("No frames to execute.");
 		}
@@ -1253,6 +1254,15 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
+	private void robotRelax() {
+		try {
+			LOGGER.info("Running [RELAX] frame ");
+			i01.rest();
+		} catch (Exception e) {
+			LOGGER.warn("Relax error", e);
+		}
+	}
+		
 	private void executeFrameOnRobot(Frame fih) {
 		if (fih.getFrameType() == FrameType.SLEEP) {
 			LOGGER.info("Running [SLEEP] frame for \"" + fih.getSleep() + "\" seconds...");
@@ -1346,8 +1356,7 @@ public class InMoovGestureCreator extends Service {
 				LOGGER.info("Please select a frame!");
 			} else {
 				// this should go into some kind of message to the user
-				LOGGER.info("Testing of frame is not possible!");
-				LOGGER.info("Robot is not initialised!");
+				LOGGER.info("Testing of frame is not possible! Robot is not initialised!");
 			}
 		}
 	}
@@ -2556,7 +2565,7 @@ public class InMoovGestureCreator extends Service {
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.TORSO, torsoSpeedNumberBoxesPanel);
 			// add elements and listeners, and make panel hierarchy
 			for (RobotSection robotSection : RobotSection.values()) {
-				LOGGER.info("robotSection: \"" + robotSection + "\"");
+				LOGGER.trace("robotSection: \"" + robotSection + "\"");
 				// adding MOVE elements
 				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
 				addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
