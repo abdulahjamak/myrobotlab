@@ -250,21 +250,33 @@ public class InMoovGestureCreator extends Service {
 
 	public void control_connect(JButton controlConnect) {
 		// Connect / Disconnect to / from the InMoov service (button top-left)
-		if (controlConnect.getText().equals("Connect")) {
-			if (referencename == null) {
-				referencename = "i01";
-			}
-			i01 = (InMoov) Runtime.getService(referencename);
-			i01.enable();
-			if (i01 != null) {
-				controlConnect.setText("Disconnect");
+		LOGGER.info("control_connect start...");
+		try {
+			if (controlConnect.getText().equals("Connect")) {
+				if (referencename == null) {
+					referencename = "i01";
+				}
+				i01 = (InMoov) Runtime.getService(referencename);
+				// TODO experiment till it works
+				LOGGER.info("i01.enable() start...");
+				i01.enable();
+				LOGGER.info("i01.enable() end");
+//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") start...");
+//				i01.startAll("COM3", "COM4");
+//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") end");
+				if (i01 != null) {
+					controlConnect.setText("Disconnect");
+				} else {
+					LOGGER.info("Failed to connect!");
+				}
 			} else {
-				LOGGER.info("Failed to connect!"); // should be a message to the user
+				i01 = null;
+				controlConnect.setText("Connect");
 			}
-		} else {
-			i01 = null;
-			controlConnect.setText("Connect");
+		} catch (Exception e) {
+			LOGGER.warn("Exception occured", e);
 		}
+		LOGGER.info("control_connect end");
 	}
 
 	public void control_loadgest(JList control_list, JList framelist, JTextField control_gestname,
