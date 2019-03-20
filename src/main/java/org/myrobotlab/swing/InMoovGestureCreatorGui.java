@@ -119,7 +119,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 
 			JPanel bottom = new JPanel();
-			Frame frame = new Frame(Frame.FrameType.SLEEP);
+			Frame frame = new Frame();
 			myService.send(boundServiceName, "initializeBottomPaneTabs", bottom, frame);
 //			initializeBottomPaneTabs(bottom, myService);
 
@@ -284,23 +284,27 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	            }
 	        });
 
-			JScrollPane framelistscroller = new JScrollPane(frameList);
-			framelistscroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			framelistscroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane frameListScroller = new JScrollPane(frameList);
+			frameListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			frameListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-			top2.add(BorderLayout.CENTER, framelistscroller);
+			top2.add(BorderLayout.CENTER, frameListScroller);
+			
+			JScrollPane top2Scroller = new JScrollPane(top2);
+			top2Scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			top2Scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-			JSplitPane splitpanetop1top2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, top1, top2);
-			splitpanetop1top2.setOneTouchExpandable(true);
+			JSplitPane splitPaneTop1Top2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, top1, top2Scroller);
+			splitPaneTop1Top2.setOneTouchExpandable(true);
 			// splitpanebottom1bottom2.setDividerLocation(200);
 
-			top.add(splitpanetop1top2);
+			top.add(splitPaneTop1Top2);
 
-			JSplitPane splitpanetopbottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
-			splitpanetopbottom.setOneTouchExpandable(true);
+			JSplitPane splitPaneTopBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+			splitPaneTopBottom.setOneTouchExpandable(true);
 			// splitpanetopbottom.setDividerLocation(300);
 
-			display.add(splitpanetopbottom);
+			display.add(splitPaneTopBottom);
 		} catch (Exception e) {
 			LOGGER.warn("Exception occured", e);
 		}

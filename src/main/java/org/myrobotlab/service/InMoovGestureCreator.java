@@ -1,6 +1,7 @@
 package org.myrobotlab.service;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -49,7 +51,6 @@ import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.logging.Logging;
 import org.myrobotlab.logging.LoggingFactory;
 import org.myrobotlab.service.model.Frame;
-import org.myrobotlab.service.model.Frame.FrameType;
 import org.myrobotlab.service.model.Frame.RobotSection;
 import org.myrobotlab.service.model.Gesture;
 import org.slf4j.Logger;
@@ -305,7 +306,7 @@ public class InMoovGestureCreator extends Service {
 				int pos = 0;
 				while (keepgoing) {
 					if (fih == null) {
-						fih = new Frame(Frame.FrameType.SLEEP);
+						fih = new Frame();
 					}
 					String line;
 					if (pos < codesplit.length) {
@@ -973,7 +974,7 @@ public class InMoovGestureCreator extends Service {
 
 	public void frame_addsleep(JList framelist, JTextField frame_addsleep_textfield) {
 		// Add a sleep frame to the framelist (button bottom-right)
-		Frame fih = new Frame(Frame.FrameType.SLEEP);
+		Frame fih = new Frame();
 
 		fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
 		fih.setSpeech(null);
@@ -986,7 +987,7 @@ public class InMoovGestureCreator extends Service {
 
 	public void frame_addspeech(JList framelist, JTextField frame_addspeech_textfield) {
 		// Add a speech frame to the framelist (button bottom-right)
-		Frame fih = new Frame(Frame.FrameType.SPEECH);
+		Frame fih = new Frame();
 
 		fih.setSleep(-1);
 		fih.setSpeech(frame_addspeech_textfield.getText());
@@ -999,7 +1000,7 @@ public class InMoovGestureCreator extends Service {
 
 	public void frame_addspeed(JList framelist) {
 		// Add a speed setting frame to the framelist (button bottom-right)
-		Frame fih = new Frame(Frame.FrameType.SPEED);
+		Frame fih = new Frame();
 
 		fih.setRightThumbFingerSpeed(Double.parseDouble(servoitemholder[0][0].spe.getText()));
 		fih.setRightIndexFingerSpeed(Double.parseDouble(servoitemholder[0][1].spe.getText()));
@@ -1264,83 +1265,81 @@ public class InMoovGestureCreator extends Service {
 	}
 		
 	private void executeFrameOnRobot(Frame fih) {
-		if (fih.getFrameType() == FrameType.SLEEP) {
-			LOGGER.info("Running [SLEEP] frame for \"" + fih.getSleep() + "\" seconds...");
-			// sleep frame
-			sleep(fih.getSleep());
-		} else if (fih.getFrameType() == FrameType.SPEECH) {
-			// speech frame
-			try {
-				LOGGER.info("Running [SPEECH] frame with text: \"" + fih.getSpeech() + "\"...");
+		LOGGER.info("Executing frame: \"" + fih.getName() + "\"...");
+		// speech 
+		try {
+			LOGGER.info("Running [SPEECH] with text: \"" + fih.getSpeech() + "\"...");
+			if (fih.getSpeechSet()) {
 				i01.mouth.speakBlocking(fih.getSpeech());
-			} catch (Exception e) {
-				LOGGER.warn("Speech frame test error", e);
 			}
-		} else if (fih.getFrameType() == FrameType.MOVE) {
-			// move frame
-			LOGGER.info("Running [MOVE] frame \"" + fih.getName() + "\"...");
-			try {
-				if (fih.getRightHandMoveSet()) {
-					i01.moveHand("right", fih.getRightThumbFingerMove(), fih.getRightIndexFingerMove(),
-							fih.getRightMajeureFingerMove(), fih.getRightRingFingerMove(),
-							fih.getRightPinkyFingerMove(), (double) fih.getRightWristMove());
-				}
-				if (fih.getRightArmMoveSet()) {
-					i01.moveArm("right", fih.getRightBicepsMove(), fih.getRightRotateMove(), fih.getRightShoulderMove(),
-							fih.getRightOmoplateMove());
-				}
-				if (fih.getLeftHandMoveSet()) {
-					i01.moveHand("left", fih.getLeftThumbFingerMove(), fih.getLeftIndexFingerMove(),
-							fih.getLeftMajeureFingerMove(), fih.getLeftRingFingerMove(), fih.getLeftPinkyFingerMove(),
-							(double) fih.getLeftWristMove());
-				}
-				if (fih.getLeftArmMoveSet()) {
-					i01.moveArm("left", fih.getLeftBicepsMove(), fih.getLeftRotateMove(), fih.getLeftShoulderMove(),
-							fih.getLeftOmoplateMove());
-				}
-				if (fih.getHeadMoveSet()) {
-					i01.moveHead(fih.getNeckMove(), fih.getHeadRotateMove(), fih.getEyeXMove(), fih.getEyeYMove(),
-							fih.getJawMove());
-				}
-				if (fih.getTorsoMoveSet()) {
-					i01.moveTorso(fih.getTopStomMove(), fih.getMidStomMove(), fih.getLowStomMove());
-				}
-			} catch (Exception e) {
-				LOGGER.warn("MOVE frame test error", e);
-			}
-		} else if (fih.getFrameType() == FrameType.SPEED) {
-			// speed frame
-			LOGGER.info("Running [SPEED] frame...");
-			try {
-				if (fih.getRightHandSpeedSet()) {
-					i01.setHandVelocity("right", fih.getRightThumbFingerSpeed(), fih.getRightIndexFingerSpeed(),
-							fih.getRightMajeureFingerSpeed(), fih.getRightRingFingerSpeed(),
-							fih.getRightPinkyFingerSpeed(), fih.getRightWristSpeed());
-				}
-				if (fih.getRightArmSpeedSet()) {
-					i01.setArmVelocity("right", fih.getRightBicepsSpeed(), fih.getRightRotateSpeed(),
-							fih.getRightShoulderSpeed(), fih.getRightOmoplateSpeed());
-				}
-				if (fih.getLeftHandSpeedSet()) {
-					i01.setHandVelocity("left", fih.getLeftThumbFingerSpeed(), fih.getLeftIndexFingerSpeed(),
-							fih.getLeftMajeureFingerSpeed(), fih.getLeftRingFingerSpeed(),
-							fih.getLeftPinkyFingerSpeed(), fih.getLeftWristSpeed());
-				}
-				if (fih.getLeftArmSpeedSet()) {
-					i01.setArmVelocity("left", fih.getLeftBicepsSpeed(), fih.getLeftRotateSpeed(),
-							fih.getLeftShoulderSpeed(), fih.getLeftOmoplateSpeed());
-				}
-				if (fih.getHeadSpeedSet()) {
-					i01.setHeadVelocity(fih.getHeadRotateSpeed(), fih.getNeckSpeed(), fih.getEyeXSpeed(),
-							fih.getEyeYSpeed(), fih.getJawSpeed());
-				}
-				if (fih.getTorsoSpeedSet()) {
-					i01.setTorsoVelocity(fih.getTopStomSpeed(), fih.getMidStomSpeed(), fih.getLowStomSpeed());
-				}
-			} catch (Exception e) {
-				LOGGER.warn("SPEED frame test error", e);
-			}
+		} catch (Exception e) {
+			LOGGER.warn("[SPEECH] execution error", e);
 		}
+		// speed 
+		try {
+			LOGGER.info("Running [SPEED]...");
+			if (fih.getRightHandSpeedSet()) {
+				i01.setHandVelocity("right", fih.getRightThumbFingerSpeed(), fih.getRightIndexFingerSpeed(),
+						fih.getRightMajeureFingerSpeed(), fih.getRightRingFingerSpeed(),
+						fih.getRightPinkyFingerSpeed(), fih.getRightWristSpeed());
+			}
+			if (fih.getRightArmSpeedSet()) {
+				i01.setArmVelocity("right", fih.getRightBicepsSpeed(), fih.getRightRotateSpeed(),
+						fih.getRightShoulderSpeed(), fih.getRightOmoplateSpeed());
+			}
+			if (fih.getLeftHandSpeedSet()) {
+				i01.setHandVelocity("left", fih.getLeftThumbFingerSpeed(), fih.getLeftIndexFingerSpeed(),
+						fih.getLeftMajeureFingerSpeed(), fih.getLeftRingFingerSpeed(),
+						fih.getLeftPinkyFingerSpeed(), fih.getLeftWristSpeed());
+			}
+			if (fih.getLeftArmSpeedSet()) {
+				i01.setArmVelocity("left", fih.getLeftBicepsSpeed(), fih.getLeftRotateSpeed(),
+						fih.getLeftShoulderSpeed(), fih.getLeftOmoplateSpeed());
+			}
+			if (fih.getHeadSpeedSet()) {
+				i01.setHeadVelocity(fih.getHeadRotateSpeed(), fih.getNeckSpeed(), fih.getEyeXSpeed(),
+						fih.getEyeYSpeed(), fih.getJawSpeed());
+			}
+			if (fih.getTorsoSpeedSet()) {
+				i01.setTorsoVelocity(fih.getTopStomSpeed(), fih.getMidStomSpeed(), fih.getLowStomSpeed());
+			}
+		} catch (Exception e) {
+			LOGGER.warn("[SPEED] execution error", e);
+		}
+		// move 
+		try {
+			LOGGER.info("Running [MOVE]...");
+			if (fih.getRightHandMoveSet()) {
+				i01.moveHand("right", fih.getRightThumbFingerMove(), fih.getRightIndexFingerMove(),
+						fih.getRightMajeureFingerMove(), fih.getRightRingFingerMove(),
+						fih.getRightPinkyFingerMove(), (double) fih.getRightWristMove());
+			}
+			if (fih.getRightArmMoveSet()) {
+				i01.moveArm("right", fih.getRightBicepsMove(), fih.getRightRotateMove(), fih.getRightShoulderMove(),
+						fih.getRightOmoplateMove());
+			}
+			if (fih.getLeftHandMoveSet()) {
+				i01.moveHand("left", fih.getLeftThumbFingerMove(), fih.getLeftIndexFingerMove(),
+						fih.getLeftMajeureFingerMove(), fih.getLeftRingFingerMove(), fih.getLeftPinkyFingerMove(),
+						(double) fih.getLeftWristMove());
+			}
+			if (fih.getLeftArmMoveSet()) {
+				i01.moveArm("left", fih.getLeftBicepsMove(), fih.getLeftRotateMove(), fih.getLeftShoulderMove(),
+						fih.getLeftOmoplateMove());
+			}
+			if (fih.getHeadMoveSet()) {
+				i01.moveHead(fih.getNeckMove(), fih.getHeadRotateMove(), fih.getEyeXMove(), fih.getEyeYMove(),
+						fih.getJawMove());
+			}
+			if (fih.getTorsoMoveSet()) {
+				i01.moveTorso(fih.getTopStomMove(), fih.getMidStomMove(), fih.getLowStomMove());
+			}
+		} catch (Exception e) {
+			LOGGER.warn("[MOVE] execution error", e);
+		}
+		LOGGER.info("Running [SLEEP] for \"" + fih.getSleep() + "\" seconds...");
+		// sleep 
+		sleep(fih.getSleep());
 		LOGGER.info("Finished frame execution.");
 	}
 
@@ -1380,21 +1379,18 @@ public class InMoovGestureCreator extends Service {
 		int pos = framelist.getSelectedIndex();
 
 		if (pos != -1) {
-			Frame fih = new Frame(Frame.FrameType.SLEEP);
+			Frame fih = new Frame();
 
 			// sleep || speech || servo movement || speed setting
 			if (frames.get(pos).getSleep() != -1) {
-				fih.setFrameType(Frame.FrameType.SLEEP);
 				fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
 				fih.setSpeech(null);
 				fih.setName(null);
 			} else if (frames.get(pos).getSpeech() != null) {
-				fih.setFrameType(Frame.FrameType.SPEECH);
 				fih.setSleep(-1);
 				fih.setSpeech(frame_addspeech_textfield.getText());
 				fih.setName(null);
 			} else if (frames.get(pos).getName() != null) {
-				fih.setFrameType(Frame.FrameType.MOVE);
 				fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
 				fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
 				fih.setRightMajeureFingerMove(servoitemholder[0][2].sli.getValue());
@@ -1433,7 +1429,6 @@ public class InMoovGestureCreator extends Service {
 				fih.setSpeech(null);
 				fih.setName(frame_add_textfield.getText());
 			} else {
-				fih.setFrameType(Frame.FrameType.SPEED);
 				fih.setRightThumbFingerSpeed(Double.parseDouble(servoitemholder[0][0].spe.getText()));
 				fih.setRightIndexFingerSpeed(Double.parseDouble(servoitemholder[0][1].spe.getText()));
 				fih.setRightMajeureFingerSpeed(Double.parseDouble(servoitemholder[0][2].spe.getText()));
@@ -1677,20 +1672,18 @@ public class InMoovGestureCreator extends Service {
 			// trimming lines before startedGesture
 			scriptLines = scriptLines.subList(counter, scriptLines.size());
 			// at this point the first gesture is starting
-			List<String> frameLines = new ArrayList<String>();
+			final List<String> frameLines = new ArrayList<String>();
+			String speechLine = null;
 			for (String singleScriptLine : scriptLines) {
-				LOGGER.trace("frameList.size() \"" + frames.size() + "\"");
-				// ' sleep(4)'
 				singleScriptLine = singleScriptLine.trim();
-				LOGGER.trace("singleScriptLine \"" + singleScriptLine + "\"");
-				// 'sleep(4)'
 				if (!singleScriptLine.contains("setHeadVelocity") && !singleScriptLine.contains("setArmVelocity")
 						&& !singleScriptLine.contains("setHandVelocity")
 						&& !singleScriptLine.contains("setTorsoVelocity") && !singleScriptLine.contains("setHeadSpeed")
 						&& !singleScriptLine.contains("setArmSpeed") && !singleScriptLine.contains("setHandSpeed")
 						&& !singleScriptLine.contains("setTorsoSpeed") && !singleScriptLine.contains("moveHead")
 						&& !singleScriptLine.contains("moveArm") && !singleScriptLine.contains("moveHand")
-						&& !singleScriptLine.contains("moveTorso") && !singleScriptLine.contains("sleep") // end frame
+						&& !singleScriptLine.contains("moveTorso")  && !singleScriptLine.contains("speak")
+						&& !singleScriptLine.contains("sleep") // end frame
 						&& !singleScriptLine.contains("finishedGesture")) { // end gesture
 					continue;
 				}
@@ -1698,22 +1691,29 @@ public class InMoovGestureCreator extends Service {
 				if (singleScriptLine.contains("finishedGesture")) {
 					// we are finished
 					return;
-				} else if (singleScriptLine.contains("speech")) {
+				} else if (singleScriptLine.contains("mouth.speak(")) {
 					// ignore
+					speechLine = singleScriptLine;
 					continue;
 				} else if (singleScriptLine.contains("sleep")) {
 					// sleep means the end of the frame
 					try {
+						final Frame frame = new Frame();
+						frame.setName("Frame#" + counter);
 						// parse the frame and add it
-						parseScriptFragmentIntoSingleFrame(frameLines, counter);
+						parseScriptFragmentIntoSingleFrame(frameLines, frame);
+						// speech
+						parseScriptSpeechLineToFrame(speechLine, frame);
 						// finish it with a sleep
-						parseScriptSleepToFrameSleep(singleScriptLine);
-						// reset framelines
-						frameLines.clear();
+						parseScriptSleepLineToFrame(singleScriptLine, frame);
+						frames.add(frame);
 					} catch (Exception e) {
 						LOGGER.error("Exception from function parseScriptFragmentIntoSingleFrame: " + e);
 					} finally {
+						speechLine = null;
 						counter++;
+						// reset framelines
+						frameLines.clear();
 					}
 				} else {
 					frameLines.add(singleScriptLine);
@@ -1724,18 +1724,9 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	private void parseScriptFragmentIntoSingleFrame(List<String> frameLines, int frameCounter)
+	private void parseScriptFragmentIntoSingleFrame(List<String> frameLines, Frame frame)
 			throws Exception {
 		try {
-			boolean addSpeed = false;
-			boolean addMove = false;
-			Frame fihSpeed = new Frame(Frame.FrameType.SPEED);
-			fihSpeed.setSpeech(null);
-			fihSpeed.setName(null);
-			fihSpeed.setSleep(-1);
-			Frame fihMove = new Frame(Frame.FrameType.MOVE);
-			fihMove.setName("Frame#" + frameCounter);
-
 			for (String singleScriptLine : frameLines) {
 				try {
 					// it always starts with 'i01.'
@@ -1755,69 +1746,68 @@ public class InMoovGestureCreator extends Service {
 					LOGGER.trace("valuesString[0] \"" + valuesString[0] + "\"");
 					LOGGER.trace("valuesString.length \"" + valuesString.length + "\"");
 					if (splitString[0].contains("Speed") || splitString[0].contains("Velocity")) {
-						addSpeed = true;
 						if (splitString[0].contains("Head")) {
 							// setHeadSpeed(0.95,0.95)
 							// it has to have 2 arguments
 							if (valuesString.length > 0) {
-								fihSpeed.setHeadSpeedSet(true);
-								fihSpeed.setHeadRotateSpeed(Double.parseDouble(valuesString[0].trim()));
+								frame.setHeadSpeedSet(true);
+								frame.setHeadRotateSpeed(Double.parseDouble(valuesString[0].trim()));
 							}
 							if (valuesString.length > 1) {
-								fihSpeed.setNeckSpeed(Double.parseDouble(valuesString[1].trim()));
+								frame.setNeckSpeed(Double.parseDouble(valuesString[1].trim()));
 							}
 							if (valuesString.length > 2) {
-								fihSpeed.setEyeXSpeed(Double.parseDouble(valuesString[2].trim()));
+								frame.setEyeXSpeed(Double.parseDouble(valuesString[2].trim()));
 							}
 							if (valuesString.length > 3) {
-								fihSpeed.setEyeYSpeed(Double.parseDouble(valuesString[3].trim()));
+								frame.setEyeYSpeed(Double.parseDouble(valuesString[3].trim()));
 							}
 							if (valuesString.length > 4) {
-								fihSpeed.setJawSpeed(Double.parseDouble(valuesString[4].trim()));
+								frame.setJawSpeed(Double.parseDouble(valuesString[4].trim()));
 							}
 						} else if (splitString[0].contains("Torso")) {
 							// setTorsoSpeed(0.95,0.85,1.0)
 							if (valuesString.length > 0) {
-								fihSpeed.setTorsoSpeedSet(true);
-								fihSpeed.setTopStomSpeed(Double.parseDouble(valuesString[0].trim()));
+								frame.setTorsoSpeedSet(true);
+								frame.setTopStomSpeed(Double.parseDouble(valuesString[0].trim()));
 							}
 							if (valuesString.length > 1) {
-								fihSpeed.setMidStomSpeed(Double.parseDouble(valuesString[1].trim()));
+								frame.setMidStomSpeed(Double.parseDouble(valuesString[1].trim()));
 							}
 							if (valuesString.length > 2) {
-								fihSpeed.setLowStomSpeed(Double.parseDouble(valuesString[2].trim()));
+								frame.setLowStomSpeed(Double.parseDouble(valuesString[2].trim()));
 							}
 						} else if (splitString[0].contains("Arm")) {
 							if (valuesString.length > 0) {
 								if (valuesString[0].contains("left")) {
 									// setArmSpeed("left",1.0,0.85,0.95,0.95)
-									fihSpeed.setLeftArmSpeedSet(true);
+									frame.setLeftArmSpeedSet(true);
 									if (valuesString.length > 1) {
-										fihSpeed.setLeftBicepsSpeed(Double.parseDouble(valuesString[1].trim()));
+										frame.setLeftBicepsSpeed(Double.parseDouble(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihSpeed.setLeftRotateSpeed(Double.parseDouble(valuesString[2].trim()));
+										frame.setLeftRotateSpeed(Double.parseDouble(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihSpeed.setLeftShoulderSpeed(Double.parseDouble(valuesString[3].trim()));
+										frame.setLeftShoulderSpeed(Double.parseDouble(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihSpeed.setLeftOmoplateSpeed(Double.parseDouble(valuesString[4].trim()));
+										frame.setLeftOmoplateSpeed(Double.parseDouble(valuesString[4].trim()));
 									}
 								} else if (valuesString[0].contains("right")) {
 									// setArmSpeed("right",0.65,0.85,0.65,0.85)
-									fihSpeed.setRightArmSpeedSet(true);
+									frame.setRightArmSpeedSet(true);
 									if (valuesString.length > 1) {
-										fihSpeed.setRightBicepsSpeed(Double.parseDouble(valuesString[1].trim()));
+										frame.setRightBicepsSpeed(Double.parseDouble(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihSpeed.setRightRotateSpeed(Double.parseDouble(valuesString[2].trim()));
+										frame.setRightRotateSpeed(Double.parseDouble(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihSpeed.setRightShoulderSpeed(Double.parseDouble(valuesString[3].trim()));
+										frame.setRightShoulderSpeed(Double.parseDouble(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihSpeed.setRightOmoplateSpeed(Double.parseDouble(valuesString[4].trim()));
+										frame.setRightOmoplateSpeed(Double.parseDouble(valuesString[4].trim()));
 									}
 								}
 							}
@@ -1825,97 +1815,99 @@ public class InMoovGestureCreator extends Service {
 							if (valuesString.length > 0) {
 								if (valuesString[0].contains("left")) {
 									// setHandSpeed("left",0.85,0.85,0.85,0.85,0.85,0.85)
-									fihSpeed.setLeftHandSpeedSet(true);
+									frame.setLeftHandSpeedSet(true);
 									if (valuesString.length > 1) {
-										fihSpeed.setLeftThumbFingerSpeed(Double.parseDouble(valuesString[1].trim()));
+										frame.setLeftThumbFingerSpeed(Double.parseDouble(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihSpeed.setLeftIndexFingerSpeed(Double.parseDouble(valuesString[2].trim()));
+										frame.setLeftIndexFingerSpeed(Double.parseDouble(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihSpeed.setLeftMajeureFingerSpeed(Double.parseDouble(valuesString[3].trim()));
+										frame.setLeftMajeureFingerSpeed(Double.parseDouble(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihSpeed.setLeftRingFingerSpeed(Double.parseDouble(valuesString[4].trim()));
+										frame.setLeftRingFingerSpeed(Double.parseDouble(valuesString[4].trim()));
 									}
 									if (valuesString.length > 5) {
-										fihSpeed.setLeftPinkyFingerSpeed(Double.parseDouble(valuesString[5].trim()));
+										frame.setLeftPinkyFingerSpeed(Double.parseDouble(valuesString[5].trim()));
 									}
 									if (valuesString.length > 6) {
-										fihSpeed.setLeftWristSpeed(Double.parseDouble(valuesString[6].trim()));
+										frame.setLeftWristSpeed(Double.parseDouble(valuesString[6].trim()));
 									}
 								} else if (valuesString[0].contains("right")) {
-									fihSpeed.setRightHandSpeedSet(true);
+									frame.setRightHandSpeedSet(true);
 									// setHandSpeed("right",0.85,0.85,0.85,0.85,0.85,0.85)
 									if (valuesString.length > 1) {
-										fihSpeed.setRightThumbFingerSpeed(Double.parseDouble(valuesString[1].trim()));
+										frame.setRightThumbFingerSpeed(Double.parseDouble(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihSpeed.setRightIndexFingerSpeed(Double.parseDouble(valuesString[2].trim()));
+										frame.setRightIndexFingerSpeed(Double.parseDouble(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihSpeed.setRightMajeureFingerSpeed(Double.parseDouble(valuesString[3].trim()));
+										frame.setRightMajeureFingerSpeed(Double.parseDouble(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihSpeed.setRightRingFingerSpeed(Double.parseDouble(valuesString[4].trim()));
+										frame.setRightRingFingerSpeed(Double.parseDouble(valuesString[4].trim()));
 									}
 									if (valuesString.length > 5) {
-										fihSpeed.setRightPinkyFingerSpeed(Double.parseDouble(valuesString[5].trim()));
+										frame.setRightPinkyFingerSpeed(Double.parseDouble(valuesString[5].trim()));
 									}
 									if (valuesString.length > 6) {
-										fihSpeed.setRightWristSpeed(Double.parseDouble(valuesString[6].trim()));
+										frame.setRightWristSpeed(Double.parseDouble(valuesString[6].trim()));
 									}
 								}
 							}
 						}
 					} else if (splitString[0].contains("move")) {
-						addMove = true;
 						if (splitString[0].contains("Head")) {
 							// moveHead(79,100,82,78,65)
 							if (valuesString.length > 0) {
-								fihMove.setNeckMove(Integer.parseInt(valuesString[0].trim()));
+								frame.setHeadMoveSet(true);
+								frame.setNeckMove(Integer.parseInt(valuesString[0].trim()));
 							}
 							if (valuesString.length > 1) {
-								fihMove.setHeadRotateMove(Integer.parseInt(valuesString[1].trim()));
+								frame.setHeadRotateMove(Integer.parseInt(valuesString[1].trim()));
 							}
 							if (valuesString.length > 2) {
-								fihMove.setEyeXMove(Integer.parseInt(valuesString[2].trim()));
+								frame.setEyeXMove(Integer.parseInt(valuesString[2].trim()));
 							}
 							if (valuesString.length > 3) {
-								fihMove.setEyeYMove(Integer.parseInt(valuesString[3].trim()));
+								frame.setEyeYMove(Integer.parseInt(valuesString[3].trim()));
 							}
 							if (valuesString.length > 4) {
-								fihMove.setJawMove(Integer.parseInt(valuesString[4].trim()));
+								frame.setJawMove(Integer.parseInt(valuesString[4].trim()));
 							}
 						} else if (splitString[0].contains("Arm")) {
 							if (valuesString.length > 0) {
 								if (valuesString[0].contains("left")) {
 									// moveArm("left",5,84,28,15)
 									if (valuesString.length > 1) {
-										fihMove.setLeftBicepsMove(Integer.parseInt(valuesString[1].trim()));
+										frame.setLeftArmMoveSet(true);
+										frame.setLeftBicepsMove(Integer.parseInt(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihMove.setLeftRotateMove(Integer.parseInt(valuesString[2].trim()));
+										frame.setLeftRotateMove(Integer.parseInt(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihMove.setLeftShoulderMove(Integer.parseInt(valuesString[3].trim()));
+										frame.setLeftShoulderMove(Integer.parseInt(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihMove.setLeftOmoplateMove(Integer.parseInt(valuesString[4].trim()));
+										frame.setLeftOmoplateMove(Integer.parseInt(valuesString[4].trim()));
 									}
 								} else if (valuesString[0].contains("right")) {
 									// moveArm("right",5,82,28,15)
 									if (valuesString.length > 1) {
-										fihMove.setRightBicepsMove(Integer.parseInt(valuesString[1].trim()));
+										frame.setRightArmMoveSet(true);
+										frame.setRightBicepsMove(Integer.parseInt(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihMove.setRightRotateMove(Integer.parseInt(valuesString[2].trim()));
+										frame.setRightRotateMove(Integer.parseInt(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihMove.setRightShoulderMove(Integer.parseInt(valuesString[3].trim()));
+										frame.setRightShoulderMove(Integer.parseInt(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihMove.setRightOmoplateMove(Integer.parseInt(valuesString[4].trim()));
+										frame.setRightOmoplateMove(Integer.parseInt(valuesString[4].trim()));
 									}
 								}
 							}
@@ -1924,86 +1916,90 @@ public class InMoovGestureCreator extends Service {
 								if (valuesString[0].contains("left")) {
 									// moveHand("left",92,33,37,71,66,25)
 									if (valuesString.length > 1) {
-										fihMove.setLeftThumbFingerMove(Integer.parseInt(valuesString[1].trim()));
+										frame.setLeftHandMoveSet(true);
+										frame.setLeftThumbFingerMove(Integer.parseInt(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihMove.setLeftIndexFingerMove(Integer.parseInt(valuesString[2].trim()));
+										frame.setLeftIndexFingerMove(Integer.parseInt(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihMove.setLeftMajeureFingerMove(Integer.parseInt(valuesString[3].trim()));
+										frame.setLeftMajeureFingerMove(Integer.parseInt(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihMove.setLeftRingFingerMove(Integer.parseInt(valuesString[4].trim()));
+										frame.setLeftRingFingerMove(Integer.parseInt(valuesString[4].trim()));
 									}
 									if (valuesString.length > 5) {
-										fihMove.setLeftPinkyFingerMove(Integer.parseInt(valuesString[5].trim()));
+										frame.setLeftPinkyFingerMove(Integer.parseInt(valuesString[5].trim()));
 									}
 									if (valuesString.length > 6) {
-										fihMove.setLeftWristMove(Integer.parseInt(valuesString[6].trim()));
+										frame.setLeftWristMove(Integer.parseInt(valuesString[6].trim()));
 									}
 								} else if (valuesString[0].contains("right")) {
 									// moveHand("right",81,66,82,60,105,113)
 									if (valuesString.length > 1) {
-										fihMove.setRightThumbFingerMove(Integer.parseInt(valuesString[1].trim()));
+										frame.setRightHandMoveSet(true);
+										frame.setRightThumbFingerMove(Integer.parseInt(valuesString[1].trim()));
 									}
 									if (valuesString.length > 2) {
-										fihMove.setRightIndexFingerMove(Integer.parseInt(valuesString[2].trim()));
+										frame.setRightIndexFingerMove(Integer.parseInt(valuesString[2].trim()));
 									}
 									if (valuesString.length > 3) {
-										fihMove.setRightMajeureFingerMove(Integer.parseInt(valuesString[3].trim()));
+										frame.setRightMajeureFingerMove(Integer.parseInt(valuesString[3].trim()));
 									}
 									if (valuesString.length > 4) {
-										fihMove.setRightRingFingerMove(Integer.parseInt(valuesString[4].trim()));
+										frame.setRightRingFingerMove(Integer.parseInt(valuesString[4].trim()));
 									}
 									if (valuesString.length > 5) {
-										fihMove.setRightPinkyFingerMove(Integer.parseInt(valuesString[5].trim()));
+										frame.setRightPinkyFingerMove(Integer.parseInt(valuesString[5].trim()));
 									}
 									if (valuesString.length > 6) {
-										fihMove.setRightWristMove(Integer.parseInt(valuesString[6].trim()));
+										frame.setRightWristMove(Integer.parseInt(valuesString[6].trim()));
 									}
 								}
 							}
 						} else if (splitString[0].contains("Torso")) {
 							// moveTorso(90,90,90)
 							if (valuesString.length > 0) {
-								fihMove.setTopStomMove(Integer.parseInt(valuesString[0].trim()));
+								frame.setTorsoMoveSet(true);
+								frame.setTopStomMove(Integer.parseInt(valuesString[0].trim()));
 							}
 							if (valuesString.length > 1) {
-								fihMove.setMidStomMove(Integer.parseInt(valuesString[1].trim()));
+								frame.setMidStomMove(Integer.parseInt(valuesString[1].trim()));
 							}
 							if (valuesString.length > 2) {
-								fihMove.setLowStomMove(Integer.parseInt(valuesString[2].trim()));
+								frame.setLowStomMove(Integer.parseInt(valuesString[2].trim()));
 							}
 						}
 					}
 				} catch (Exception e) {
-					LOGGER.warn("Frame line parsing error on frame: " + frameCounter + "! ", e);
+					LOGGER.warn("Frame line parsing error on frame: \"" + singleScriptLine + "\"", e);
 				}
-			}
-			if (addSpeed) {
-				frames.add(fihSpeed);
-			}
-			if (addMove) {
-				frames.add(fihMove);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("Frame line parsing error", e);
 		}
 	}
 
-	private void parseScriptSleepToFrameSleep(String sleepLine) {
+	private void parseScriptSpeechLineToFrame(String speechLine, Frame frame) {
+	    // i01.mouth.speak("Some speech")
+		try {
+			LOGGER.trace("speechLine: \"" + speechLine + "\"");
+			if (speechLine != null) {
+				String[] splitLine = speechLine.split("\"");
+				LOGGER.trace("splitLine[1]: \"" + splitLine[1] + "\"");
+				frame.setSpeech(splitLine[1]);
+				frame.setSpeechSet(true);
+			}
+		} catch (Exception e) {
+			LOGGER.warn("Speak line parsing error", e);
+		}
+	}
+	private void parseScriptSleepLineToFrame(String sleepLine, Frame frame) {
 		try {
 			// sleep line: sleep(3)
 			sleepLine = sleepLine.substring(sleepLine.indexOf('(') + 1, sleepLine.indexOf(')'));
 			Double sleepTime = Double.parseDouble(sleepLine);
-			Frame fihSleep = new Frame(Frame.FrameType.SLEEP);
-			fihSleep.resetValues();
-
-			fihSleep.setName(null); // sleep frame has Name and Speech as null and Sleep as int
-			fihSleep.setSpeech(null);
-			fihSleep.setSleep(sleepTime.intValue());
-
-			frames.add(fihSleep);
+			frame.setSleep(sleepTime.intValue());
 		} catch (Exception e) {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
@@ -2085,7 +2081,7 @@ public class InMoovGestureCreator extends Service {
 
 	public void frame_add(JList framelist, JTextField frame_add_textfield) {
 		// Add a servo movement frame to the framelist (button bottom-right)
-		Frame fih = new Frame(Frame.FrameType.MOVE);
+		Frame fih = new Frame();
 
 		fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
 		fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
@@ -2307,7 +2303,7 @@ public class InMoovGestureCreator extends Service {
 		servoitemholder[t1][t2].akt.setText(servoitemholder[t1][t2].sli.getValue() + "");
 		// Move the Servos in "Real-Time"
 		if (moverealtime && i01 != null) {
-			Frame fih = new Frame(Frame.FrameType.MOVE);
+			Frame fih = new Frame();
 
 			fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
 			fih.setRightIndexFingerMove(servoitemholder[0][1].sli.getValue());
@@ -2401,8 +2397,18 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
 
+	private void addMoveSlidersToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
+		LOGGER.trace("addMoveSlidersToSectionPane for \"" + robotSection +
+					"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
+		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
+			// TODO
+			JLabel label = new JLabel("Move: "+frame.getMoveValue(robotSection, i)+ " ");
+			panel.add(label);
+		}
+	}
 	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
-		LOGGER.trace("addSpeedTextToSectionPane subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
+		LOGGER.trace("addSpeedTextToSectionPane for \"" + robotSection + 
+				"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
 		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
 			JFormattedTextField speed = new JFormattedTextField(decimalFormat);
 			speed.setColumns(4);
@@ -2452,7 +2458,7 @@ public class InMoovGestureCreator extends Service {
 				component.setEnabled(isEnabled);
 			}
 		} catch (Exception e) {
-			LOGGER.warn("Creating bottom tabbed frame", e);
+			LOGGER.warn("setPanelEnabled", e);
 		}
 	}
 
@@ -2479,6 +2485,13 @@ public class InMoovGestureCreator extends Service {
 			leftArmPanel.add(BorderLayout.NORTH, new JLabel("Left Arm"));
 			headPanel.add(BorderLayout.NORTH, new JLabel("Head"));
 			torsoPanel.add(BorderLayout.NORTH, new JLabel("Torso"));
+			// borders
+			rightHandPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			rightArmPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			leftHandPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			leftArmPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			headPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			torsoPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
 			// panels for MOVE controls
 			final JPanel rightHandMovePanel = new JPanel();
 			rightHandMovePanel.setLayout(new BoxLayout(rightHandMovePanel, BoxLayout.Y_AXIS));
@@ -2533,7 +2546,7 @@ public class InMoovGestureCreator extends Service {
 			final JPanel headSpeedPanel = new JPanel();
 			headSpeedPanel.setLayout(new BoxLayout(headSpeedPanel, BoxLayout.Y_AXIS));
 			final JPanel torsoSpeedPanel = new JPanel();
-			headSpeedPanel.setLayout(new BoxLayout(headSpeedPanel, BoxLayout.Y_AXIS));
+			torsoSpeedPanel.setLayout(new BoxLayout(torsoSpeedPanel, BoxLayout.Y_AXIS));
 			// add to map
 			Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
 			robotSectionSpeedPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedPanel);
@@ -2569,74 +2582,15 @@ public class InMoovGestureCreator extends Service {
 				// adding MOVE elements
 				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
 				addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
+				addMoveSlidersToSectionPane(robotSectionSlidersPanels.get(robotSection), frame, robotSection);
 				robotSectionMovePanel.add(robotSectionSlidersPanels.get(robotSection));
+				setPanelEnabled(robotSectionSlidersPanels.get(robotSection), frame.getMoveSet(robotSection));
 				// adding SPEED elements
 				JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
 				addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
-				addSpeedTextToSectionPane(robotSectionSpeedPanel, frame, robotSection);
+				addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanels.get(robotSection), frame, robotSection);
 				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanels.get(robotSection));
-			}
-//			for (Map.Entry<RobotSection, JPanel> robotSectionPanel : robotSectionMovePanels.entrySet()) {
-//				addEnableCheckBoxesToSectionPane(robotSectionPanel.getValue(), frame, "Move?",
-//						robotSectionPanel.getKey(), true);
-//			}
-//			for (Map.Entry<RobotSection, JPanel> robotSectionSpeedPanel : robotSectionSpeedPanels.entrySet()) {
-//				addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel.getValue(), frame, "Set Speed?",
-//						robotSectionSpeedPanel.getKey(), false);
-//			}
-			//
-//			rightHandSpeedPanel.add(rightHandSpeedNumberBoxesPanel);
-//			rightArmSpeedPanel.add(rightArmSpeedNumberBoxesPanel);
-//			leftHandSpeedPanel.add(leftHandSpeedNumberBoxesPanel);
-//			leftArmSpeedPanel.add(leftArmSpeedNumberBoxesPanel);
-//			headSpeedPanel.add(headSpeedNumberBoxesPanel);
-//			torsoSpeedPanel.add(torsoSpeedNumberBoxesPanel);
-			// ENABLE / DISABLE logic
-			if (frame.getFrameType() == Frame.FrameType.MOVE) {
-				// disable SPEED panels
-				setPanelEnabled(rightHandSpeedPanel, false);
-				setPanelEnabled(rightArmSpeedPanel, false);
-				setPanelEnabled(leftHandSpeedPanel, false);
-				setPanelEnabled(leftArmSpeedPanel, false);
-				setPanelEnabled(headSpeedPanel, false);
-				setPanelEnabled(torsoSpeedPanel, false);
-				// enable MOVE panels
-				setPanelEnabled(rightHandMovePanel, true);
-				setPanelEnabled(rightArmMovePanel, true);
-				setPanelEnabled(leftHandMovePanel, true);
-				setPanelEnabled(leftArmMovePanel, true);
-				setPanelEnabled(headMovePanel, true);
-				setPanelEnabled(torsoMovePanel, true);
-			} else if (frame.getFrameType() == Frame.FrameType.SPEED) {
-				// enable SPEED panels
-				setPanelEnabled(rightHandSpeedPanel, true);
-				setPanelEnabled(rightArmSpeedPanel, true);
-				setPanelEnabled(leftHandSpeedPanel, true);
-				setPanelEnabled(leftArmSpeedPanel, true);
-				setPanelEnabled(headSpeedPanel, true);
-				setPanelEnabled(torsoSpeedPanel, true);
-				// disable MOVE panels
-				setPanelEnabled(rightHandMovePanel, false);
-				setPanelEnabled(rightArmMovePanel, false);
-				setPanelEnabled(leftHandMovePanel, false);
-				setPanelEnabled(leftArmMovePanel, false);
-				setPanelEnabled(headMovePanel, false);
-				setPanelEnabled(torsoMovePanel, false);
-			} else {
-				// disable SPEED panels
-				setPanelEnabled(rightHandSpeedPanel, false);
-				setPanelEnabled(rightArmSpeedPanel, false);
-				setPanelEnabled(leftHandSpeedPanel, false);
-				setPanelEnabled(leftArmSpeedPanel, false);
-				setPanelEnabled(headSpeedPanel, false);
-				setPanelEnabled(torsoSpeedPanel, false);
-				// disable MOVE panels
-				setPanelEnabled(rightHandMovePanel, false);
-				setPanelEnabled(rightArmMovePanel, false);
-				setPanelEnabled(leftHandMovePanel, false);
-				setPanelEnabled(leftArmMovePanel, false);
-				setPanelEnabled(headMovePanel, false);
-				setPanelEnabled(torsoMovePanel, false);
+				setPanelEnabled(robotSectionSpeedNumberBoxesPanels.get(robotSection), frame.getSpeedSet(robotSection));
 			}
 
 			

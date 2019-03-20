@@ -11,9 +11,9 @@ public class Frame implements Serializable {
 	private static final long serialVersionUID = -7038574417962603966L;
 	private final static Logger LOGGER = LoggerFactory.getLogger(Frame.class);
 
-	public enum FrameType {
-		SPEED, SPEECH, SLEEP, MOVE;
-	};
+//	public enum FrameType {
+//		SPEED, SPEECH, SLEEP, MOVE;
+//	};
 	public enum RobotSection {
 		RIGHT_HAND, RIGHT_ARM, LEFT_HAND, LEFT_ARM, HEAD, TORSO;
 	};
@@ -30,7 +30,7 @@ public class Frame implements Serializable {
 		TOP, MID, LOW;
 	};
 
-	private FrameType frameType;  
+	private Boolean speechSet = false;
 	/**
 	 * 0: right hand
 	 * 1: right arm
@@ -57,9 +57,9 @@ public class Frame implements Serializable {
 	 * 2: shoulder
 	 * 3: omoplate
 	 */
-	final private Integer[] rightArmMoves = new Integer[6];
+	final private Integer[] rightArmMoves = new Integer[4];
 	final private Integer[] leftHandMoves = new Integer[6];
-	final private Integer[] leftArmMoves = new Integer[6];
+	final private Integer[] leftArmMoves = new Integer[4];
 	/**
 	 * 0: neck
 	 * 1: head
@@ -67,183 +67,167 @@ public class Frame implements Serializable {
 	 * 3: eyeY
 	 * 4: jaw
 	 */
-	final private Integer[] headMoves = new Integer[6];
+	final private Integer[] headMoves = new Integer[5];
 	/**
 	 * 0: top
 	 * 1: mid
 	 * 2: low
 	 */
-	final private Integer[] torsoMoves = new Integer[6];
+	final private Integer[] torsoMoves = new Integer[3];
 	// speeds
 	final private Double[] rightHandSpeeds = new Double[6];
-	final private Double[] rightArmSpeeds = new Double[6];
+	final private Double[] rightArmSpeeds = new Double[4];
 	final private Double[] leftHandSpeeds = new Double[6];
-	final private Double[] leftArmSpeeds = new Double[6];
-	final private Double[] headSpeeds = new Double[6];
-	final private Double[] torsoSpeeds = new Double[6];
+	final private Double[] leftArmSpeeds = new Double[4];
+	final private Double[] headSpeeds = new Double[5];
+	final private Double[] torsoSpeeds = new Double[3];
 	
 	private Integer sleep = -1;
-	private String speech;
-	private String name;
+	private String speech = null;
+	private String name = null;
 
 	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
 	private static final String PIPE_SYMBOL = " | ";
+	private static final String NEW_LINE = "<br/>";
 
-	public Frame(FrameType frameType) {
-		this.frameType = frameType;
+	public Frame() {
+//		this.frameType = frameType;
 		resetValues();
 	}
 
 	@Override
 	public String toString() {
-		if (this.frameType == FrameType.SLEEP) {
-			// sleep frame
-			return "SLEEP "+this.sleep;
-		} else if (this.frameType == FrameType.SPEECH) {
-			// speech frame
-			return "SPEECH "+this.speech;
-		} else if (this.frameType == FrameType.MOVE) {
-			// move frame
-			StringBuffer movements = new StringBuffer();
-			movements.append(this.name).append(": ");
-				// right hand
-				if(moveSets[0]) {
-					movements.append(this.rightHandMoves[0]).append(SPACE_SYMBOL)
-						.append(this.rightHandMoves[1]).append(SPACE_SYMBOL)
-						.append(this.rightHandMoves[2]).append(SPACE_SYMBOL)
-						.append(this.rightHandMoves[3]).append(SPACE_SYMBOL)
-						.append(this.rightHandMoves[4]).append(SPACE_SYMBOL)
-						.append(this.rightHandMoves[5]).append(PIPE_SYMBOL);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// right arm
-				if(moveSets[1]) {
-					movements.append(this.rightArmMoves[0]).append(SPACE_SYMBOL)
-						.append(this.rightArmMoves[1]).append(SPACE_SYMBOL)
-						.append(this.rightArmMoves[2]).append(SPACE_SYMBOL)
-						.append(this.rightArmMoves[3]).append(PIPE_SYMBOL);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// left hand
-				if(moveSets[2]) {
-					movements.append(this.leftHandMoves[0]).append(SPACE_SYMBOL)
-						.append(this.leftHandMoves[1]).append(SPACE_SYMBOL)
-						.append(this.leftHandMoves[2]).append(SPACE_SYMBOL)
-						.append(this.leftHandMoves[3]).append(SPACE_SYMBOL)
-						.append(this.leftHandMoves[4]).append(SPACE_SYMBOL)
-						.append(this.leftHandMoves[5]).append(PIPE_SYMBOL);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// left arm
-				if(moveSets[3]) {
-					movements.append(this.leftArmMoves[0]).append(SPACE_SYMBOL)
-						.append(this.leftArmMoves[1]).append(SPACE_SYMBOL)
-						.append(this.leftArmMoves[2]).append(SPACE_SYMBOL)
-						.append(this.leftArmMoves[3]).append(PIPE_SYMBOL);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL)
-						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// head
-				if(moveSets[4]) {
-					movements.append(this.headMoves[0]).append(SPACE_SYMBOL)
-						.append(this.headMoves[1]).append(SPACE_SYMBOL)
-						.append(this.headMoves[2]).append(SPACE_SYMBOL)
-						.append(this.headMoves[3]).append(SPACE_SYMBOL)
-						.append(this.headMoves[4]).append(PIPE_SYMBOL);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// torso
-				if(moveSets[5]) {
-					movements.append(this.torsoMoves[0]).append(SPACE_SYMBOL)
-						.append(this.torsoMoves[1]).append(SPACE_SYMBOL)
-						.append(this.torsoMoves[2]);
-				} else {
-					movements.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
-				}
-			return movements.toString();
+		StringBuffer frameString = new StringBuffer();
+		// speech frame
+		frameString.append("<html>FRAME name ").append(this.name).append(NEW_LINE);
+		frameString.append("<p>SPEECH ");
+		if (speechSet) {
+			frameString.append(this.speech);
 		} else {
-			// speed frame
-			StringBuffer speeds = new StringBuffer();
-			speeds.append("SPEED").append(" ");
-				// right hand
-				if(speedSets[0]) {
-					speeds.append(this.rightHandSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.rightHandSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.rightHandSpeeds[2]).append(SPACE_SYMBOL)
-						.append(this.rightHandSpeeds[3]).append(SPACE_SYMBOL)
-						.append(this.rightHandSpeeds[4]).append(SPACE_SYMBOL)
-						.append(this.rightHandSpeeds[5]).append(PIPE_SYMBOL);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// right arm
-				if(speedSets[1]) {
-					speeds.append(this.rightArmSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.rightArmSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.rightArmSpeeds[2]).append(SPACE_SYMBOL)
-						.append(this.rightArmSpeeds[3]).append(PIPE_SYMBOL);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// left hand
-				if(speedSets[2]) {
-					speeds.append(this.leftHandSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.leftHandSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.leftHandSpeeds[2]).append(SPACE_SYMBOL)
-						.append(this.leftHandSpeeds[3]).append(SPACE_SYMBOL)
-						.append(this.leftHandSpeeds[4]).append(SPACE_SYMBOL)
-						.append(this.leftHandSpeeds[5]).append(PIPE_SYMBOL);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// left arm
-				if(speedSets[3]) {
-					speeds.append(this.leftArmSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.leftArmSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.leftArmSpeeds[2]).append(SPACE_SYMBOL)
-						.append(this.leftArmSpeeds[3]).append(PIPE_SYMBOL);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL)
-						.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// head
-				if(speedSets[4]) {
-					speeds.append(this.headSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.headSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.headSpeeds[2]).append(SPACE_SYMBOL)
-						.append(this.headSpeeds[3]).append(SPACE_SYMBOL)
-						.append(this.headSpeeds[4]).append(PIPE_SYMBOL);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
-							.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
-				}
-				// torso
-				if(speedSets[5]) {
-					speeds.append(this.torsoSpeeds[0]).append(SPACE_SYMBOL)
-						.append(this.torsoSpeeds[1]).append(SPACE_SYMBOL)
-						.append(this.torsoSpeeds[2]);
-				} else {
-					speeds.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
-				}
-			return speeds.toString();
-		} 
+			frameString.append(STAR_SYMBOL);
+		}
+		frameString.append(NEW_LINE);
+		// speed frame
+		frameString.append("<p>SPEED ");
+		// right hand
+		if (speedSets[0]) {
+			frameString.append(this.rightHandSpeeds[0]).append(SPACE_SYMBOL).append(this.rightHandSpeeds[1])
+					.append(SPACE_SYMBOL).append(this.rightHandSpeeds[2]).append(SPACE_SYMBOL)
+					.append(this.rightHandSpeeds[3]).append(SPACE_SYMBOL).append(this.rightHandSpeeds[4])
+					.append(SPACE_SYMBOL).append(this.rightHandSpeeds[5]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// right arm
+		if (speedSets[1]) {
+			frameString.append(this.rightArmSpeeds[0]).append(SPACE_SYMBOL).append(this.rightArmSpeeds[1])
+					.append(SPACE_SYMBOL).append(this.rightArmSpeeds[2]).append(SPACE_SYMBOL)
+					.append(this.rightArmSpeeds[3]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// left hand
+		if (speedSets[2]) {
+			frameString.append(this.leftHandSpeeds[0]).append(SPACE_SYMBOL).append(this.leftHandSpeeds[1])
+					.append(SPACE_SYMBOL).append(this.leftHandSpeeds[2]).append(SPACE_SYMBOL)
+					.append(this.leftHandSpeeds[3]).append(SPACE_SYMBOL).append(this.leftHandSpeeds[4])
+					.append(SPACE_SYMBOL).append(this.leftHandSpeeds[5]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// left arm
+		if (speedSets[3]) {
+			frameString.append(this.leftArmSpeeds[0]).append(SPACE_SYMBOL).append(this.leftArmSpeeds[1]).append(SPACE_SYMBOL)
+					.append(this.leftArmSpeeds[2]).append(SPACE_SYMBOL).append(this.leftArmSpeeds[3])
+					.append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// head
+		if (speedSets[4]) {
+			frameString.append(this.headSpeeds[0]).append(SPACE_SYMBOL).append(this.headSpeeds[1]).append(SPACE_SYMBOL)
+					.append(this.headSpeeds[2]).append(SPACE_SYMBOL).append(this.headSpeeds[3]).append(SPACE_SYMBOL)
+					.append(this.headSpeeds[4]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(PIPE_SYMBOL);
+		}
+		// torso
+		if (speedSets[5]) {
+			frameString.append(this.torsoSpeeds[0]).append(SPACE_SYMBOL).append(this.torsoSpeeds[1]).append(SPACE_SYMBOL)
+					.append(this.torsoSpeeds[2]);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+		}
+		frameString.append(NEW_LINE);
+		// move frame
+		frameString.append("<p>MOVE ");
+		// right hand
+		if (moveSets[0]) {
+			frameString.append(this.rightHandMoves[0]).append(SPACE_SYMBOL).append(this.rightHandMoves[1])
+					.append(SPACE_SYMBOL).append(this.rightHandMoves[2]).append(SPACE_SYMBOL)
+					.append(this.rightHandMoves[3]).append(SPACE_SYMBOL).append(this.rightHandMoves[4])
+					.append(SPACE_SYMBOL).append(this.rightHandMoves[5]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// right arm
+		if (moveSets[1]) {
+			frameString.append(this.rightArmMoves[0]).append(SPACE_SYMBOL).append(this.rightArmMoves[1])
+					.append(SPACE_SYMBOL).append(this.rightArmMoves[2]).append(SPACE_SYMBOL)
+					.append(this.rightArmMoves[3]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(PIPE_SYMBOL);
+		}
+		// left hand
+		if (moveSets[2]) {
+			frameString.append(this.leftHandMoves[0]).append(SPACE_SYMBOL).append(this.leftHandMoves[1])
+					.append(SPACE_SYMBOL).append(this.leftHandMoves[2]).append(SPACE_SYMBOL)
+					.append(this.leftHandMoves[3]).append(SPACE_SYMBOL).append(this.leftHandMoves[4])
+					.append(SPACE_SYMBOL).append(this.leftHandMoves[5]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(STAR_SYMBOL).append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// left arm
+		if (moveSets[3]) {
+			frameString.append(this.leftArmMoves[0]).append(SPACE_SYMBOL).append(this.leftArmMoves[1])
+					.append(SPACE_SYMBOL).append(this.leftArmMoves[2]).append(SPACE_SYMBOL).append(this.leftArmMoves[3])
+					.append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(PIPE_SYMBOL);
+		}
+		// head
+		if (moveSets[4]) {
+			frameString.append(this.headMoves[0]).append(SPACE_SYMBOL).append(this.headMoves[1]).append(SPACE_SYMBOL)
+					.append(this.headMoves[2]).append(SPACE_SYMBOL).append(this.headMoves[3]).append(SPACE_SYMBOL)
+					.append(this.headMoves[4]).append(PIPE_SYMBOL);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL)
+					.append(STAR_SYMBOL).append(PIPE_SYMBOL);
+		}
+		// torso
+		if (moveSets[5]) {
+			frameString.append(this.torsoMoves[0]).append(SPACE_SYMBOL).append(this.torsoMoves[1]).append(SPACE_SYMBOL)
+					.append(this.torsoMoves[2]);
+		} else {
+			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
+		}
+		frameString.append(NEW_LINE);
+		// sleep frame
+		frameString.append("<p>SLEEP ").append(this.sleep).append("</html>");
+		//
+		return frameString.toString();
 	}
 
 	public void resetValues() {	
-		Arrays.fill(moveSets, true);
+		Arrays.fill(moveSets, false);
 		Arrays.fill(speedSets, false);
 
 		Arrays.fill(rightHandMoves, 90);
@@ -261,6 +245,8 @@ public class Frame implements Serializable {
 		Arrays.fill(torsoSpeeds, 0d);
 		
 		this.sleep = -1;
+		this.speech = null;
+		this.name = null;
 	}
 
 	public int getSubSectionSize(RobotSection robotSection) {
@@ -535,231 +521,168 @@ public class Frame implements Serializable {
 	public void setTorsoMoveSet(Boolean torsoMoveSet) {
 		this.moveSets[5] = torsoMoveSet;
 	}
-
-	public FrameType getFrameType() {
-		return frameType;
-	}
-
-	public void setFrameType(FrameType frameType) {
-		this.frameType = frameType;
-	}
-
 	public Integer getRightThumbFingerMove() {
 		return rightHandMoves[0];
 	}
-
 	public void setRightThumbFingerMove(Integer rthumb) {
 		this.rightHandMoves[0] = rthumb;
 	}
-
 	public Integer getRightIndexFingerMove() {
 		return rightHandMoves[1];
 	}
-
 	public void setRightIndexFingerMove(Integer rindex) {
 		this.rightHandMoves[1] = rindex;
 	}
-
 	public Integer getRightMajeureFingerMove() {
 		return rightHandMoves[2];
 	}
-
 	public void setRightMajeureFingerMove(Integer rmajeure) {
 		this.rightHandMoves[2] = rmajeure;
 	}
-
 	public Integer getRightRingFingerMove() {
 		return rightHandMoves[3];
 	}
-
 	public void setRightRingFingerMove(Integer rringfinger) {
 		this.rightHandMoves[3] = rringfinger;
 	}
-
 	public Integer getRightPinkyFingerMove() {
 		return rightHandMoves[4];
 	}
-
 	public void setRightPinkyFingerMove(Integer rpinky) {
 		this.rightHandMoves[4] = rpinky;
 	}
-
 	public Integer getRightWristMove() {
 		return rightHandMoves[5];
 	}
-
 	public void setRightWristMove(Integer rwrist) {
 		this.rightHandMoves[5] = rwrist;
 	}
-
 	public Integer getRightBicepsMove() {
 		return rightArmMoves[0];
 	}
-
 	public void setRightBicepsMove(Integer rbicep) {
 		this.rightArmMoves[0] = rbicep;
 	}
-
 	public Integer getRightRotateMove() {
 		return rightArmMoves[1];
 	}
-
 	public void setRightRotateMove(Integer rrotate) {
 		this.rightArmMoves[1] = rrotate;
 	}
-
 	public Integer getRightShoulderMove() {
 		return rightArmMoves[2];
 	}
-
 	public void setRightShoulderMove(Integer rshoulder) {
 		this.rightArmMoves[2] = rshoulder;
 	}
-
 	public Integer getRightOmoplateMove() {
 		return rightArmMoves[3];
 	}
-
 	public void setRightOmoplateMove(Integer romoplate) {
 		this.rightArmMoves[3] = romoplate;
 	}
-
 	public Integer getLeftThumbFingerMove() {
 		return leftHandMoves[0];
 	}
-
 	public void setLeftThumbFingerMove(Integer lthumb) {
 		this.leftHandMoves[0] = lthumb;
 	}
-
 	public Integer getLeftIndexFingerMove() {
 		return leftHandMoves[1];
 	}
-
 	public void setLeftIndexFingerMove(Integer lindex) {
 		this.leftHandMoves[1] = lindex;
 	}
-
 	public Integer getLeftMajeureFingerMove() {
 		return leftHandMoves[2];
 	}
-
 	public void setLeftMajeureFingerMove(Integer lmajeure) {
 		this.leftHandMoves[2] = lmajeure;
 	}
-
 	public Integer getLeftRingFingerMove() {
 		return leftHandMoves[3];
 	}
-
 	public void setLeftRingFingerMove(Integer lringfinger) {
 		this.leftHandMoves[3] = lringfinger;
 	}
-
 	public Integer getLeftPinkyFingerMove() {
 		return leftHandMoves[4];
 	}
-
 	public void setLeftPinkyFingerMove(Integer lpinky) {
 		this.leftHandMoves[4] = lpinky;
 	}
-
 	public Integer getLeftWristMove() {
 		return leftHandMoves[5];
 	}
-
 	public void setLeftWristMove(Integer lwrist) {
 		this.leftHandMoves[5] = lwrist;
 	}
-
 	public Integer getLeftBicepsMove() {
 		return leftArmMoves[0];
 	}
-
 	public void setLeftBicepsMove(Integer lbicep) {
 		this.leftArmMoves[0] = lbicep;
 	}
-
 	public Integer getLeftRotateMove() {
 		return leftArmMoves[1];
 	}
-
 	public void setLeftRotateMove(Integer lrotate) {
 		this.leftArmMoves[1] = lrotate;
 	}
-
 	public Integer getLeftShoulderMove() {
 		return leftArmMoves[2];
 	}
-
 	public void setLeftShoulderMove(Integer lshoulder) {
 		this.leftArmMoves[2] = lshoulder;
 	}
-
 	public Integer getLeftOmoplateMove() {
 		return leftArmMoves[3];
 	}
-
 	public void setLeftOmoplateMove(Integer lomoplate) {
 		this.leftArmMoves[3] = lomoplate;
 	}
-
 	public Integer getNeckMove() {
 		return headMoves[0];
 	}
-
 	public void setNeckMove(Integer neck) {
 		this.headMoves[0] = neck;
 	}
-
 	public Integer getHeadRotateMove() {
 		return headMoves[1];
 	}
-
 	public void setHeadRotateMove(Integer rothead) {
 		this.headMoves[1] = rothead;
 	}
-
 	public Integer getEyeXMove() {
 		return headMoves[2];
 	}
-
 	public void setEyeXMove(Integer eyeX) {
 		this.headMoves[2] = eyeX;
 	}
-
 	public Integer getEyeYMove() {
 		return headMoves[3];
 	}
-
 	public void setEyeYMove(Integer eyeY) {
 		this.headMoves[3] = eyeY;
 	}
-
 	public Integer getJawMove() {
 		return headMoves[4];
 	}
-
 	public void setJawMove(Integer jaw) {
 		this.headMoves[4] = jaw;
 	}
-
 	public Integer getTopStomMove() {
 		return torsoMoves[0];
 	}
-
 	public void setTopStomMove(Integer topStom) {
 		this.torsoMoves[0] = topStom;
 	}
-
 	public Integer getMidStomMove() {
 		return torsoMoves[1];
 	}
-
 	public void setMidStomMove(Integer midStom) {
 		this.torsoMoves[1] = midStom;
 	}
-
 	public Integer getLowStomMove() {
 		return torsoMoves[2];
 	}
@@ -1004,5 +927,11 @@ public class Frame implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Boolean getSpeechSet() {
+		return speechSet;
+	}
+	public void setSpeechSet(Boolean speechSet) {
+		this.speechSet = speechSet;
 	}
 }
