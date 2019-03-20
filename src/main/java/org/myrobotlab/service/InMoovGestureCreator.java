@@ -248,22 +248,22 @@ public class InMoovGestureCreator extends Service {
 		parsescript(control_list);
 	}
 
-	public void control_connect(JButton control_connect) {
-		// Connect / Disconnect to / from the InMoov service (button
-		// bottom-left)
-		if (control_connect.getText().equals("Connect")) {
+	public void control_connect(JButton controlConnect) {
+		// Connect / Disconnect to / from the InMoov service (button top-left)
+		if (controlConnect.getText().equals("Connect")) {
 			if (referencename == null) {
 				referencename = "i01";
 			}
 			i01 = (InMoov) Runtime.getService(referencename);
+			i01.enable();
 			if (i01 != null) {
-				control_connect.setText("Disconnect");
+				controlConnect.setText("Disconnect");
 			} else {
 				LOGGER.info("Failed to connect!"); // should be a message to the user
 			}
 		} else {
 			i01 = null;
-			control_connect.setText("Connect");
+			controlConnect.setText("Connect");
 		}
 	}
 
