@@ -254,7 +254,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel bottom = new JPanel();
 			bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
 			JPanel bottomTop = new JPanel();
-			Dimension maximumSize = new Dimension(Integer.MAX_VALUE, 30);
+			Dimension maximumSize = new Dimension(Integer.MAX_VALUE, 40);
 			bottomTop.setMaximumSize(maximumSize);
 			bottomTop.setLayout(new BoxLayout(bottomTop, BoxLayout.X_AXIS));			
 			JPanel bottomBottom = new JPanel();

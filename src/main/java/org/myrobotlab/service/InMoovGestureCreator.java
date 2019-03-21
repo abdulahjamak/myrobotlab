@@ -1349,8 +1349,8 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("[MOVE] execution error", e);
 		}
 		LOGGER.info("Running [SLEEP] for \"" + fih.getSleep() + "\" seconds...");
-		// sleep 
-		sleep(fih.getSleep());
+		// sleep is in mili seconds
+		sleep(fih.getSleep()*1000);
 		LOGGER.info("Finished frame execution.");
 	}
 
