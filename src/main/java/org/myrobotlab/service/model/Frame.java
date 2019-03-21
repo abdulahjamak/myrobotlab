@@ -106,7 +106,7 @@ public class Frame implements Serializable {
 		StringBuffer frameString = new StringBuffer();
 		// speech frame
 		frameString.append("<html>FRAME: ").append(this.name).append(NEW_LINE);
-		frameString.append("<p>SPEECH ");
+		frameString.append("- SPEECH ");
 		if (speechSet) {
 			frameString.append(this.speech);
 		} else {
@@ -114,7 +114,7 @@ public class Frame implements Serializable {
 		}
 		frameString.append(NEW_LINE);
 		// speed frame
-		frameString.append("<p>SPEED ");
+		frameString.append("- SPEED ");
 		// right hand
 		if (speedSets[0]) {
 			frameString.append(this.rightHandSpeeds[0]).append(SPACE_SYMBOL).append(this.rightHandSpeeds[1])
@@ -169,7 +169,7 @@ public class Frame implements Serializable {
 		}
 		frameString.append(NEW_LINE);
 		// move frame
-		frameString.append("<p>MOVE ");
+		frameString.append("- MOVE ");
 		// right hand
 		if (moveSets[0]) {
 			frameString.append(this.rightHandMoves[0]).append(SPACE_SYMBOL).append(this.rightHandMoves[1])
@@ -226,7 +226,7 @@ public class Frame implements Serializable {
 		}
 		frameString.append(NEW_LINE);
 		// sleep frame
-		frameString.append("<p>SLEEP ").append(this.sleep).append("</html>");
+		frameString.append("- SLEEP ").append(this.sleep).append("</html>");
 		//
 		return frameString.toString();
 	}

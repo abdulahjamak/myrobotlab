@@ -2411,7 +2411,6 @@ public class InMoovGestureCreator extends Service {
 			panel.add(sliderLabelContainer);
 		}
 	}
-	
 	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
 		LOGGER.trace("addSpeedTextToSectionPane for \"" + robotSection + 
 				"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
@@ -2468,6 +2467,81 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
+	public void addBottomTopPane(
+			JPanel bottomTop, 
+			JFormattedTextField frameNameTextField, 
+			JFormattedTextField frameSleepTextField, 
+			JFormattedTextField frameSpeechTextField, 
+			int frameItemHolderIndex) {
+		LOGGER.info("addBottomTopPane [START]");
+		try {
+			Frame frame = frames.get(frameItemHolderIndex);
+			bottomTop.removeAll();
+			JLabel frameNameLabel = new JLabel("Frame Name");
+			bottomTop.add(frameNameLabel);
+			frameNameTextField = new JFormattedTextField(frame.getName());
+			bottomTop.add(frameNameTextField);
+
+			PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+					frame.setName(text);	
+		        }
+		    };
+		    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
+
+//			frame_add = new JButton("Add");
+//			bottomTop.add(frame_add);
+//			frame_add.addActionListener(this);
+
+//			frame_addspeed = new JButton("Add Speed");
+//			top2top1.add(frame_addspeed);
+//			frame_addspeed.addActionListener(this);
+
+			JLabel sleepLabel = new JLabel("Sleep (s)");
+			bottomTop.add(sleepLabel);
+			frameSleepTextField = new JFormattedTextField(decimalFormat);
+			frameSleepTextField.setColumns(3);
+			frameSleepTextField.setValue(frame.getSleep());
+			bottomTop.add(frameSleepTextField);
+
+			PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+					frame.setSleep(Integer.valueOf(text));	
+		        }
+		    };
+		    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
+
+//			frame_addsleep = new JButton("Add Sleep");
+//			top2top1.add(frame_addsleep);
+//			frame_addsleep.addActionListener(this);
+
+			JLabel speechLabel = new JLabel("Speech");
+			bottomTop.add(speechLabel);			
+			frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
+			bottomTop.add(frameSpeechTextField);
+
+			PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+					frame.setSpeech(text);	
+		        }
+		    };
+		    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
+
+//			frame_addspeech = new JButton("Add Speech");
+//			top2top1.add(frame_addspeech);
+//			frame_addspeech.addActionListener(this);
+		} catch (Exception e) {
+			LOGGER.warn("addBottomTopPane error: ", e);
+		}
+		LOGGER.trace("addBottomTopPane [END]");
+	}
+
 	public void frameSelectionChanged(JPanel top, 
 			Map<RobotSection, JPanel> robotSectionMovePanels, 
 			Map<RobotSection, JPanel> robotSectionSlidersPanels,
@@ -2502,10 +2576,10 @@ public class InMoovGestureCreator extends Service {
 			top.revalidate();
 			top.repaint();
 
-			LOGGER.trace("frameSelectionChanged [END]");
 		} catch (Exception e) {
 			LOGGER.warn("frameSelectionChanged error: ", e);
 		}
+		LOGGER.trace("frameSelectionChanged [END]");
 	}
 
 	public void oldTabs(JPanel bottom, Frame frame, int frameItemHolderIndex) {		

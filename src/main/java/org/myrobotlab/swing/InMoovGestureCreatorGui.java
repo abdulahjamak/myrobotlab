@@ -2,6 +2,7 @@ package org.myrobotlab.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -13,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -28,7 +30,6 @@ import javax.swing.event.ListSelectionListener;
 import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.service.InMoovGestureCreator;
 import org.myrobotlab.service.SwingGui;
-import org.myrobotlab.service.model.Frame;
 import org.myrobotlab.service.model.Frame.RobotSection;
 import org.slf4j.Logger;
 
@@ -59,12 +60,12 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
   JList control_list;
 
-  JTextField frame_add_textfield;
+  JFormattedTextField frameNameTextField;
   JButton frame_add;
   JButton frame_addspeed;
-  JTextField frame_addsleep_textfield;
+  JFormattedTextField frameSleepTextField;
   JButton frame_addsleep;
-  JTextField frame_addspeech_textfield;
+  JFormattedTextField frameSpeechTextField;
   JButton frame_addspeech;
 
   JButton frame_importminresmax;
@@ -195,38 +196,11 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel topRight = new JPanel();
 			topRight.setLayout(new BoxLayout(topRight, BoxLayout.Y_AXIS));
 
-			JPanel top2top = new JPanel();
-			top2top.setLayout(new BoxLayout(top2top, BoxLayout.Y_AXIS));
-
-			JPanel top2top1 = new JPanel();
-			top2top1.setLayout(new BoxLayout(top2top1, BoxLayout.X_AXIS));
-
-			frame_add_textfield = new JTextField("Frame-Name");
-			top2top1.add(frame_add_textfield);
-
-			frame_add = new JButton("Add");
-			top2top1.add(frame_add);
-			frame_add.addActionListener(this);
-
-			frame_addspeed = new JButton("Add Speed");
-			top2top1.add(frame_addspeed);
-			frame_addspeed.addActionListener(this);
-
-			frame_addsleep_textfield = new JTextField("Seconds of Sleep");
-			top2top1.add(frame_addsleep_textfield);
-
-			frame_addsleep = new JButton("Add Sleep");
-			top2top1.add(frame_addsleep);
-			frame_addsleep.addActionListener(this);
-
-			frame_addspeech_textfield = new JTextField("Speech");
-			top2top1.add(frame_addspeech_textfield);
-
-			frame_addspeech = new JButton("Add Speech");
-			top2top1.add(frame_addspeech);
-			frame_addspeech.addActionListener(this);
-
-			top2top.add(top2top1);
+//			JPanel top2top = new JPanel();
+//			top2top.setLayout(new BoxLayout(top2top, BoxLayout.Y_AXIS));
+//
+//
+//			top2top.add(top2top1);
 
 			JPanel top2top2 = new JPanel();
 			top2top2.setLayout(new BoxLayout(top2top2, BoxLayout.X_AXIS));
@@ -268,9 +242,9 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			top2top2.add(frame_moverealtime);
 			frame_moverealtime.addItemListener(this);
 
-			top2top.add(top2top2);
+//			top2top.add(top2top2);
 
-			topRight.add(BorderLayout.NORTH, top2top);
+			topRight.add(BorderLayout.NORTH, top2top2);
 
 			String[] te2 = {"Load a script to see frames..."}; 
 
@@ -278,7 +252,13 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			frameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			JPanel bottom = new JPanel();
-			bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+			bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
+			JPanel bottomTop = new JPanel();
+			Dimension maximumSize = new Dimension(Integer.MAX_VALUE, 30);
+			bottomTop.setMaximumSize(maximumSize);
+			bottomTop.setLayout(new BoxLayout(bottomTop, BoxLayout.X_AXIS));			
+			JPanel bottomBottom = new JPanel();
+			bottomBottom.setLayout(new BoxLayout(bottomBottom, BoxLayout.X_AXIS));
 
 			// main 6 panels for robot sections
 			final JPanel rightHandPanel = new JPanel();
@@ -309,12 +289,12 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			torsoPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
 			//
 //			bottom.removeAll();
-			bottom.add(rightHandPanel);
-			bottom.add(rightArmPanel);
-			bottom.add(leftHandPanel);
-			bottom.add(leftArmPanel);
-			bottom.add(headPanel);
-			bottom.add(torsoPanel);
+			bottomBottom.add(rightHandPanel);
+			bottomBottom.add(rightArmPanel);
+			bottomBottom.add(leftHandPanel);
+			bottomBottom.add(leftArmPanel);
+			bottomBottom.add(headPanel);
+			bottomBottom.add(torsoPanel);
 //			bottom.revalidate();
 //			bottom.repaint();
 			// panels for MOVE controls
@@ -424,6 +404,12 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	            @Override
 	            public void valueChanged(ListSelectionEvent arg0) {
 	                if (!arg0.getValueIsAdjusting()) {
+	                	myService.send(boundServiceName, "addBottomTopPane", 
+	                			bottomTop,
+	                			frameNameTextField,
+	                			frameSleepTextField, 
+	                			frameSpeechTextField, 
+	                			frameList.getSelectedIndex());			
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
 	                			top,
 	                			robotSectionMovePanels, 
@@ -434,6 +420,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	                }
 	            }
 	        });
+			bottom.add(bottomTop);
+			bottom.add(bottomBottom);
 
 			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
 			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
@@ -478,23 +466,23 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		} else if (o == control_testgest) {
 			swingGui.send(boundServiceName, "control_testgest");
 		} else if (o == frame_add) {
-			swingGui.send(boundServiceName, "frame_add", frameList, frame_add_textfield);
+			swingGui.send(boundServiceName, "frame_add", frameList, frameNameTextField);
 		} else if (o == frame_addspeed) {
 			swingGui.send(boundServiceName, "frame_addspeed", frameList);
 		} else if (o == frame_addsleep) {
-			swingGui.send(boundServiceName, "frame_addsleep", frameList, frame_addsleep_textfield);
+			swingGui.send(boundServiceName, "frame_addsleep", frameList, frameSleepTextField);
 		} else if (o == frame_addspeech) {
-			swingGui.send(boundServiceName, "frame_addspeech", frameList, frame_addspeech_textfield);
+			swingGui.send(boundServiceName, "frame_addspeech", frameList, frameSpeechTextField);
 		} else if (o == frame_importminresmax) {
 			swingGui.send(boundServiceName, "frame_importminresmax");
 		} else if (o == frame_remove) {
 			swingGui.send(boundServiceName, "frame_remove", frameList);
 		} else if (o == frame_load) {
-			swingGui.send(boundServiceName, "frame_load", frameList, frame_add_textfield, frame_addsleep_textfield,
-					frame_addspeech_textfield);
+			swingGui.send(boundServiceName, "frame_load", frameList, frameNameTextField, frameSleepTextField,
+					frameSpeechTextField);
 		} else if (o == frame_update) {
-			swingGui.send(boundServiceName, "frame_update", frameList, frame_add_textfield, frame_addsleep_textfield,
-					frame_addspeech_textfield);
+			swingGui.send(boundServiceName, "frame_update", frameList, frameNameTextField, frameSleepTextField,
+					frameSpeechTextField);
 		} else if (o == frame_copy) {
 			swingGui.send(boundServiceName, "frame_copy", frameList);
 		} else if (o == frame_up) {
