@@ -1,14 +1,19 @@
 package org.myrobotlab.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +29,7 @@ import org.myrobotlab.logging.LoggerFactory;
 import org.myrobotlab.service.InMoovGestureCreator;
 import org.myrobotlab.service.SwingGui;
 import org.myrobotlab.service.model.Frame;
+import org.myrobotlab.service.model.Frame.RobotSection;
 import org.slf4j.Logger;
 
 /**
@@ -118,67 +124,63 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			// |----------|
 
 
-			JPanel bottom = new JPanel();
-			Frame frame = new Frame();
-			myService.send(boundServiceName, "initializeBottomPaneTabs", bottom, frame);
-//			initializeBottomPaneTabs(bottom, myService);
 
 			JPanel top = new JPanel();
 
-			JPanel top1 = new JPanel();
-			top1.setLayout(new BorderLayout());
+			JPanel topLeft = new JPanel();
+			topLeft.setLayout(new BorderLayout());
 
-			JPanel top1top = new JPanel();
-			top1top.setLayout(new BoxLayout(top1top, BoxLayout.X_AXIS));
+			JPanel topLefttop = new JPanel();
+			topLefttop.setLayout(new BoxLayout(topLefttop, BoxLayout.X_AXIS));
 
 			control_gestname = new JTextField("Gest. Name");
-			top1top.add(control_gestname);
+			topLefttop.add(control_gestname);
 
 			control_funcname = new JTextField("Func. Name");
-			top1top.add(control_funcname);
+			topLefttop.add(control_funcname);
 
 			control_connect = new JButton("Connect");
-			top1top.add(control_connect);
+			topLefttop.add(control_connect);
 			control_connect.addActionListener(this);
 
 			control_ScriptFolder = new JButton("Scri Fldr");
-			top1top.add(control_ScriptFolder);
+			topLefttop.add(control_ScriptFolder);
 			control_ScriptFolder.addActionListener(this);
 
-			top1.add(BorderLayout.NORTH, top1top);
+			topLeft.add(BorderLayout.NORTH, topLefttop);
 
-			JPanel top1right = new JPanel();
-			top1right.setLayout(new BoxLayout(top1right, BoxLayout.Y_AXIS));
+			JPanel topLeftright = new JPanel();
+			topLeftright.setLayout(new BoxLayout(topLeftright, BoxLayout.Y_AXIS));
 
 			control_loadscri = new JButton("Load Scri");
-			top1right.add(control_loadscri);
+			topLeftright.add(control_loadscri);
 			control_loadscri.addActionListener(this);
 
 			control_savescri = new JButton("Save Scri");
-			top1right.add(control_savescri);
+			topLeftright.add(control_savescri);
 			control_savescri.addActionListener(this);
 
 			control_loadgest = new JButton("Load Gest");
-			top1right.add(control_loadgest);
+			topLeftright.add(control_loadgest);
 			control_loadgest.addActionListener(this);
 
 			control_addgest = new JButton("Add Gest");
-			top1right.add(control_addgest);
+			topLeftright.add(control_addgest);
 			control_addgest.addActionListener(this);
 
 			control_updategest = new JButton("Update Gest");
-			top1right.add(control_updategest);
+			topLeftright.add(control_updategest);
 			control_updategest.addActionListener(this);
 
 			control_removegest = new JButton("Remove Gest");
-			top1right.add(control_removegest);
+			topLeftright.add(control_removegest);
 			control_removegest.addActionListener(this);
 
 			control_testgest = new JButton("Test Gest");
-			top1right.add(control_testgest);
+			topLeftright.add(control_testgest);
 			control_testgest.addActionListener(this);
 
-			top1.add(BorderLayout.EAST, top1right);
+			topLeft.add(BorderLayout.EAST, topLeftright);
 			
 			String[] te1 = { "Load folder with scripts" };
 			control_list = new JList(te1);
@@ -188,10 +190,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			control_listscroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			control_listscroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-			top1.add(BorderLayout.CENTER, control_listscroller);
+			topLeft.add(BorderLayout.CENTER, control_listscroller);
 
-			JPanel top2 = new JPanel();
-			top2.setLayout(new BoxLayout(top2, BoxLayout.Y_AXIS));
+			JPanel topRight = new JPanel();
+			topRight.setLayout(new BoxLayout(topRight, BoxLayout.Y_AXIS));
 
 			JPanel top2top = new JPanel();
 			top2top.setLayout(new BoxLayout(top2top, BoxLayout.Y_AXIS));
@@ -268,18 +270,162 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			top2top.add(top2top2);
 
-			top2.add(BorderLayout.NORTH, top2top);
+			topRight.add(BorderLayout.NORTH, top2top);
 
 			String[] te2 = {"Load a script to see frames..."}; 
 
 			frameList = new JList(te2);
 			frameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			JPanel bottom = new JPanel();
+			bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+
+			// main 6 panels for robot sections
+			final JPanel rightHandPanel = new JPanel();
+			rightHandPanel.setLayout(new BorderLayout());
+			final JPanel rightArmPanel = new JPanel();
+			rightArmPanel.setLayout(new BorderLayout());
+			final JPanel leftHandPanel = new JPanel();
+			leftHandPanel.setLayout(new BorderLayout());
+			final JPanel leftArmPanel = new JPanel();
+			leftArmPanel.setLayout(new BorderLayout());
+			final JPanel headPanel = new JPanel();
+			headPanel.setLayout(new BorderLayout());
+			final JPanel torsoPanel = new JPanel();
+			torsoPanel.setLayout(new BorderLayout());
+			// Titles
+			rightHandPanel.add(BorderLayout.NORTH, new JLabel("Right Hand"));
+			rightArmPanel.add(BorderLayout.NORTH, new JLabel("Right Arm"));
+			leftHandPanel.add(BorderLayout.NORTH, new JLabel("Left Hand"));
+			leftArmPanel.add(BorderLayout.NORTH, new JLabel("Left Arm"));
+			headPanel.add(BorderLayout.NORTH, new JLabel("Head"));
+			torsoPanel.add(BorderLayout.NORTH, new JLabel("Torso"));
+			// borders
+			rightHandPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			rightArmPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			leftHandPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			leftArmPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			headPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			torsoPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			//
+//			bottom.removeAll();
+			bottom.add(rightHandPanel);
+			bottom.add(rightArmPanel);
+			bottom.add(leftHandPanel);
+			bottom.add(leftArmPanel);
+			bottom.add(headPanel);
+			bottom.add(torsoPanel);
+//			bottom.revalidate();
+//			bottom.repaint();
+			// panels for MOVE controls
+			final JPanel rightHandMovePanel = new JPanel();
+			rightHandMovePanel.setLayout(new BoxLayout(rightHandMovePanel, BoxLayout.Y_AXIS));
+			final JPanel rightArmMovePanel = new JPanel();
+			rightArmMovePanel.setLayout(new BoxLayout(rightArmMovePanel, BoxLayout.Y_AXIS));
+			final JPanel leftHandMovePanel = new JPanel();
+			leftHandMovePanel.setLayout(new BoxLayout(leftHandMovePanel, BoxLayout.Y_AXIS));
+			final JPanel leftArmMovePanel = new JPanel();
+			leftArmMovePanel.setLayout(new BoxLayout(leftArmMovePanel, BoxLayout.Y_AXIS));
+			final JPanel headMovePanel = new JPanel();
+			headMovePanel.setLayout(new BoxLayout(headMovePanel, BoxLayout.Y_AXIS));
+			final JPanel torsoMovePanel = new JPanel();
+			torsoMovePanel.setLayout(new BoxLayout(torsoMovePanel, BoxLayout.Y_AXIS));
+			// add to map
+			final Map<RobotSection, JPanel> robotSectionMovePanels = new HashMap<RobotSection, JPanel>();
+			robotSectionMovePanels.put(RobotSection.RIGHT_HAND, rightHandMovePanel);
+			robotSectionMovePanels.put(RobotSection.RIGHT_ARM, rightArmMovePanel);
+			robotSectionMovePanels.put(RobotSection.LEFT_HAND, leftHandMovePanel);
+			robotSectionMovePanels.put(RobotSection.LEFT_ARM, leftArmMovePanel);
+			robotSectionMovePanels.put(RobotSection.HEAD, headMovePanel);
+			robotSectionMovePanels.put(RobotSection.TORSO, torsoMovePanel);
+			// add panels for sliders
+			final JPanel rightHandSlidersPanel = new JPanel();
+			rightHandSlidersPanel.setLayout(new BoxLayout(rightHandSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel rightArmSlidersPanel = new JPanel();
+			rightArmSlidersPanel.setLayout(new BoxLayout(rightArmSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel leftHandSlidersPanel = new JPanel();
+			leftHandSlidersPanel.setLayout(new BoxLayout(leftHandSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel leftArmSlidersPanel = new JPanel();
+			leftArmSlidersPanel.setLayout(new BoxLayout(leftArmSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel headSlidersPanel = new JPanel();
+			headSlidersPanel.setLayout(new BoxLayout(headSlidersPanel, BoxLayout.X_AXIS));
+			final JPanel torsoSlidersPanel = new JPanel();
+			torsoSlidersPanel.setLayout(new BoxLayout(torsoSlidersPanel, BoxLayout.X_AXIS));
+			// add to map
+			final Map<RobotSection, JPanel> robotSectionSlidersPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSlidersPanels.put(RobotSection.RIGHT_HAND, rightHandSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.RIGHT_ARM, rightArmSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.LEFT_HAND, leftHandSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.LEFT_ARM, leftArmSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.HEAD, headSlidersPanel);
+			robotSectionSlidersPanels.put(RobotSection.TORSO, torsoSlidersPanel);
+			// panels for SPEED controls
+			final JPanel rightHandSpeedPanel = new JPanel();
+			rightHandSpeedPanel.setLayout(new BoxLayout(rightHandSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel rightArmSpeedPanel = new JPanel();
+			rightArmSpeedPanel.setLayout(new BoxLayout(rightArmSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel leftHandSpeedPanel = new JPanel();
+			leftHandSpeedPanel.setLayout(new BoxLayout(leftHandSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel leftArmSpeedPanel = new JPanel();
+			leftArmSpeedPanel.setLayout(new BoxLayout(leftArmSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel headSpeedPanel = new JPanel();
+			headSpeedPanel.setLayout(new BoxLayout(headSpeedPanel, BoxLayout.Y_AXIS));
+			final JPanel torsoSpeedPanel = new JPanel();
+			torsoSpeedPanel.setLayout(new BoxLayout(torsoSpeedPanel, BoxLayout.Y_AXIS));
+			// layouts
+			rightHandPanel.add(BorderLayout.CENTER, rightHandMovePanel);
+			rightHandPanel.add(BorderLayout.SOUTH, rightHandSpeedPanel);
+			rightArmPanel.add(BorderLayout.CENTER, rightArmMovePanel);
+			rightArmPanel.add(BorderLayout.SOUTH, rightArmSpeedPanel);
+			leftHandPanel.add(BorderLayout.CENTER, leftHandMovePanel);
+			leftHandPanel.add(BorderLayout.SOUTH, leftHandSpeedPanel);
+			leftArmPanel.add(BorderLayout.CENTER, leftArmMovePanel);
+			leftArmPanel.add(BorderLayout.SOUTH, leftArmSpeedPanel);
+			headPanel.add(BorderLayout.CENTER, headMovePanel);
+			headPanel.add(BorderLayout.SOUTH, headSpeedPanel);
+			torsoPanel.add(BorderLayout.CENTER, torsoMovePanel);
+			torsoPanel.add(BorderLayout.SOUTH, torsoSpeedPanel);
+			// add to map
+			final Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSpeedPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedPanel);
+			robotSectionSpeedPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedPanel);
+			robotSectionSpeedPanels.put(RobotSection.LEFT_HAND, leftHandSpeedPanel);
+			robotSectionSpeedPanels.put(RobotSection.LEFT_ARM, leftArmSpeedPanel);
+			robotSectionSpeedPanels.put(RobotSection.HEAD, headSpeedPanel);
+			robotSectionSpeedPanels.put(RobotSection.TORSO, torsoSpeedPanel);
+			// panels for SPEED text boxes
+			final JPanel rightHandSpeedNumberBoxesPanel = new JPanel();
+			rightHandSpeedNumberBoxesPanel.setLayout(new BoxLayout(rightHandSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel rightArmSpeedNumberBoxesPanel = new JPanel();
+			rightArmSpeedNumberBoxesPanel.setLayout(new BoxLayout(rightArmSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel leftHandSpeedNumberBoxesPanel = new JPanel();
+			leftHandSpeedNumberBoxesPanel.setLayout(new BoxLayout(leftHandSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel leftArmSpeedNumberBoxesPanel = new JPanel();
+			leftArmSpeedNumberBoxesPanel.setLayout(new BoxLayout(leftArmSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel headSpeedNumberBoxesPanel = new JPanel();
+			headSpeedNumberBoxesPanel.setLayout(new BoxLayout(headSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
+			torsoSpeedNumberBoxesPanel.setLayout(new BoxLayout(torsoSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+			// add to map
+			final Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_HAND, leftHandSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_ARM, leftArmSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.HEAD, headSpeedNumberBoxesPanel);
+			robotSectionSpeedNumberBoxesPanels.put(RobotSection.TORSO, torsoSpeedNumberBoxesPanel);
+			
 			frameList.addListSelectionListener(new ListSelectionListener() {
 	            @Override
 	            public void valueChanged(ListSelectionEvent arg0) {
 	                if (!arg0.getValueIsAdjusting()) {
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
-	                			bottom, frameList.getSelectedIndex());
+	                			top,
+	                			robotSectionMovePanels, 
+	                			robotSectionSlidersPanels,
+	                			robotSectionSpeedPanels,
+	                			robotSectionSpeedNumberBoxesPanels, 
+	                			frameList.getSelectedIndex());
 	                }
 	            }
 	        });
@@ -288,17 +434,13 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			frameListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			frameListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-			top2.add(BorderLayout.CENTER, frameListScroller);
-			
-			JScrollPane top2Scroller = new JScrollPane(top2);
-			top2Scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			top2Scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			topRight.add(BorderLayout.CENTER, frameListScroller);
 
-			JSplitPane splitPaneTop1Top2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, top1, top2Scroller);
-			splitPaneTop1Top2.setOneTouchExpandable(true);
+			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
+			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
 			// splitpanebottom1bottom2.setDividerLocation(200);
 
-			top.add(splitPaneTop1Top2);
+			top.add(splitPaneTopLeftTopRight);
 
 			JSplitPane splitPaneTopBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
 			splitPaneTopBottom.setOneTouchExpandable(true);

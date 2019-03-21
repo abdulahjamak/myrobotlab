@@ -100,7 +100,7 @@ public class Frame implements Serializable {
 	public String toString() {
 		StringBuffer frameString = new StringBuffer();
 		// speech frame
-		frameString.append("<html>FRAME name ").append(this.name).append(NEW_LINE);
+		frameString.append("<html>FRAME: ").append(this.name).append(NEW_LINE);
 		frameString.append("<p>SPEECH ");
 		if (speechSet) {
 			frameString.append(this.speech);
