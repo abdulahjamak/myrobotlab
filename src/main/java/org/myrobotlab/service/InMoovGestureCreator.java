@@ -2382,8 +2382,9 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.trace("addMoveSlidersToSectionPane for \"" + robotSection +
 					"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
 		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
-
-			// preset the slider
+			// preset the slider			
+			final int sectionIndex = i;
+			JLabel sliderLabel = new JLabel(Frame.getSectionLabel(robotSection, sectionIndex));
 			JSlider slider = new JSlider();
 			slider.setOrientation(SwingConstants.VERTICAL);
 			slider.setMinimum(0);
@@ -2394,8 +2395,6 @@ public class InMoovGestureCreator extends Service {
 			slider.setPaintTicks(true);
 			slider.setPaintLabels(true);
 			slider.setValue(frame.getMoveValue(robotSection, i));
-			
-			final int sectionIndex = i;
 
 			slider.addChangeListener(new ChangeListener() {
 
@@ -2405,7 +2404,11 @@ public class InMoovGestureCreator extends Service {
 					frame.setMoveValue(robotSection, sectionIndex, slider.getValue());	
 				}
 			});
-			panel.add(slider);
+			final JPanel sliderLabelContainer = new JPanel();
+			sliderLabelContainer.setLayout(new BoxLayout(sliderLabelContainer, BoxLayout.Y_AXIS));
+			sliderLabelContainer.add(sliderLabel);
+			sliderLabelContainer.add(slider);
+			panel.add(sliderLabelContainer);
 		}
 	}
 	

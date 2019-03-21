@@ -415,6 +415,11 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.HEAD, headSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.TORSO, torsoSpeedNumberBoxesPanel);
 			
+			JScrollPane frameListScroller = new JScrollPane(frameList);
+			frameListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			frameListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			topRight.add(BorderLayout.CENTER, frameListScroller);
+			
 			frameList.addListSelectionListener(new ListSelectionListener() {
 	            @Override
 	            public void valueChanged(ListSelectionEvent arg0) {
@@ -429,12 +434,6 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	                }
 	            }
 	        });
-
-			JScrollPane frameListScroller = new JScrollPane(frameList);
-			frameListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			frameListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-			topRight.add(BorderLayout.CENTER, frameListScroller);
 
 			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
 			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
