@@ -1281,7 +1281,7 @@ public class InMoovGestureCreator extends Service {
 		try {
 			LOGGER.info("Running [SPEECH] with text: \"" + fih.getSpeech() + "\"...");
 			if (fih.getSpeechSet()) {
-				i01.mouth.speakBlocking(fih.getSpeech());
+				i01.mouth.speak(fih.getSpeech());
 			}
 		} catch (Exception e) {
 			LOGGER.warn("[SPEECH] execution error", e);
