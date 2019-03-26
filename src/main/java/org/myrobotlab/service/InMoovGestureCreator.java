@@ -87,9 +87,9 @@ public class InMoovGestureCreator extends Service {
 	private final Gesture gesture = new Gesture();
 	private final List<Frame> frames = gesture.getFrames();
 
-	transient ServoItemHolder[][] servoitemholder;
+	private final List<File> scriptFiles = new ArrayList<File>();
 
-	private final List<File> pythonFiles = new ArrayList<File>();
+	transient ServoItemHolder[][] servoitemholder;
 
 	transient ArrayList<PythonItemHolder> pythonitemholder;
 
@@ -108,8 +108,6 @@ public class InMoovGestureCreator extends Service {
 
 	String ime_gest = null;
 
-	private JList frameListGlobal;
-
 	/**
 	 * This static method returns all the details of the class without it having to
 	 * be constructed. It has description, categories, dependencies, and peer
@@ -125,26 +123,14 @@ public class InMoovGestureCreator extends Service {
 		return meta;
 	}
 
-	public JList getFrameListGlobal() {
-		return frameListGlobal;
-	}
-
-	public void setFrameListGlobal(JList frameListGlobal) {
-		this.frameListGlobal = frameListGlobal;
-	}
-
 	public static void main(String[] args) throws InterruptedException {
-
 		LoggingFactory.init(Level.INFO);
 		try {
-
 			Runtime.start("gui", "SwingGui");
 			Runtime.start("inmoovgesturecreator", "InMoovGestureCreator");
-
 		} catch (Exception e) {
 			Logging.logError(e);
 		}
-
 	}
 
 	public InMoovGestureCreator(String n) {
@@ -155,665 +141,788 @@ public class InMoovGestureCreator extends Service {
 		decimalFormat.setGroupingUsed(false);
 	}
 
-	public void control_addgest(JList control_list, JTextField control_gestname, JTextField control_funcname) {
-		// Add the current gesture to the script (button bottom-left)
-		String defname = ime_funkcije = control_funcname.getText();
-		String gestname = ime_gest = control_gestname.getText();
+//	public void control_addgest(JList<String> gestureList, JTextField control_gestname, JTextField control_funcname) {
+//		// Add the current gesture to the script (button bottom-left)
+//		String defname = ime_funkcije = control_funcname.getText();
+//		String gestname = ime_gest = control_gestname.getText();
+//
+//		String code = "";
+//		for (Frame fih : frames) {
+//			String code1;
+//			if (fih.getSleep() != -1) {
+//				code1 = "    sleep(" + fih.getSleep() + ")\n";
+//			} else if (fih.getSpeech() != null) {
+//				code1 = "    " + pythonname + ".mouth.speakBlocking(\"" + fih.getSpeech() + "\")\n";
+//			} else if (fih.getName() != null) {
+//				String code11 = "";
+//				String code12 = "";
+//				String code13 = "";
+//				String code14 = "";
+//				String code15 = "";
+//				String code16 = "";
+//				if (fih.getRightHandMoveSet()) {
+//					code11 = "    " + pythonname + ".moveHead(" + fih.getNeckMove() + "," + fih.getHeadRotateMove()
+//							+ "," + fih.getEyeXMove() + "," + fih.getEyeYMove() + "," + fih.getJawMove() + ")\n";
+//				}
+//				if (fih.getRightArmMoveSet()) {
+//					code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLeftBicepsMove() + ","
+//							+ fih.getLeftRotateMove() + "," + fih.getLeftShoulderMove() + ","
+//							+ fih.getLeftOmoplateMove() + ")\n";
+//				}
+//				if (fih.getLeftHandMoveSet()) {
+//					code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRightBicepsMove() + ","
+//							+ fih.getRightRotateMove() + "," + fih.getRightShoulderMove() + ","
+//							+ fih.getRightOmoplateMove() + ")\n";
+//				}
+//				if (fih.getLeftArmMoveSet()) {
+//					code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLeftThumbFingerMove() + ","
+//							+ fih.getLeftIndexFingerMove() + "," + fih.getLeftMajeureFingerMove() + ","
+//							+ fih.getLeftRingFingerMove() + "," + fih.getLeftPinkyFingerMove() + ","
+//							+ fih.getLeftWristMove() + ")\n";
+//				}
+//				if (fih.getHeadMoveSet()) {
+//					code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRightThumbFingerMove() + ","
+//							+ fih.getRightIndexFingerMove() + "," + fih.getRightMajeureFingerMove() + ","
+//							+ fih.getRightRingFingerMove() + "," + fih.getRightPinkyFingerMove() + ","
+//							+ fih.getRightWristMove() + ")\n";
+//				}
+//				if (fih.getTorsoMoveSet()) {
+//					code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStomMove() + "," + fih.getMidStomMove()
+//							+ "," + fih.getLowStomMove() + ")\n";
+//				}
+//				code1 = code11 + code12 + code13 + code14 + code15 + code16;
+//			} else {
+//				String code11 = "";
+//				String code12 = "";
+//				String code13 = "";
+//				String code14 = "";
+//				String code15 = "";
+//				String code16 = "";
+//				if (fih.getRightHandMoveSet()) {
+//					code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckSpeed() + ","
+//							+ fih.getHeadRotateSpeed() + "," + fih.getEyeXSpeed() + "," + fih.getEyeYSpeed() + ","
+//							+ fih.getJawSpeed() + ")\n";
+//				}
+//				if (fih.getRightArmMoveSet()) {
+//					code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLeftBicepsSpeed() + ","
+//							+ fih.getLeftRotateSpeed() + "," + fih.getLeftShoulderSpeed() + ","
+//							+ fih.getLeftOmoplateSpeed() + ")\n";
+//				}
+//				if (fih.getLeftHandMoveSet()) {
+//					code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRightBicepsSpeed() + ","
+//							+ fih.getRightRotateSpeed() + "," + fih.getRightShoulderSpeed() + ","
+//							+ fih.getRightOmoplateSpeed() + ")\n";
+//				}
+//				if (fih.getLeftArmMoveSet()) {
+//					code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLeftThumbFingerSpeed() + ","
+//							+ fih.getLeftIndexFingerSpeed() + "," + fih.getLeftMajeureFingerSpeed() + ","
+//							+ fih.getLeftRingFingerSpeed() + "," + fih.getLeftPinkyFingerSpeed() + ","
+//							+ fih.getLeftWristSpeed() + ")\n";
+//				}
+//				if (fih.getHeadMoveSet()) {
+//					code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRightThumbFingerSpeed() + ","
+//							+ fih.getRightIndexFingerSpeed() + "," + fih.getRightMajeureFingerSpeed() + ","
+//							+ fih.getRightRingFingerSpeed() + "," + fih.getRightPinkyFingerSpeed() + ","
+//							+ fih.getRightWristSpeed() + ")\n";
+//				}
+//				if (fih.getTorsoMoveSet()) {
+//					code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomSpeed() + ","
+//							+ fih.getMidStomSpeed() + "," + fih.getLowStomSpeed() + ")\n";
+//				}
+//				code1 = code11 + code12 + code13 + code14 + code15 + code16;
+//			}
+//			code = code + code1;
+//		}
+//		String finalcode = "def " + defname + "():\n" + code;
+//
+//		String insert = "ear.addCommand(\"" + gestname + "\", \"python\", \"" + defname + "\")";
+//		int posear = pythonscript.lastIndexOf("ear.addCommand");
+//		int pos = pythonscript.indexOf("\n", posear);
+//		pythonscript = pythonscript.substring(0, pos) + "\n" + insert
+//				+ pythonscript.substring(pos, pythonscript.length());
+//
+//		pythonscript = pythonscript + "\n" + finalcode;
+//
+//		parsescript(gestureList);
+//	}
 
-		String code = "";
-		for (Frame fih : frames) {
-			String code1;
-			if (fih.getSleep() != -1) {
-				code1 = "    sleep(" + fih.getSleep() + ")\n";
-			} else if (fih.getSpeech() != null) {
-				code1 = "    " + pythonname + ".mouth.speakBlocking(\"" + fih.getSpeech() + "\")\n";
-			} else if (fih.getName() != null) {
-				String code11 = "";
-				String code12 = "";
-				String code13 = "";
-				String code14 = "";
-				String code15 = "";
-				String code16 = "";
-				if (fih.getRightHandMoveSet()) {
-					code11 = "    " + pythonname + ".moveHead(" + fih.getNeckMove() + "," + fih.getHeadRotateMove()
-							+ "," + fih.getEyeXMove() + "," + fih.getEyeYMove() + "," + fih.getJawMove() + ")\n";
-				}
-				if (fih.getRightArmMoveSet()) {
-					code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLeftBicepsMove() + ","
-							+ fih.getLeftRotateMove() + "," + fih.getLeftShoulderMove() + ","
-							+ fih.getLeftOmoplateMove() + ")\n";
-				}
-				if (fih.getLeftHandMoveSet()) {
-					code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRightBicepsMove() + ","
-							+ fih.getRightRotateMove() + "," + fih.getRightShoulderMove() + ","
-							+ fih.getRightOmoplateMove() + ")\n";
-				}
-				if (fih.getLeftArmMoveSet()) {
-					code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLeftThumbFingerMove() + ","
-							+ fih.getLeftIndexFingerMove() + "," + fih.getLeftMajeureFingerMove() + ","
-							+ fih.getLeftRingFingerMove() + "," + fih.getLeftPinkyFingerMove() + ","
-							+ fih.getLeftWristMove() + ")\n";
-				}
-				if (fih.getHeadMoveSet()) {
-					code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRightThumbFingerMove() + ","
-							+ fih.getRightIndexFingerMove() + "," + fih.getRightMajeureFingerMove() + ","
-							+ fih.getRightRingFingerMove() + "," + fih.getRightPinkyFingerMove() + ","
-							+ fih.getRightWristMove() + ")\n";
-				}
-				if (fih.getTorsoMoveSet()) {
-					code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStomMove() + "," + fih.getMidStomMove()
-							+ "," + fih.getLowStomMove() + ")\n";
-				}
-				code1 = code11 + code12 + code13 + code14 + code15 + code16;
-			} else {
-				String code11 = "";
-				String code12 = "";
-				String code13 = "";
-				String code14 = "";
-				String code15 = "";
-				String code16 = "";
-				if (fih.getRightHandMoveSet()) {
-					code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckSpeed() + ","
-							+ fih.getHeadRotateSpeed() + "," + fih.getEyeXSpeed() + "," + fih.getEyeYSpeed() + ","
-							+ fih.getJawSpeed() + ")\n";
-				}
-				if (fih.getRightArmMoveSet()) {
-					code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLeftBicepsSpeed() + ","
-							+ fih.getLeftRotateSpeed() + "," + fih.getLeftShoulderSpeed() + ","
-							+ fih.getLeftOmoplateSpeed() + ")\n";
-				}
-				if (fih.getLeftHandMoveSet()) {
-					code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRightBicepsSpeed() + ","
-							+ fih.getRightRotateSpeed() + "," + fih.getRightShoulderSpeed() + ","
-							+ fih.getRightOmoplateSpeed() + ")\n";
-				}
-				if (fih.getLeftArmMoveSet()) {
-					code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLeftThumbFingerSpeed() + ","
-							+ fih.getLeftIndexFingerSpeed() + "," + fih.getLeftMajeureFingerSpeed() + ","
-							+ fih.getLeftRingFingerSpeed() + "," + fih.getLeftPinkyFingerSpeed() + ","
-							+ fih.getLeftWristSpeed() + ")\n";
-				}
-				if (fih.getHeadMoveSet()) {
-					code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRightThumbFingerSpeed() + ","
-							+ fih.getRightIndexFingerSpeed() + "," + fih.getRightMajeureFingerSpeed() + ","
-							+ fih.getRightRingFingerSpeed() + "," + fih.getRightPinkyFingerSpeed() + ","
-							+ fih.getRightWristSpeed() + ")\n";
-				}
-				if (fih.getTorsoMoveSet()) {
-					code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomSpeed() + ","
-							+ fih.getMidStomSpeed() + "," + fih.getLowStomSpeed() + ")\n";
-				}
-				code1 = code11 + code12 + code13 + code14 + code15 + code16;
-			}
-			code = code + code1;
-		}
-		String finalcode = "def " + defname + "():\n" + code;
+//	public void control_loadgest(JList<String> gestureList, JList<String> framelist, JTextField controlGestureName,
+//			JTextField control_funcname) {
+//		// Load the current gesture from the script (button bottom-left)
+//		int posl = gestureList.getSelectedIndex();
+//
+//		if (posl != -1) {
+//			if (pythonitemholder.get(posl).modifyable) {
+//				frames.clear();
+//
+//				String defname = null;
+//
+//				String code = pythonitemholder.get(posl).code;
+//				String[] codesplit = code.split("\n");
+//				Frame fih = null;
+//				boolean ismove = false;
+//				boolean isspeed = false;
+//				boolean head = false;
+//				boolean rhand = false;
+//				boolean lhand = false;
+//				boolean rarm = false;
+//				boolean larm = false;
+//				boolean torso = false;
+//				boolean keepgoing = true;
+//				int pos = 0;
+//				while (keepgoing) {
+//					if (fih == null) {
+//						fih = new Frame();
+//					}
+//					String line;
+//					if (pos < codesplit.length) {
+//						line = codesplit[pos];
+//					} else {
+//						line = "pweicmfh - only one run";
+//						keepgoing = false;
+//					}
+//					String linewithoutspace = line.replace(" ", "");
+//					if (linewithoutspace.equals("")) {
+//						pos++;
+//						continue;
+//					}
+//					String line2 = line.replace(" ", "");
+//					if (!(ismove) && !(isspeed)) {
+//						if (line2.startsWith("def")) {
+//							String defn = line.substring(line.indexOf(" ") + 1, line.lastIndexOf("():"));
+//							defname = defn;
+//							pos++;
+//						} else if (line2.startsWith("sleep")) {
+//							String sleeptime = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
+//							fih.setSleep(Integer.parseInt(sleeptime));
+//							fih.setSpeech(null);
+//							fih.setName(null);
+//							frames.add(fih);
+//							fih = null;
+//							pos++;
+//						} else if (line2.startsWith(pythonname)) {
+//							if (line2.startsWith(pythonname + ".mouth.speak")) {
+//								fih.setSleep(-1);
+//								fih.setSpeech(line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")));
+//								fih.setName(null);
+//								frames.add(fih);
+//								fih = null;
+//								pos++;
+//							} else if (line2.startsWith(pythonname + ".move")) {
+//								ismove = true;
+//								String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
+//								String[] goodsplit = good.split(",");
+//								if (line2.startsWith(pythonname + ".moveHead")) {
+//									fih.setNeckMove(Integer.parseInt(goodsplit[0]));
+//									fih.setHeadRotateMove(Integer.parseInt(goodsplit[1]));
+//									if (goodsplit.length > 2) {
+//										fih.setEyeXMove(Integer.parseInt(goodsplit[2]));
+//										fih.setEyeYMove(Integer.parseInt(goodsplit[3]));
+//										fih.setJawMove(Integer.parseInt(goodsplit[4]));
+//									} else {
+//										fih.setEyeXMove(90);
+//										fih.setEyeYMove(90);
+//										fih.setJawMove(90);
+//									}
+//									head = true;
+//									pos++;
+//								} else if (line2.startsWith(pythonname + ".moveHand")) {
+//									String gs = goodsplit[0];
+//									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//									if (side.equals("right")) {
+//										fih.setRightThumbFingerMove(Integer.parseInt(goodsplit[1]));
+//										fih.setRightIndexFingerMove(Integer.parseInt(goodsplit[2]));
+//										fih.setRightMajeureFingerMove(Integer.parseInt(goodsplit[3]));
+//										fih.setRightRingFingerMove(Integer.parseInt(goodsplit[4]));
+//										fih.setRightPinkyFingerMove(Integer.parseInt(goodsplit[5]));
+//										if (goodsplit.length > 6) {
+//											fih.setRightWristMove(Integer.parseInt(goodsplit[6]));
+//										} else {
+//											fih.setRightWristMove(90);
+//										}
+//										rhand = true;
+//										pos++;
+//									} else if (side.equals("left")) {
+//										fih.setLeftThumbFingerMove(Integer.parseInt(goodsplit[1]));
+//										fih.setLeftIndexFingerMove(Integer.parseInt(goodsplit[2]));
+//										fih.setLeftMajeureFingerMove(Integer.parseInt(goodsplit[3]));
+//										fih.setLeftRingFingerMove(Integer.parseInt(goodsplit[4]));
+//										fih.setLeftPinkyFingerMove(Integer.parseInt(goodsplit[5]));
+//										if (goodsplit.length > 6) {
+//											fih.setLeftWristMove(Integer.parseInt(goodsplit[6]));
+//										} else {
+//											fih.setLeftWristMove(90);
+//										}
+//										lhand = true;
+//										pos++;
+//									}
+//								} else if (line2.startsWith(pythonname + ".moveArm")) {
+//									String gs = goodsplit[0];
+//									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//									if (side.equals("right")) {
+//										fih.setRightBicepsMove(Integer.parseInt(goodsplit[1]));
+//										fih.setRightRotateMove(Integer.parseInt(goodsplit[2]));
+//										fih.setRightShoulderMove(Integer.parseInt(goodsplit[3]));
+//										fih.setRightOmoplateMove(Integer.parseInt(goodsplit[4]));
+//										rarm = true;
+//										pos++;
+//									} else if (side.equals("left")) {
+//										fih.setLeftBicepsMove(Integer.parseInt(goodsplit[1]));
+//										fih.setLeftRotateMove(Integer.parseInt(goodsplit[2]));
+//										fih.setLeftShoulderMove(Integer.parseInt(goodsplit[3]));
+//										fih.setLeftOmoplateMove(Integer.parseInt(goodsplit[4]));
+//										larm = true;
+//										pos++;
+//									}
+//								} else if (line2.startsWith(pythonname + ".moveTorso")) {
+//									fih.setTopStomMove(Integer.parseInt(goodsplit[0]));
+//									fih.setMidStomMove(Integer.parseInt(goodsplit[1]));
+//									fih.setLowStomMove(Integer.parseInt(goodsplit[2]));
+//									torso = true;
+//									pos++;
+//								}
+//							} else if (line2.startsWith(pythonname + ".set")) {
+//								isspeed = true;
+//								String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
+//								String[] goodsplit = good.split(",");
+//								if (line2.startsWith(pythonname + ".setHeadSpeed")) {
+//									fih.setNeckSpeed(Double.parseDouble(goodsplit[0]));
+//									fih.setHeadRotateSpeed(Double.parseDouble(goodsplit[1]));
+//									if (goodsplit.length > 2) {
+//										fih.setEyeXSpeed(Double.parseDouble(goodsplit[2]));
+//										fih.setEyeYSpeed(Double.parseDouble(goodsplit[3]));
+//										fih.setJawSpeed(Double.parseDouble(goodsplit[4]));
+//									} else {
+//										fih.setEyeXSpeed(1.0d);
+//										fih.setEyeYSpeed(1.0d);
+//										fih.setJawSpeed(1.0d);
+//									}
+//									head = true;
+//									pos++;
+//								} else if (line2.startsWith(pythonname + ".setHandSpeed")) {
+//									String gs = goodsplit[0];
+//									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//									if (side.equals("right")) {
+//										fih.setRightThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
+//										fih.setRightIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
+//										fih.setRightMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
+//										fih.setRightRingFingerSpeed(Double.parseDouble(goodsplit[4]));
+//										fih.setRightPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
+//										if (goodsplit.length > 6) {
+//											fih.setRightWristSpeed(Double.parseDouble(goodsplit[6]));
+//										} else {
+//											fih.setRightWristSpeed(1.0d);
+//										}
+//										rhand = true;
+//										pos++;
+//									} else if (side.equals("left")) {
+//										fih.setLeftThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
+//										fih.setLeftIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
+//										fih.setLeftMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
+//										fih.setLeftRingFingerSpeed(Double.parseDouble(goodsplit[4]));
+//										fih.setLeftPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
+//										if (goodsplit.length > 6) {
+//											fih.setLeftWristSpeed(Double.parseDouble(goodsplit[6]));
+//										} else {
+//											fih.setLeftWristSpeed(1.0d);
+//										}
+//										lhand = true;
+//										pos++;
+//									}
+//								} else if (line2.startsWith(pythonname + ".setArmSpeed")) {
+//									String gs = goodsplit[0];
+//									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//									if (side.equals("right")) {
+//										fih.setRightBicepsSpeed(Double.parseDouble(goodsplit[1]));
+//										fih.setRightRotateSpeed(Double.parseDouble(goodsplit[2]));
+//										fih.setRightShoulderSpeed(Double.parseDouble(goodsplit[3]));
+//										fih.setRightOmoplateSpeed(Double.parseDouble(goodsplit[4]));
+//										rarm = true;
+//										pos++;
+//									} else if (side.equals("left")) {
+//										fih.setLeftBicepsSpeed(Double.parseDouble(goodsplit[1]));
+//										fih.setLeftRotateSpeed(Double.parseDouble(goodsplit[2]));
+//										fih.setLeftShoulderSpeed(Double.parseDouble(goodsplit[3]));
+//										fih.setLeftOmoplateSpeed(Double.parseDouble(goodsplit[4]));
+//										larm = true;
+//										pos++;
+//									}
+//								} else if (line2.startsWith(pythonname + ".setTorsoSpeed")) {
+//									fih.setTopStomSpeed(Double.parseDouble(goodsplit[0]));
+//									fih.setMidStomSpeed(Double.parseDouble(goodsplit[1]));
+//									fih.setLowStomSpeed(Double.parseDouble(goodsplit[2]));
+//									torso = true;
+//									pos++;
+//								}
+//							}
+//						}
+//					} else if (ismove && !(isspeed)) {
+//						if (line2.startsWith(pythonname + ".move")) {
+//							String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
+//							String[] goodsplit = good.split(",");
+//							if (line2.startsWith(pythonname + ".moveHead")) {
+//								fih.setNeckMove(Integer.parseInt(goodsplit[0]));
+//								fih.setHeadRotateMove(Integer.parseInt(goodsplit[1]));
+//								if (goodsplit.length > 2) {
+//									fih.setEyeXMove(Integer.parseInt(goodsplit[2]));
+//									fih.setEyeYMove(Integer.parseInt(goodsplit[3]));
+//									fih.setJawMove(Integer.parseInt(goodsplit[4]));
+//								} else {
+//									fih.setEyeXMove(90);
+//									fih.setEyeYMove(90);
+//									fih.setJawMove(90);
+//								}
+//								head = true;
+//								pos++;
+//							} else if (line2.startsWith(pythonname + ".moveHand")) {
+//								String gs = goodsplit[0];
+//								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//								if (side.equals("right")) {
+//									fih.setRightThumbFingerMove(Integer.parseInt(goodsplit[1]));
+//									fih.setRightIndexFingerMove(Integer.parseInt(goodsplit[2]));
+//									fih.setRightMajeureFingerMove(Integer.parseInt(goodsplit[3]));
+//									fih.setRightRingFingerMove(Integer.parseInt(goodsplit[4]));
+//									fih.setRightPinkyFingerMove(Integer.parseInt(goodsplit[5]));
+//									if (goodsplit.length > 6) {
+//										fih.setRightWristMove(Integer.parseInt(goodsplit[6]));
+//									} else {
+//										fih.setRightWristMove(90);
+//									}
+//									rhand = true;
+//									pos++;
+//								} else if (side.equals("left")) {
+//									fih.setLeftThumbFingerMove(Integer.parseInt(goodsplit[1]));
+//									fih.setLeftIndexFingerMove(Integer.parseInt(goodsplit[2]));
+//									fih.setLeftMajeureFingerMove(Integer.parseInt(goodsplit[3]));
+//									fih.setLeftRingFingerMove(Integer.parseInt(goodsplit[4]));
+//									fih.setLeftPinkyFingerMove(Integer.parseInt(goodsplit[5]));
+//									if (goodsplit.length > 6) {
+//										fih.setLeftWristMove(Integer.parseInt(goodsplit[6]));
+//									} else {
+//										fih.setLeftWristMove(90);
+//									}
+//									lhand = true;
+//									pos++;
+//								}
+//							} else if (line2.startsWith(pythonname + ".moveArm")) {
+//								String gs = goodsplit[0];
+//								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//								if (side.equals("right")) {
+//									fih.setRightBicepsMove(Integer.parseInt(goodsplit[1]));
+//									fih.setRightRotateMove(Integer.parseInt(goodsplit[2]));
+//									fih.setRightShoulderMove(Integer.parseInt(goodsplit[3]));
+//									fih.setRightOmoplateMove(Integer.parseInt(goodsplit[4]));
+//									rarm = true;
+//									pos++;
+//								} else if (side.equals("left")) {
+//									fih.setLeftBicepsMove(Integer.parseInt(goodsplit[1]));
+//									fih.setLeftRotateMove(Integer.parseInt(goodsplit[2]));
+//									fih.setLeftShoulderMove(Integer.parseInt(goodsplit[3]));
+//									fih.setLeftOmoplateMove(Integer.parseInt(goodsplit[4]));
+//									larm = true;
+//									pos++;
+//								}
+//							} else if (line2.startsWith(pythonname + ".moveTorso")) {
+//								fih.setTopStomMove(Integer.parseInt(goodsplit[0]));
+//								fih.setMidStomMove(Integer.parseInt(goodsplit[1]));
+//								fih.setLowStomMove(Integer.parseInt(goodsplit[2]));
+//								torso = true;
+//								pos++;
+//							}
+//						} else {
+//							if (!head) {
+//								fih.setNeckMove(90);
+//								fih.setHeadRotateMove(90);
+//								fih.setEyeXMove(90);
+//								fih.setEyeYMove(90);
+//								fih.setJawMove(90);
+//							}
+//							if (!rhand) {
+//								fih.setRightThumbFingerMove(90);
+//								fih.setRightIndexFingerMove(90);
+//								fih.setRightMajeureFingerMove(90);
+//								fih.setRightRingFingerMove(90);
+//								fih.setRightPinkyFingerMove(90);
+//								fih.setRightWristMove(90);
+//							}
+//							if (!lhand) {
+//								fih.setLeftThumbFingerMove(90);
+//								fih.setLeftIndexFingerMove(90);
+//								fih.setLeftMajeureFingerMove(90);
+//								fih.setLeftRingFingerMove(90);
+//								fih.setLeftPinkyFingerMove(90);
+//								fih.setLeftWristMove(90);
+//							}
+//							if (!rarm) {
+//								fih.setRightBicepsMove(90);
+//								fih.setRightRotateMove(90);
+//								fih.setRightShoulderMove(90);
+//								fih.setRightOmoplateMove(90);
+//							}
+//							if (!larm) {
+//								fih.setLeftBicepsMove(90);
+//								fih.setLeftRotateMove(90);
+//								fih.setLeftShoulderMove(90);
+//								fih.setLeftOmoplateMove(90);
+//							}
+//							if (!torso) {
+//								fih.setTopStomMove(90);
+//								fih.setMidStomMove(90);
+//								fih.setLowStomMove(90);
+//							}
+//							fih.setSleep(-1);
+//							fih.setSpeech(null);
+//							fih.setName("SEQ");
+//							frames.add(fih);
+//							fih = null;
+//							ismove = false;
+//							head = false;
+//							rhand = false;
+//							lhand = false;
+//							rarm = false;
+//							larm = false;
+//							torso = false;
+//						}
+//					} else if (!(ismove) && isspeed) {
+//						if (line2.startsWith(pythonname + ".set")) {
+//							String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
+//							String[] goodsplit = good.split(",");
+//							if (line2.startsWith(pythonname + ".setHeadSpeed")) {
+//								fih.setNeckSpeed(Double.parseDouble(goodsplit[0]));
+//								fih.setHeadRotateSpeed(Double.parseDouble(goodsplit[1]));
+//								if (goodsplit.length > 2) {
+//									fih.setEyeXSpeed(Double.parseDouble(goodsplit[2]));
+//									fih.setEyeYSpeed(Double.parseDouble(goodsplit[3]));
+//									fih.setJawSpeed(Double.parseDouble(goodsplit[4]));
+//								} else {
+//									fih.setEyeXSpeed(1.0d);
+//									fih.setEyeYSpeed(1.0d);
+//									fih.setJawSpeed(1.0d);
+//								}
+//								head = true;
+//								pos++;
+//							} else if (line2.startsWith(pythonname + ".setHandSpeed")) {
+//								String gs = goodsplit[0];
+//								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//								if (side.equals("right")) {
+//									fih.setRightThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
+//									fih.setRightIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
+//									fih.setRightMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
+//									fih.setRightRingFingerSpeed(Double.parseDouble(goodsplit[4]));
+//									fih.setRightPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
+//									if (goodsplit.length > 6) {
+//										fih.setRightWristSpeed(Double.parseDouble(goodsplit[6]));
+//									} else {
+//										fih.setRightWristSpeed(1.0d);
+//									}
+//									rhand = true;
+//									pos++;
+//								} else if (side.equals("left")) {
+//									fih.setLeftThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
+//									fih.setLeftIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
+//									fih.setLeftMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
+//									fih.setLeftRingFingerSpeed(Double.parseDouble(goodsplit[4]));
+//									fih.setLeftPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
+//									if (goodsplit.length > 6) {
+//										fih.setLeftWristSpeed(Double.parseDouble(goodsplit[6]));
+//									} else {
+//										fih.setLeftWristSpeed(1.0d);
+//									}
+//									lhand = true;
+//									pos++;
+//								}
+//							} else if (line2.startsWith(pythonname + ".setArmSpeed")) {
+//								String gs = goodsplit[0];
+//								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
+//								if (side.equals("right")) {
+//									fih.setRightBicepsSpeed(Double.parseDouble(goodsplit[1]));
+//									fih.setRightRotateSpeed(Double.parseDouble(goodsplit[2]));
+//									fih.setRightShoulderSpeed(Double.parseDouble(goodsplit[3]));
+//									fih.setRightOmoplateSpeed(Double.parseDouble(goodsplit[4]));
+//									rarm = true;
+//									pos++;
+//								} else if (side.equals("left")) {
+//									fih.setLeftBicepsSpeed(Double.parseDouble(goodsplit[1]));
+//									fih.setLeftRotateSpeed(Double.parseDouble(goodsplit[2]));
+//									fih.setLeftShoulderSpeed(Double.parseDouble(goodsplit[3]));
+//									fih.setLeftOmoplateSpeed(Double.parseDouble(goodsplit[4]));
+//									larm = true;
+//									pos++;
+//								}
+//							} else if (line2.startsWith(pythonname + ".setTorsoSpeed")) {
+//								fih.setTopStomSpeed(Double.parseDouble(goodsplit[0]));
+//								fih.setMidStomSpeed(Double.parseDouble(goodsplit[1]));
+//								fih.setLowStomSpeed(Double.parseDouble(goodsplit[2]));
+//								torso = true;
+//								pos++;
+//							}
+//						} else {
+//							if (!head) {
+//								fih.setNeckSpeed(1.0d);
+//								fih.setHeadRotateSpeed(1.0d);
+//								fih.setEyeXSpeed(1.0d);
+//								fih.setEyeYSpeed(1.0d);
+//								fih.setJawSpeed(1.0d);
+//							}
+//							if (!rhand) {
+//								fih.setRightThumbFingerSpeed(1.0d);
+//								fih.setRightIndexFingerSpeed(1.0d);
+//								fih.setRightMajeureFingerSpeed(1.0d);
+//								fih.setRightRingFingerSpeed(1.0d);
+//								fih.setRightPinkyFingerSpeed(1.0d);
+//								fih.setRightWristSpeed(1.0d);
+//							}
+//							if (!lhand) {
+//								fih.setLeftThumbFingerSpeed(1.0d);
+//								fih.setLeftIndexFingerSpeed(1.0d);
+//								fih.setLeftMajeureFingerSpeed(1.0d);
+//								fih.setLeftRingFingerSpeed(1.0d);
+//								fih.setLeftPinkyFingerSpeed(1.0d);
+//								fih.setLeftWristSpeed(1.0d);
+//							}
+//							if (!rarm) {
+//								fih.setRightBicepsSpeed(1.0d);
+//								fih.setRightRotateSpeed(1.0d);
+//								fih.setRightShoulderSpeed(1.0d);
+//								fih.setRightOmoplateSpeed(1.0d);
+//							}
+//							if (!larm) {
+//								fih.setLeftBicepsSpeed(1.0d);
+//								fih.setLeftRotateSpeed(1.0d);
+//								fih.setLeftShoulderSpeed(1.0d);
+//								fih.setLeftOmoplateSpeed(1.0d);
+//							}
+//							if (!torso) {
+//								fih.setTopStomSpeed(1.0d);
+//								fih.setMidStomSpeed(1.0d);
+//								fih.setLowStomSpeed(1.0d);
+//							}
+//							fih.setSleep(-1);
+//							fih.setSpeech(null);
+//							fih.setName(null);
+//							frames.add(fih);
+//							fih = null;
+//							isspeed = false;
+//							head = false;
+//							rhand = false;
+//							lhand = false;
+//							rarm = false;
+//							larm = false;
+//							torso = false;
+//						}
+//					} else {
+//						// this shouldn't be reached
+//						// ismove & isspeed true
+//						// wrong
+//					}
+//				}
+//
+//				framelistact(framelist);
+//
+//				int defnamepos = pythonscript.indexOf(defname);
+//				int earpos1 = pythonscript.lastIndexOf("\n", defnamepos);
+//				int earpos2 = pythonscript.indexOf("\n", defnamepos);
+//				String earline = pythonscript.substring(earpos1 + 1, earpos2);
+//				if (earline.startsWith("ear.addCommand")) {
+//					String good = earline.substring(earline.indexOf("("), earline.lastIndexOf(")"));
+//					String[] goodsplit = good.split(",");
+//
+//					String funcnamedirty = goodsplit[0];
+//					String funcname = funcnamedirty.substring(funcnamedirty.indexOf("\"") + 1,
+//							funcnamedirty.lastIndexOf("\""));
+//
+//					controlGestureName.setText(funcname);
+////					control_funcname.setText(defname);
+//				}
+//			}
+//		}
+//	}
 
-		String insert = "ear.addCommand(\"" + gestname + "\", \"python\", \"" + defname + "\")";
-		int posear = pythonscript.lastIndexOf("ear.addCommand");
-		int pos = pythonscript.indexOf("\n", posear);
-		pythonscript = pythonscript.substring(0, pos) + "\n" + insert
-				+ pythonscript.substring(pos, pythonscript.length());
+//	public void control_removegest(JList<String> gestureList) {
+//		// Remove the selected gesture from the script (button bottom-left)
+//		int posl = gestureList.getSelectedIndex();
+//
+//		if (posl != -1) {
+//
+//			if (pythonitemholder.get(posl).function && !pythonitemholder.get(posl).notfunction) {
+//
+//				String codeold = pythonitemholder.get(posl).code;
+//				String defnameold = codeold.substring(codeold.indexOf("def ") + 4, codeold.indexOf("():"));
+//
+//				int olddefpos = pythonscript.indexOf(defnameold);
+//				int pos1 = pythonscript.lastIndexOf("\n", olddefpos);
+//				int pos2 = pythonscript.indexOf("\n", olddefpos);
+//				pythonscript = pythonscript.substring(0, pos1) + pythonscript.substring(pos2, pythonscript.length());
+//
+//				int posscript = pythonscript.lastIndexOf(defnameold);
+//				int posscriptnextdef = pythonscript.indexOf("def", posscript);
+//				if (posscriptnextdef == -1) {
+//					posscriptnextdef = pythonscript.length();
+//				}
+//
+//				pythonscript = pythonscript.substring(0, posscript - 4)
+//						+ pythonscript.substring(posscriptnextdef - 1, pythonscript.length());
+//
+//				parsescript(gestureList);
+//			}
+//		}
+//	}
 
-		pythonscript = pythonscript + "\n" + finalcode;
+//	public void control_updategest(JList<String> gestureList, JTextField controlGestureName, JTextField control_funcname) {
+//		// Update the current gesture in the script (button bottom-left)
+//		int posl = gestureList.getSelectedIndex();
+//
+//		if (posl != -1) {
+//
+//			if (pythonitemholder.get(posl).function && !pythonitemholder.get(posl).notfunction) {
+//
+//				String codeold = pythonitemholder.get(posl).code;
+//				String defnameold = codeold.substring(codeold.indexOf("def ") + 4, codeold.indexOf("():"));
+//
+//				String defname = control_funcname.getText();
+//				String gestname = controlGestureName.getText();
+//
+//				String code = "";
+//				for (Frame fih : frames) {
+//					String code1;
+//					if (fih.getSleep() != -1) {
+//						code1 = "    sleep(" + fih.getSleep() + ")\n";
+//					} else if (fih.getSpeech() != null) {
+//						code1 = "    " + pythonname + ".mouth.speakBlocking(\"" + fih.getSpeech() + "\")\n";
+//					} else if (fih.getName() != null) {
+//						String code11 = "";
+//						String code12 = "";
+//						String code13 = "";
+//						String code14 = "";
+//						String code15 = "";
+//						String code16 = "";
+//						if (fih.getRightHandMoveSet()) {
+//							code11 = "    " + pythonname + ".moveHead(" + fih.getNeckMove() + ","
+//									+ fih.getHeadRotateMove() + "," + fih.getEyeXMove() + "," + fih.getEyeYMove() + ","
+//									+ fih.getJawMove() + ")\n";
+//						}
+//						if (fih.getRightArmMoveSet()) {
+//							code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLeftBicepsMove() + ","
+//									+ fih.getLeftRotateMove() + "," + fih.getLeftShoulderMove() + ","
+//									+ fih.getLeftOmoplateMove() + ")\n";
+//						}
+//						if (fih.getLeftHandMoveSet()) {
+//							code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRightBicepsMove() + ","
+//									+ fih.getRightRotateMove() + "," + fih.getRightShoulderMove() + ","
+//									+ fih.getRightOmoplateMove() + ")\n";
+//						}
+//						if (fih.getLeftArmMoveSet()) {
+//							code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLeftThumbFingerMove() + ","
+//									+ fih.getLeftIndexFingerMove() + "," + fih.getLeftMajeureFingerMove() + ","
+//									+ fih.getLeftRingFingerMove() + "," + fih.getLeftPinkyFingerMove() + ","
+//									+ fih.getLeftWristMove() + ")\n";
+//						}
+//						if (fih.getHeadMoveSet()) {
+//							code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRightThumbFingerMove() + ","
+//									+ fih.getRightIndexFingerMove() + "," + fih.getRightMajeureFingerMove() + ","
+//									+ fih.getRightRingFingerMove() + "," + fih.getRightPinkyFingerMove() + ","
+//									+ fih.getRightWristMove() + ")\n";
+//						}
+//						if (fih.getTorsoMoveSet()) {
+//							code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStomMove() + ","
+//									+ fih.getMidStomMove() + "," + fih.getLowStomMove() + ")\n";
+//						}
+//						code1 = code11 + code12 + code13 + code14 + code15 + code16;
+//					} else {
+//						String code11 = "";
+//						String code12 = "";
+//						String code13 = "";
+//						String code14 = "";
+//						String code15 = "";
+//						String code16 = "";
+//						if (fih.getRightHandMoveSet()) {
+//							code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckSpeed() + ","
+//									+ fih.getHeadRotateSpeed() + "," + fih.getEyeXSpeed() + "," + fih.getEyeYSpeed()
+//									+ "," + fih.getJawSpeed() + ")\n";
+//						}
+//						if (fih.getRightArmMoveSet()) {
+//							code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLeftBicepsSpeed() + ","
+//									+ fih.getLeftRotateSpeed() + "," + fih.getLeftShoulderSpeed() + ","
+//									+ fih.getLeftOmoplateSpeed() + ")\n";
+//						}
+//
+//						if (fih.getLeftHandMoveSet()) {
+//							code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRightBicepsSpeed() + ","
+//									+ fih.getRightRotateSpeed() + "," + fih.getRightShoulderSpeed() + ","
+//									+ fih.getRightOmoplateSpeed() + ")\n";
+//						}
+//						if (fih.getLeftArmMoveSet()) {
+//							code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLeftThumbFingerSpeed()
+//									+ "," + fih.getLeftIndexFingerSpeed() + "," + fih.getLeftMajeureFingerSpeed() + ","
+//									+ fih.getLeftRingFingerSpeed() + "," + fih.getLeftPinkyFingerSpeed() + ","
+//									+ fih.getLeftWristSpeed() + ")\n";
+//						}
+//						if (fih.getHeadMoveSet()) {
+//							code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRightThumbFingerSpeed()
+//									+ "," + fih.getRightIndexFingerSpeed() + "," + fih.getRightMajeureFingerSpeed()
+//									+ "," + fih.getRightRingFingerSpeed() + "," + fih.getRightPinkyFingerSpeed() + ","
+//									+ fih.getRightWristSpeed() + ")\n";
+//						}
+//						if (fih.getTorsoMoveSet()) {
+//							code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomSpeed() + ","
+//									+ fih.getMidStomSpeed() + "," + fih.getLowStomSpeed() + ")\n";
+//						}
+//						code1 = code11 + code12 + code13 + code14 + code15 + code16;
+//					}
+//					code = code + code1;
+//				}
+//				String finalcode = "def " + defname + "():\n" + code;
+//
+//				String insert = "ear.addCommand(\"" + gestname + "\", \"python\", \"" + defname + "\")";
+//				int olddefpos = pythonscript.indexOf(defnameold);
+//				int pos1 = pythonscript.lastIndexOf("\n", olddefpos);
+//				int pos2 = pythonscript.indexOf("\n", olddefpos);
+//				pythonscript = pythonscript.substring(0, pos1) + "\n" + insert
+//						+ pythonscript.substring(pos2, pythonscript.length());
+//
+//				int posscript = pythonscript.lastIndexOf(defnameold);
+//				int posscriptnextdef = pythonscript.indexOf("def", posscript);
+//				if (posscriptnextdef == -1) {
+//					posscriptnextdef = pythonscript.length();
+//				}
+//
+//				pythonscript = pythonscript.substring(0, posscript - 4) + "\n" + finalcode
+//						+ pythonscript.substring(posscriptnextdef - 1, pythonscript.length());
+//
+//				parsescript(gestureList);
+//			}
+//		}
+//	}
 
-		parsescript(control_list);
+	public void clearGestureAndSelectedFrame(JList<String> framelist, 
+			JPanel bottomTop, 
+			JPanel top, 
+			Map<RobotSection, JPanel> robotSectionMovePanels, 
+			Map<RobotSection, JPanel> robotSectionSlidersPanels,
+			Map<RobotSection, JPanel> robotSectionSpeedPanels,
+			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
+		this.gesture.setGestureName(null);
+		this.frames.clear();
+		gestureListReload(framelist);
+		clearSelectedFrame(bottomTop, top, robotSectionMovePanels, 
+				robotSectionSlidersPanels, robotSectionSpeedPanels, 
+				robotSectionSpeedNumberBoxesPanels);
 	}
 
-	public void control_connect(JButton controlConnect) {
-		// Connect / Disconnect to / from the InMoov service (button top-left)
-		LOGGER.info("control_connect start...");
-		try {
-			if (controlConnect.getText().equals("Connect")) {
-				if (referencename == null) {
-					referencename = "i01";
-				}
-				i01 = (InMoov) Runtime.getService(referencename);
-				// TODO experiment till it works
-				LOGGER.info("i01.enable() start...");
-				i01.enable();
-				LOGGER.info("i01.enable() end");
-//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") start...");
-//				i01.startAll("COM3", "COM4");
-//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") end");
-				if (i01 != null) {
-					controlConnect.setText("Disconnect");
-				} else {
-					LOGGER.info("Failed to connect!");
-				}
-			} else {
-				i01 = null;
-				controlConnect.setText("Connect");
-			}
-		} catch (Exception e) {
-			LOGGER.warn("Exception occured", e);
-		}
-		LOGGER.info("control_connect end");
+	public void clearSelectedFrame(
+			JPanel bottomTop, 
+			JPanel top, 
+			Map<RobotSection, JPanel> robotSectionMovePanels, 
+			Map<RobotSection, JPanel> robotSectionSlidersPanels,
+			Map<RobotSection, JPanel> robotSectionSpeedPanels,
+			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
+		addBottomTopPane(bottomTop, null, null, null, null, -1);
+		frameSelectionChanged(top, robotSectionMovePanels, 
+				robotSectionSlidersPanels, robotSectionSpeedPanels, 
+				robotSectionSpeedNumberBoxesPanels, -1);
 	}
 
-	public void control_loadgest(JList control_list, JList framelist, JTextField control_gestname,
-			JTextField control_funcname) {
-		// Load the current gesture from the script (button bottom-left)
-		int posl = control_list.getSelectedIndex();
-
-		if (posl != -1) {
-			if (pythonitemholder.get(posl).modifyable) {
-				frames.clear();
-
-				String defname = null;
-
-				String code = pythonitemholder.get(posl).code;
-				String[] codesplit = code.split("\n");
-				Frame fih = null;
-				boolean ismove = false;
-				boolean isspeed = false;
-				boolean head = false;
-				boolean rhand = false;
-				boolean lhand = false;
-				boolean rarm = false;
-				boolean larm = false;
-				boolean torso = false;
-				boolean keepgoing = true;
-				int pos = 0;
-				while (keepgoing) {
-					if (fih == null) {
-						fih = new Frame();
-					}
-					String line;
-					if (pos < codesplit.length) {
-						line = codesplit[pos];
-					} else {
-						line = "pweicmfh - only one run";
-						keepgoing = false;
-					}
-					String linewithoutspace = line.replace(" ", "");
-					if (linewithoutspace.equals("")) {
-						pos++;
-						continue;
-					}
-					String line2 = line.replace(" ", "");
-					if (!(ismove) && !(isspeed)) {
-						if (line2.startsWith("def")) {
-							String defn = line.substring(line.indexOf(" ") + 1, line.lastIndexOf("():"));
-							defname = defn;
-							pos++;
-						} else if (line2.startsWith("sleep")) {
-							String sleeptime = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
-							fih.setSleep(Integer.parseInt(sleeptime));
-							fih.setSpeech(null);
-							fih.setName(null);
-							frames.add(fih);
-							fih = null;
-							pos++;
-						} else if (line2.startsWith(pythonname)) {
-							if (line2.startsWith(pythonname + ".mouth.speak")) {
-								fih.setSleep(-1);
-								fih.setSpeech(line.substring(line.indexOf("(") + 1, line.lastIndexOf(")")));
-								fih.setName(null);
-								frames.add(fih);
-								fih = null;
-								pos++;
-							} else if (line2.startsWith(pythonname + ".move")) {
-								ismove = true;
-								String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
-								String[] goodsplit = good.split(",");
-								if (line2.startsWith(pythonname + ".moveHead")) {
-									fih.setNeckMove(Integer.parseInt(goodsplit[0]));
-									fih.setHeadRotateMove(Integer.parseInt(goodsplit[1]));
-									if (goodsplit.length > 2) {
-										fih.setEyeXMove(Integer.parseInt(goodsplit[2]));
-										fih.setEyeYMove(Integer.parseInt(goodsplit[3]));
-										fih.setJawMove(Integer.parseInt(goodsplit[4]));
-									} else {
-										fih.setEyeXMove(90);
-										fih.setEyeYMove(90);
-										fih.setJawMove(90);
-									}
-									head = true;
-									pos++;
-								} else if (line2.startsWith(pythonname + ".moveHand")) {
-									String gs = goodsplit[0];
-									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-									if (side.equals("right")) {
-										fih.setRightThumbFingerMove(Integer.parseInt(goodsplit[1]));
-										fih.setRightIndexFingerMove(Integer.parseInt(goodsplit[2]));
-										fih.setRightMajeureFingerMove(Integer.parseInt(goodsplit[3]));
-										fih.setRightRingFingerMove(Integer.parseInt(goodsplit[4]));
-										fih.setRightPinkyFingerMove(Integer.parseInt(goodsplit[5]));
-										if (goodsplit.length > 6) {
-											fih.setRightWristMove(Integer.parseInt(goodsplit[6]));
-										} else {
-											fih.setRightWristMove(90);
-										}
-										rhand = true;
-										pos++;
-									} else if (side.equals("left")) {
-										fih.setLeftThumbFingerMove(Integer.parseInt(goodsplit[1]));
-										fih.setLeftIndexFingerMove(Integer.parseInt(goodsplit[2]));
-										fih.setLeftMajeureFingerMove(Integer.parseInt(goodsplit[3]));
-										fih.setLeftRingFingerMove(Integer.parseInt(goodsplit[4]));
-										fih.setLeftPinkyFingerMove(Integer.parseInt(goodsplit[5]));
-										if (goodsplit.length > 6) {
-											fih.setLeftWristMove(Integer.parseInt(goodsplit[6]));
-										} else {
-											fih.setLeftWristMove(90);
-										}
-										lhand = true;
-										pos++;
-									}
-								} else if (line2.startsWith(pythonname + ".moveArm")) {
-									String gs = goodsplit[0];
-									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-									if (side.equals("right")) {
-										fih.setRightBicepsMove(Integer.parseInt(goodsplit[1]));
-										fih.setRightRotateMove(Integer.parseInt(goodsplit[2]));
-										fih.setRightShoulderMove(Integer.parseInt(goodsplit[3]));
-										fih.setRightOmoplateMove(Integer.parseInt(goodsplit[4]));
-										rarm = true;
-										pos++;
-									} else if (side.equals("left")) {
-										fih.setLeftBicepsMove(Integer.parseInt(goodsplit[1]));
-										fih.setLeftRotateMove(Integer.parseInt(goodsplit[2]));
-										fih.setLeftShoulderMove(Integer.parseInt(goodsplit[3]));
-										fih.setLeftOmoplateMove(Integer.parseInt(goodsplit[4]));
-										larm = true;
-										pos++;
-									}
-								} else if (line2.startsWith(pythonname + ".moveTorso")) {
-									fih.setTopStomMove(Integer.parseInt(goodsplit[0]));
-									fih.setMidStomMove(Integer.parseInt(goodsplit[1]));
-									fih.setLowStomMove(Integer.parseInt(goodsplit[2]));
-									torso = true;
-									pos++;
-								}
-							} else if (line2.startsWith(pythonname + ".set")) {
-								isspeed = true;
-								String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
-								String[] goodsplit = good.split(",");
-								if (line2.startsWith(pythonname + ".setHeadSpeed")) {
-									fih.setNeckSpeed(Double.parseDouble(goodsplit[0]));
-									fih.setHeadRotateSpeed(Double.parseDouble(goodsplit[1]));
-									if (goodsplit.length > 2) {
-										fih.setEyeXSpeed(Double.parseDouble(goodsplit[2]));
-										fih.setEyeYSpeed(Double.parseDouble(goodsplit[3]));
-										fih.setJawSpeed(Double.parseDouble(goodsplit[4]));
-									} else {
-										fih.setEyeXSpeed(1.0d);
-										fih.setEyeYSpeed(1.0d);
-										fih.setJawSpeed(1.0d);
-									}
-									head = true;
-									pos++;
-								} else if (line2.startsWith(pythonname + ".setHandSpeed")) {
-									String gs = goodsplit[0];
-									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-									if (side.equals("right")) {
-										fih.setRightThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
-										fih.setRightIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
-										fih.setRightMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
-										fih.setRightRingFingerSpeed(Double.parseDouble(goodsplit[4]));
-										fih.setRightPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
-										if (goodsplit.length > 6) {
-											fih.setRightWristSpeed(Double.parseDouble(goodsplit[6]));
-										} else {
-											fih.setRightWristSpeed(1.0d);
-										}
-										rhand = true;
-										pos++;
-									} else if (side.equals("left")) {
-										fih.setLeftThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
-										fih.setLeftIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
-										fih.setLeftMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
-										fih.setLeftRingFingerSpeed(Double.parseDouble(goodsplit[4]));
-										fih.setLeftPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
-										if (goodsplit.length > 6) {
-											fih.setLeftWristSpeed(Double.parseDouble(goodsplit[6]));
-										} else {
-											fih.setLeftWristSpeed(1.0d);
-										}
-										lhand = true;
-										pos++;
-									}
-								} else if (line2.startsWith(pythonname + ".setArmSpeed")) {
-									String gs = goodsplit[0];
-									String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-									if (side.equals("right")) {
-										fih.setRightBicepsSpeed(Double.parseDouble(goodsplit[1]));
-										fih.setRightRotateSpeed(Double.parseDouble(goodsplit[2]));
-										fih.setRightShoulderSpeed(Double.parseDouble(goodsplit[3]));
-										fih.setRightOmoplateSpeed(Double.parseDouble(goodsplit[4]));
-										rarm = true;
-										pos++;
-									} else if (side.equals("left")) {
-										fih.setLeftBicepsSpeed(Double.parseDouble(goodsplit[1]));
-										fih.setLeftRotateSpeed(Double.parseDouble(goodsplit[2]));
-										fih.setLeftShoulderSpeed(Double.parseDouble(goodsplit[3]));
-										fih.setLeftOmoplateSpeed(Double.parseDouble(goodsplit[4]));
-										larm = true;
-										pos++;
-									}
-								} else if (line2.startsWith(pythonname + ".setTorsoSpeed")) {
-									fih.setTopStomSpeed(Double.parseDouble(goodsplit[0]));
-									fih.setMidStomSpeed(Double.parseDouble(goodsplit[1]));
-									fih.setLowStomSpeed(Double.parseDouble(goodsplit[2]));
-									torso = true;
-									pos++;
-								}
-							}
-						}
-					} else if (ismove && !(isspeed)) {
-						if (line2.startsWith(pythonname + ".move")) {
-							String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
-							String[] goodsplit = good.split(",");
-							if (line2.startsWith(pythonname + ".moveHead")) {
-								fih.setNeckMove(Integer.parseInt(goodsplit[0]));
-								fih.setHeadRotateMove(Integer.parseInt(goodsplit[1]));
-								if (goodsplit.length > 2) {
-									fih.setEyeXMove(Integer.parseInt(goodsplit[2]));
-									fih.setEyeYMove(Integer.parseInt(goodsplit[3]));
-									fih.setJawMove(Integer.parseInt(goodsplit[4]));
-								} else {
-									fih.setEyeXMove(90);
-									fih.setEyeYMove(90);
-									fih.setJawMove(90);
-								}
-								head = true;
-								pos++;
-							} else if (line2.startsWith(pythonname + ".moveHand")) {
-								String gs = goodsplit[0];
-								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-								if (side.equals("right")) {
-									fih.setRightThumbFingerMove(Integer.parseInt(goodsplit[1]));
-									fih.setRightIndexFingerMove(Integer.parseInt(goodsplit[2]));
-									fih.setRightMajeureFingerMove(Integer.parseInt(goodsplit[3]));
-									fih.setRightRingFingerMove(Integer.parseInt(goodsplit[4]));
-									fih.setRightPinkyFingerMove(Integer.parseInt(goodsplit[5]));
-									if (goodsplit.length > 6) {
-										fih.setRightWristMove(Integer.parseInt(goodsplit[6]));
-									} else {
-										fih.setRightWristMove(90);
-									}
-									rhand = true;
-									pos++;
-								} else if (side.equals("left")) {
-									fih.setLeftThumbFingerMove(Integer.parseInt(goodsplit[1]));
-									fih.setLeftIndexFingerMove(Integer.parseInt(goodsplit[2]));
-									fih.setLeftMajeureFingerMove(Integer.parseInt(goodsplit[3]));
-									fih.setLeftRingFingerMove(Integer.parseInt(goodsplit[4]));
-									fih.setLeftPinkyFingerMove(Integer.parseInt(goodsplit[5]));
-									if (goodsplit.length > 6) {
-										fih.setLeftWristMove(Integer.parseInt(goodsplit[6]));
-									} else {
-										fih.setLeftWristMove(90);
-									}
-									lhand = true;
-									pos++;
-								}
-							} else if (line2.startsWith(pythonname + ".moveArm")) {
-								String gs = goodsplit[0];
-								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-								if (side.equals("right")) {
-									fih.setRightBicepsMove(Integer.parseInt(goodsplit[1]));
-									fih.setRightRotateMove(Integer.parseInt(goodsplit[2]));
-									fih.setRightShoulderMove(Integer.parseInt(goodsplit[3]));
-									fih.setRightOmoplateMove(Integer.parseInt(goodsplit[4]));
-									rarm = true;
-									pos++;
-								} else if (side.equals("left")) {
-									fih.setLeftBicepsMove(Integer.parseInt(goodsplit[1]));
-									fih.setLeftRotateMove(Integer.parseInt(goodsplit[2]));
-									fih.setLeftShoulderMove(Integer.parseInt(goodsplit[3]));
-									fih.setLeftOmoplateMove(Integer.parseInt(goodsplit[4]));
-									larm = true;
-									pos++;
-								}
-							} else if (line2.startsWith(pythonname + ".moveTorso")) {
-								fih.setTopStomMove(Integer.parseInt(goodsplit[0]));
-								fih.setMidStomMove(Integer.parseInt(goodsplit[1]));
-								fih.setLowStomMove(Integer.parseInt(goodsplit[2]));
-								torso = true;
-								pos++;
-							}
-						} else {
-							if (!head) {
-								fih.setNeckMove(90);
-								fih.setHeadRotateMove(90);
-								fih.setEyeXMove(90);
-								fih.setEyeYMove(90);
-								fih.setJawMove(90);
-							}
-							if (!rhand) {
-								fih.setRightThumbFingerMove(90);
-								fih.setRightIndexFingerMove(90);
-								fih.setRightMajeureFingerMove(90);
-								fih.setRightRingFingerMove(90);
-								fih.setRightPinkyFingerMove(90);
-								fih.setRightWristMove(90);
-							}
-							if (!lhand) {
-								fih.setLeftThumbFingerMove(90);
-								fih.setLeftIndexFingerMove(90);
-								fih.setLeftMajeureFingerMove(90);
-								fih.setLeftRingFingerMove(90);
-								fih.setLeftPinkyFingerMove(90);
-								fih.setLeftWristMove(90);
-							}
-							if (!rarm) {
-								fih.setRightBicepsMove(90);
-								fih.setRightRotateMove(90);
-								fih.setRightShoulderMove(90);
-								fih.setRightOmoplateMove(90);
-							}
-							if (!larm) {
-								fih.setLeftBicepsMove(90);
-								fih.setLeftRotateMove(90);
-								fih.setLeftShoulderMove(90);
-								fih.setLeftOmoplateMove(90);
-							}
-							if (!torso) {
-								fih.setTopStomMove(90);
-								fih.setMidStomMove(90);
-								fih.setLowStomMove(90);
-							}
-							fih.setSleep(-1);
-							fih.setSpeech(null);
-							fih.setName("SEQ");
-							frames.add(fih);
-							fih = null;
-							ismove = false;
-							head = false;
-							rhand = false;
-							lhand = false;
-							rarm = false;
-							larm = false;
-							torso = false;
-						}
-					} else if (!(ismove) && isspeed) {
-						if (line2.startsWith(pythonname + ".set")) {
-							String good = line2.substring(line2.indexOf("(") + 1, line2.lastIndexOf(")"));
-							String[] goodsplit = good.split(",");
-							if (line2.startsWith(pythonname + ".setHeadSpeed")) {
-								fih.setNeckSpeed(Double.parseDouble(goodsplit[0]));
-								fih.setHeadRotateSpeed(Double.parseDouble(goodsplit[1]));
-								if (goodsplit.length > 2) {
-									fih.setEyeXSpeed(Double.parseDouble(goodsplit[2]));
-									fih.setEyeYSpeed(Double.parseDouble(goodsplit[3]));
-									fih.setJawSpeed(Double.parseDouble(goodsplit[4]));
-								} else {
-									fih.setEyeXSpeed(1.0d);
-									fih.setEyeYSpeed(1.0d);
-									fih.setJawSpeed(1.0d);
-								}
-								head = true;
-								pos++;
-							} else if (line2.startsWith(pythonname + ".setHandSpeed")) {
-								String gs = goodsplit[0];
-								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-								if (side.equals("right")) {
-									fih.setRightThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
-									fih.setRightIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
-									fih.setRightMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
-									fih.setRightRingFingerSpeed(Double.parseDouble(goodsplit[4]));
-									fih.setRightPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
-									if (goodsplit.length > 6) {
-										fih.setRightWristSpeed(Double.parseDouble(goodsplit[6]));
-									} else {
-										fih.setRightWristSpeed(1.0d);
-									}
-									rhand = true;
-									pos++;
-								} else if (side.equals("left")) {
-									fih.setLeftThumbFingerSpeed(Double.parseDouble(goodsplit[1]));
-									fih.setLeftIndexFingerSpeed(Double.parseDouble(goodsplit[2]));
-									fih.setLeftMajeureFingerSpeed(Double.parseDouble(goodsplit[3]));
-									fih.setLeftRingFingerSpeed(Double.parseDouble(goodsplit[4]));
-									fih.setLeftPinkyFingerSpeed(Double.parseDouble(goodsplit[5]));
-									if (goodsplit.length > 6) {
-										fih.setLeftWristSpeed(Double.parseDouble(goodsplit[6]));
-									} else {
-										fih.setLeftWristSpeed(1.0d);
-									}
-									lhand = true;
-									pos++;
-								}
-							} else if (line2.startsWith(pythonname + ".setArmSpeed")) {
-								String gs = goodsplit[0];
-								String side = gs.substring(gs.indexOf("\"") + 1, gs.lastIndexOf("\""));
-								if (side.equals("right")) {
-									fih.setRightBicepsSpeed(Double.parseDouble(goodsplit[1]));
-									fih.setRightRotateSpeed(Double.parseDouble(goodsplit[2]));
-									fih.setRightShoulderSpeed(Double.parseDouble(goodsplit[3]));
-									fih.setRightOmoplateSpeed(Double.parseDouble(goodsplit[4]));
-									rarm = true;
-									pos++;
-								} else if (side.equals("left")) {
-									fih.setLeftBicepsSpeed(Double.parseDouble(goodsplit[1]));
-									fih.setLeftRotateSpeed(Double.parseDouble(goodsplit[2]));
-									fih.setLeftShoulderSpeed(Double.parseDouble(goodsplit[3]));
-									fih.setLeftOmoplateSpeed(Double.parseDouble(goodsplit[4]));
-									larm = true;
-									pos++;
-								}
-							} else if (line2.startsWith(pythonname + ".setTorsoSpeed")) {
-								fih.setTopStomSpeed(Double.parseDouble(goodsplit[0]));
-								fih.setMidStomSpeed(Double.parseDouble(goodsplit[1]));
-								fih.setLowStomSpeed(Double.parseDouble(goodsplit[2]));
-								torso = true;
-								pos++;
-							}
-						} else {
-							if (!head) {
-								fih.setNeckSpeed(1.0d);
-								fih.setHeadRotateSpeed(1.0d);
-								fih.setEyeXSpeed(1.0d);
-								fih.setEyeYSpeed(1.0d);
-								fih.setJawSpeed(1.0d);
-							}
-							if (!rhand) {
-								fih.setRightThumbFingerSpeed(1.0d);
-								fih.setRightIndexFingerSpeed(1.0d);
-								fih.setRightMajeureFingerSpeed(1.0d);
-								fih.setRightRingFingerSpeed(1.0d);
-								fih.setRightPinkyFingerSpeed(1.0d);
-								fih.setRightWristSpeed(1.0d);
-							}
-							if (!lhand) {
-								fih.setLeftThumbFingerSpeed(1.0d);
-								fih.setLeftIndexFingerSpeed(1.0d);
-								fih.setLeftMajeureFingerSpeed(1.0d);
-								fih.setLeftRingFingerSpeed(1.0d);
-								fih.setLeftPinkyFingerSpeed(1.0d);
-								fih.setLeftWristSpeed(1.0d);
-							}
-							if (!rarm) {
-								fih.setRightBicepsSpeed(1.0d);
-								fih.setRightRotateSpeed(1.0d);
-								fih.setRightShoulderSpeed(1.0d);
-								fih.setRightOmoplateSpeed(1.0d);
-							}
-							if (!larm) {
-								fih.setLeftBicepsSpeed(1.0d);
-								fih.setLeftRotateSpeed(1.0d);
-								fih.setLeftShoulderSpeed(1.0d);
-								fih.setLeftOmoplateSpeed(1.0d);
-							}
-							if (!torso) {
-								fih.setTopStomSpeed(1.0d);
-								fih.setMidStomSpeed(1.0d);
-								fih.setLowStomSpeed(1.0d);
-							}
-							fih.setSleep(-1);
-							fih.setSpeech(null);
-							fih.setName(null);
-							frames.add(fih);
-							fih = null;
-							isspeed = false;
-							head = false;
-							rhand = false;
-							lhand = false;
-							rarm = false;
-							larm = false;
-							torso = false;
-						}
-					} else {
-						// this shouldn't be reached
-						// ismove & isspeed true
-						// wrong
-					}
-				}
-
-				framelistact(framelist);
-
-				int defnamepos = pythonscript.indexOf(defname);
-				int earpos1 = pythonscript.lastIndexOf("\n", defnamepos);
-				int earpos2 = pythonscript.indexOf("\n", defnamepos);
-				String earline = pythonscript.substring(earpos1 + 1, earpos2);
-				if (earline.startsWith("ear.addCommand")) {
-					String good = earline.substring(earline.indexOf("("), earline.lastIndexOf(")"));
-					String[] goodsplit = good.split(",");
-
-					String funcnamedirty = goodsplit[0];
-					String funcname = funcnamedirty.substring(funcnamedirty.indexOf("\"") + 1,
-							funcnamedirty.lastIndexOf("\""));
-
-					control_gestname.setText(funcname);
-					control_funcname.setText(defname);
-				}
-			}
-		}
-	}
-
-	public void control_removegest(JList control_list) {
-		// Remove the selected gesture from the script (button bottom-left)
-		int posl = control_list.getSelectedIndex();
-
-		if (posl != -1) {
-
-			if (pythonitemholder.get(posl).function && !pythonitemholder.get(posl).notfunction) {
-
-				String codeold = pythonitemholder.get(posl).code;
-				String defnameold = codeold.substring(codeold.indexOf("def ") + 4, codeold.indexOf("():"));
-
-				int olddefpos = pythonscript.indexOf(defnameold);
-				int pos1 = pythonscript.lastIndexOf("\n", olddefpos);
-				int pos2 = pythonscript.indexOf("\n", olddefpos);
-				pythonscript = pythonscript.substring(0, pos1) + pythonscript.substring(pos2, pythonscript.length());
-
-				int posscript = pythonscript.lastIndexOf(defnameold);
-				int posscriptnextdef = pythonscript.indexOf("def", posscript);
-				if (posscriptnextdef == -1) {
-					posscriptnextdef = pythonscript.length();
-				}
-
-				pythonscript = pythonscript.substring(0, posscript - 4)
-						+ pythonscript.substring(posscriptnextdef - 1, pythonscript.length());
-
-				parsescript(control_list);
-			}
-		}
-	}
-
-	public void control_savescri() {
+	public void controlSaveScript() {
 		// Save the Python-Script (in Python-Service) (button bottom-left)
 		JFrame frame = new JFrame();
 		JTextArea textarea = new JTextArea();
@@ -839,8 +948,39 @@ public class InMoovGestureCreator extends Service {
 			e.printStackTrace();
 		}
 	}
+		
+	public void controlConnect(JButton controlConnect) {
+		// Connect / Disconnect to / from the InMoov service (button top-left)
+		LOGGER.info("controlConnect start...");
+		try {
+			if (controlConnect.getText().equals("Connect")) {
+				if (referencename == null) {
+					referencename = "i01";
+				}
+				i01 = (InMoov) Runtime.getService(referencename);
+				// TODO experiment till it works
+				LOGGER.info("i01.enable() start...");
+				i01.enable();
+				LOGGER.info("i01.enable() end");
+//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") start...");
+//				i01.startAll("COM3", "COM4");
+//				LOGGER.info("i01.startAll(\"COM3\", \"COM4\") end");
+				if (i01 != null) {
+					controlConnect.setText("Disconnect");
+				} else {
+					LOGGER.info("Failed to connect!");
+				}
+			} else {
+				i01 = null;
+				controlConnect.setText("Connect");
+			}
+		} catch (Exception e) {
+			LOGGER.warn("Exception occured", e);
+		}
+		LOGGER.info("controlConnect end");
+	}
 
-	public void control_testgest() {
+	public void controlExecuteGesture() {
 		// test the gesture
 		if (i01 == null) {
 			// this should go into some kind of message to the user
@@ -857,133 +997,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void control_updategest(JList control_list, JTextField control_gestname, JTextField control_funcname) {
-		// Update the current gesture in the script (button bottom-left)
-		int posl = control_list.getSelectedIndex();
-
-		if (posl != -1) {
-
-			if (pythonitemholder.get(posl).function && !pythonitemholder.get(posl).notfunction) {
-
-				String codeold = pythonitemholder.get(posl).code;
-				String defnameold = codeold.substring(codeold.indexOf("def ") + 4, codeold.indexOf("():"));
-
-				String defname = control_funcname.getText();
-				String gestname = control_gestname.getText();
-
-				String code = "";
-				for (Frame fih : frames) {
-					String code1;
-					if (fih.getSleep() != -1) {
-						code1 = "    sleep(" + fih.getSleep() + ")\n";
-					} else if (fih.getSpeech() != null) {
-						code1 = "    " + pythonname + ".mouth.speakBlocking(\"" + fih.getSpeech() + "\")\n";
-					} else if (fih.getName() != null) {
-						String code11 = "";
-						String code12 = "";
-						String code13 = "";
-						String code14 = "";
-						String code15 = "";
-						String code16 = "";
-						if (fih.getRightHandMoveSet()) {
-							code11 = "    " + pythonname + ".moveHead(" + fih.getNeckMove() + ","
-									+ fih.getHeadRotateMove() + "," + fih.getEyeXMove() + "," + fih.getEyeYMove() + ","
-									+ fih.getJawMove() + ")\n";
-						}
-						if (fih.getRightArmMoveSet()) {
-							code12 = "    " + pythonname + ".moveArm(\"left\"," + fih.getLeftBicepsMove() + ","
-									+ fih.getLeftRotateMove() + "," + fih.getLeftShoulderMove() + ","
-									+ fih.getLeftOmoplateMove() + ")\n";
-						}
-						if (fih.getLeftHandMoveSet()) {
-							code13 = "    " + pythonname + ".moveArm(\"right\"," + fih.getRightBicepsMove() + ","
-									+ fih.getRightRotateMove() + "," + fih.getRightShoulderMove() + ","
-									+ fih.getRightOmoplateMove() + ")\n";
-						}
-						if (fih.getLeftArmMoveSet()) {
-							code14 = "    " + pythonname + ".moveHand(\"left\"," + fih.getLeftThumbFingerMove() + ","
-									+ fih.getLeftIndexFingerMove() + "," + fih.getLeftMajeureFingerMove() + ","
-									+ fih.getLeftRingFingerMove() + "," + fih.getLeftPinkyFingerMove() + ","
-									+ fih.getLeftWristMove() + ")\n";
-						}
-						if (fih.getHeadMoveSet()) {
-							code15 = "    " + pythonname + ".moveHand(\"right\"," + fih.getRightThumbFingerMove() + ","
-									+ fih.getRightIndexFingerMove() + "," + fih.getRightMajeureFingerMove() + ","
-									+ fih.getRightRingFingerMove() + "," + fih.getRightPinkyFingerMove() + ","
-									+ fih.getRightWristMove() + ")\n";
-						}
-						if (fih.getTorsoMoveSet()) {
-							code16 = "    " + pythonname + ".moveTorso(" + fih.getTopStomMove() + ","
-									+ fih.getMidStomMove() + "," + fih.getLowStomMove() + ")\n";
-						}
-						code1 = code11 + code12 + code13 + code14 + code15 + code16;
-					} else {
-						String code11 = "";
-						String code12 = "";
-						String code13 = "";
-						String code14 = "";
-						String code15 = "";
-						String code16 = "";
-						if (fih.getRightHandMoveSet()) {
-							code11 = "    " + pythonname + ".setHeadSpeed(" + fih.getNeckSpeed() + ","
-									+ fih.getHeadRotateSpeed() + "," + fih.getEyeXSpeed() + "," + fih.getEyeYSpeed()
-									+ "," + fih.getJawSpeed() + ")\n";
-						}
-						if (fih.getRightArmMoveSet()) {
-							code12 = "    " + pythonname + ".setArmSpeed(\"left\"," + fih.getLeftBicepsSpeed() + ","
-									+ fih.getLeftRotateSpeed() + "," + fih.getLeftShoulderSpeed() + ","
-									+ fih.getLeftOmoplateSpeed() + ")\n";
-						}
-
-						if (fih.getLeftHandMoveSet()) {
-							code13 = "    " + pythonname + ".setArmSpeed(\"right\"," + fih.getRightBicepsSpeed() + ","
-									+ fih.getRightRotateSpeed() + "," + fih.getRightShoulderSpeed() + ","
-									+ fih.getRightOmoplateSpeed() + ")\n";
-						}
-						if (fih.getLeftArmMoveSet()) {
-							code14 = "    " + pythonname + ".setHandSpeed(\"left\"," + fih.getLeftThumbFingerSpeed()
-									+ "," + fih.getLeftIndexFingerSpeed() + "," + fih.getLeftMajeureFingerSpeed() + ","
-									+ fih.getLeftRingFingerSpeed() + "," + fih.getLeftPinkyFingerSpeed() + ","
-									+ fih.getLeftWristSpeed() + ")\n";
-						}
-						if (fih.getHeadMoveSet()) {
-							code15 = "    " + pythonname + ".setHandSpeed(\"right\"," + fih.getRightThumbFingerSpeed()
-									+ "," + fih.getRightIndexFingerSpeed() + "," + fih.getRightMajeureFingerSpeed()
-									+ "," + fih.getRightRingFingerSpeed() + "," + fih.getRightPinkyFingerSpeed() + ","
-									+ fih.getRightWristSpeed() + ")\n";
-						}
-						if (fih.getTorsoMoveSet()) {
-							code16 = "    " + pythonname + ".setTorsoSpeed(" + fih.getTopStomSpeed() + ","
-									+ fih.getMidStomSpeed() + "," + fih.getLowStomSpeed() + ")\n";
-						}
-						code1 = code11 + code12 + code13 + code14 + code15 + code16;
-					}
-					code = code + code1;
-				}
-				String finalcode = "def " + defname + "():\n" + code;
-
-				String insert = "ear.addCommand(\"" + gestname + "\", \"python\", \"" + defname + "\")";
-				int olddefpos = pythonscript.indexOf(defnameold);
-				int pos1 = pythonscript.lastIndexOf("\n", olddefpos);
-				int pos2 = pythonscript.indexOf("\n", olddefpos);
-				pythonscript = pythonscript.substring(0, pos1) + "\n" + insert
-						+ pythonscript.substring(pos2, pythonscript.length());
-
-				int posscript = pythonscript.lastIndexOf(defnameold);
-				int posscriptnextdef = pythonscript.indexOf("def", posscript);
-				if (posscriptnextdef == -1) {
-					posscriptnextdef = pythonscript.length();
-				}
-
-				pythonscript = pythonscript.substring(0, posscript - 4) + "\n" + finalcode
-						+ pythonscript.substring(posscriptnextdef - 1, pythonscript.length());
-
-				parsescript(control_list);
-			}
-		}
-	}
-
-	public void frame_addsleep(JList framelist, JTextField frame_addsleep_textfield) {
+	public void frame_addsleep(JList<String> framelist, JTextField frame_addsleep_textfield) {
 		// Add a sleep frame to the framelist (button bottom-right)
 		Frame fih = new Frame();
 
@@ -996,7 +1010,7 @@ public class InMoovGestureCreator extends Service {
 		framelistact(framelist);
 	}
 
-	public void frame_addspeech(JList framelist, JTextField frame_addspeech_textfield) {
+	public void frame_addspeech(JList<String> framelist, JTextField frame_addspeech_textfield) {
 		// Add a speech frame to the framelist (button bottom-right)
 		Frame fih = new Frame();
 
@@ -1009,7 +1023,7 @@ public class InMoovGestureCreator extends Service {
 		framelistact(framelist);
 	}
 
-	public void frame_addspeed(JList framelist) {
+	public void frame_addspeed(JList<String> framelist) {
 		// Add a speed setting frame to the framelist (button bottom-right)
 		Frame fih = new Frame();
 
@@ -1056,7 +1070,7 @@ public class InMoovGestureCreator extends Service {
 		framelistact(framelist);
 	}
 
-	public void frame_copy(JList framelist) {
+	public void frame_copy(JList<String> framelist) {
 		// Copy this frame on the framelist (button bottom-right)
 		int pos = framelist.getSelectedIndex();
 
@@ -1068,7 +1082,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frame_down(JList framelist) {
+	public void frame_down(JList<String> framelist) {
 		// Move this frame one down on the framelist (button bottom-right)
 		int pos = framelist.getSelectedIndex();
 
@@ -1167,7 +1181,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frame_load(JList framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
+	public void frame_load(JList<String> framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
 			JTextField frame_addspeech_textfield) {
 		// Load this frame from the framelist (button bottom-right)
 		int pos = framelist.getSelectedIndex();
@@ -1256,7 +1270,7 @@ public class InMoovGestureCreator extends Service {
 		moverealtime = frame_moverealtime.isSelected();
 	}
 
-	public void frame_remove(JList framelist) {
+	public void frame_remove(JList<String> framelist) {
 		// Remove this frame from the framelist (button bottom-right)
 		int pos = framelist.getSelectedIndex();
 		if (pos != -1) {
@@ -1354,7 +1368,7 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.info("Finished frame execution.");
 	}
 
-	public void frame_test(JList framelist) {
+	public void frame_test(JList<String> framelist) {
 		// Test selected frame
 		int selectedFrameIndex = framelist.getSelectedIndex();
 		if (i01 != null && selectedFrameIndex != -1) {
@@ -1371,7 +1385,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frame_up(JList framelist) {
+	public void frame_up(JList<String> framelist) {
 		// Move this frame one up on the framelist (button bottom-right)
 		int pos = framelist.getSelectedIndex();
 
@@ -1383,7 +1397,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frame_update(JList framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
+	public void frame_update(JList<String> framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
 			JTextField frame_addspeech_textfield) {
 		// Update this frame on the framelist (button bottom-right)
 
@@ -1484,9 +1498,8 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void framelistact(JList framelist) {
+	public void framelistact(JList<String> framelist) {
 		// Re-Build the framelist
-		frameListGlobal = framelist;
 		String[] listdata = new String[frames.size()];
 
 		for (int i = 0; i < frames.size(); i++) {
@@ -1574,7 +1587,7 @@ public class InMoovGestureCreator extends Service {
 		framelist.setListData(listdata);
 	}
 
-	public void control_ScriptFolder(JList control_list) {
+	public void controlScriptFolder(JList control_list) {
 		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		jfc.setDialogTitle("Choose a directory with Gesture scripts in Python");
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -1585,31 +1598,31 @@ public class InMoovGestureCreator extends Service {
 				LOGGER.info("Selected script directory: " + jfc.getSelectedFile());
 
 				File[] listOfFiles = jfc.getSelectedFile().listFiles();
-				pythonFiles.clear();
-				List<String> pythonFileNames = new ArrayList<String>();
+				scriptFiles.clear();
+				List<String> scriptFileNames = new ArrayList<String>();
 				for (int i = 0; i < listOfFiles.length; i++) {
 					if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".py")) {
 						// list only ".py" files in the folder
-						pythonFileNames.add(listOfFiles[i].getName());
-						pythonFiles.add(listOfFiles[i]);
+						scriptFileNames.add(listOfFiles[i].getName());
+						scriptFiles.add(listOfFiles[i]);
 					}
 				}
-				if (pythonFileNames != null && pythonFileNames.size() > 0) {
-					control_list.setListData(pythonFileNames.toArray());
+				if (scriptFileNames != null && scriptFileNames.size() > 0) {
+					control_list.setListData(scriptFileNames.toArray());
 				}
 			}
 		}
 	}
 
-	public void control_loadscri(JList control_list, JList frameListGui) {
+	public void controlLoadScript(JList<String> control_list, JList<String> frameListGui) {
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
 		try {
-			File selectedFile = pythonFiles.get(control_list.getSelectedIndex());
+			File selectedFile = scriptFiles.get(control_list.getSelectedIndex());
 			LOGGER.info("Loading script \"" + selectedFile.getAbsolutePath() + "\"...");
 			fileReader = new FileReader(selectedFile);
-//			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + control_list.getSelectedValue().toString());
+//			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + gestureList.getSelectedValue().toString());
 //			fileReader = new FileReader("/d:/balance.py");
 			bufferedReader = new BufferedReader(fileReader);
 			String line = null;
@@ -1639,14 +1652,14 @@ public class InMoovGestureCreator extends Service {
 			parseScriptToGesture(scriptLines);
 			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
 			// loading parsed frames into GUI list
-			controlListReload(frameListGui);
+			gestureListReload(frameListGui);
 			LOGGER.trace("Reload GUI finished");
 		} catch (Exception e) {
 			LOGGER.warn("Loading parsed frames", e);
 		}
 	}
 
-	public void controlListReload(JList framelist) {
+	private void gestureListReload(JList framelist) {
 		List<String> listdata = new ArrayList<String>();
 		for (Frame fih : frames) {
 			listdata.add(fih.toString());
@@ -2090,7 +2103,7 @@ public class InMoovGestureCreator extends Service {
 		parsirani_kod = code;
 	}
 
-	public void frame_add(JList framelist, JTextField frame_add_textfield) {
+	public void frame_add(JList<String> framelist, JTextField frame_add_textfield) {
 		// Add a servo movement frame to the framelist (button bottom-right)
 		Frame fih = new Frame();
 
@@ -2137,149 +2150,7 @@ public class InMoovGestureCreator extends Service {
 		framelistact(framelist);
 	}
 
-	public void parsescript(JList control_list) {
-		pythonitemholder.clear();
-
-		if (true) { // wut?
-			String pscript = pythonscript;
-			String[] pscriptsplit = pscript.split("\n");
-
-			// get the name of the InMoov-reference
-			for (String line : pscriptsplit) {
-				if (line.contains(" = Runtime.createAndStart(") || line.contains("Runtime.start(")) {
-					if (line.contains(", \"InMoov\")")) {
-						pythonname = line.substring(0, line.indexOf(" = "));
-						referencename = line.substring(line.indexOf("(\"") + 2, line.indexOf("\", \"InMoov\")"));
-					}
-				}
-			}
-
-			PythonItemHolder pih = null;
-			boolean keepgoing = true;
-			int pos = 0;
-			while (keepgoing) {
-				if (pih == null) {
-					pih = new PythonItemHolder();
-				}
-				if (pos >= pscriptsplit.length) {
-					keepgoing = false;
-					break;
-				}
-				String line = pscriptsplit[pos];
-				String linewithoutspace = line.replace(" ", "");
-				if (linewithoutspace.equals("")) {
-					pos++;
-					continue;
-				}
-				if (linewithoutspace.startsWith("#")) {
-					pih.code = pih.code + "\n" + line;
-					pos++;
-					continue;
-				}
-				line = line.replace("  ", "    "); // 2 -> 4
-				line = line.replace("   ", "    "); // 3 -> 4
-				line = line.replace("     ", "    "); // 5 -> 4
-				line = line.replace("      ", "    "); // 6 -> 4
-
-				if (!(pih.function) && !(pih.notfunction)) {
-					if (line.startsWith("def")) {
-						pih.function = true;
-						pih.notfunction = false;
-						pih.modifyable = false;
-						pih.code = line;
-						pos++;
-					} else {
-						pih.notfunction = true;
-						pih.function = false;
-						pih.modifyable = false;
-						pih.code = line;
-						pos++;
-					}
-				} else if (pih.function && !(pih.notfunction)) {
-					if (line.startsWith("    ")) {
-						pih.code = pih.code + "\n" + line;
-						pos++;
-					} else {
-						pythonitemholder.add(pih);
-						pih = null;
-					}
-				} else if (!(pih.function) && pih.notfunction) {
-					if (!(line.startsWith("def"))) {
-						pih.code = pih.code + "\n" + line;
-						pos++;
-					} else {
-						pythonitemholder.add(pih);
-						pih = null;
-					}
-				} else {
-					// it should never end here ...
-					// .function & .notfunction true ...
-					// would be wrong ...
-				}
-			}
-			pythonitemholder.add(pih);
-		}
-
-		if (true) {
-			ArrayList<PythonItemHolder> pythonitemholder1 = pythonitemholder;
-			pythonitemholder = new ArrayList<PythonItemHolder>();
-			for (PythonItemHolder pih : pythonitemholder1) {
-				if (pih.function && !(pih.notfunction)) {
-					String code = pih.code;
-					String[] codesplit = code.split("\n");
-					String code2 = "";
-					for (String line : codesplit) {
-						line = line.replace(" ", "");
-						if (line.startsWith("def")) {
-							line = "";
-						} else if (line.startsWith("sleep")) {
-							line = "";
-						} else if (line.startsWith(pythonname)) {
-							if (line.startsWith(pythonname + ".move")) {
-								if (line.startsWith(pythonname + ".moveHead")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".moveHand")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".moveArm")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".moveTorso")) {
-									line = "";
-								}
-							} else if (line.startsWith(pythonname + ".set")) {
-								if (line.startsWith(pythonname + ".setHeadSpeed")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".setHandSpeed")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".setArmSpeed")) {
-									line = "";
-								} else if (line.startsWith(pythonname + ".setTorsoSpeed")) {
-									line = "";
-								}
-							} else if (line.startsWith(pythonname + ".mouth.speak")) {
-								line = "";
-							}
-						}
-						code2 = code2 + line;
-					}
-					if (code2.length() > 0) {
-						pih.modifyable = false;
-					} else {
-						pih.modifyable = true;
-					}
-				} else if (!(pih.function) && pih.notfunction) {
-					pih.modifyable = false;
-				} else {
-					// shouldn't get here
-					// both true or both false
-					// wrong
-				}
-				pythonitemholder.add(pih);
-			}
-		}
-		controllistact(control_list);
-	}
-
-	public void controllistact(JList control_list) {
+	public void gestureListAct(JList<String> control_list) {
 		String[] listdata = new String[pythonitemholder.size()];
 		for (int i = 0; i < pythonitemholder.size(); i++) {
 			PythonItemHolder pih = pythonitemholder.get(i);
@@ -2472,70 +2343,80 @@ public class InMoovGestureCreator extends Service {
 			JFormattedTextField frameNameTextField, 
 			JFormattedTextField frameSleepTextField, 
 			JFormattedTextField frameSpeechTextField, 
+			JCheckBox frameMoveRealTime,
 			int frameItemHolderIndex) {
 		LOGGER.info("addBottomTopPane [START]");
 		try {
-			Frame frame = frames.get(frameItemHolderIndex);
 			bottomTop.removeAll();
-			JLabel frameNameLabel = new JLabel("Frame Name");
-			bottomTop.add(frameNameLabel);
-			frameNameTextField = new JFormattedTextField(frame.getName());
-			bottomTop.add(frameNameTextField);
-
-			PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-					frame.setName(text);	
-		        }
-		    };
-		    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
-
-//			frame_add = new JButton("Add");
-//			bottomTop.add(frame_add);
-//			frame_add.addActionListener(this);
-
-//			frame_addspeed = new JButton("Add Speed");
-//			top2top1.add(frame_addspeed);
-//			frame_addspeed.addActionListener(this);
-
-			JLabel sleepLabel = new JLabel("Sleep (s)");
-			bottomTop.add(sleepLabel);
-			frameSleepTextField = new JFormattedTextField(decimalFormat);
-			frameSleepTextField.setColumns(3);
-			frameSleepTextField.setValue(frame.getSleep());
-			bottomTop.add(frameSleepTextField);
-
-			PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-					frame.setSleep(Integer.valueOf(text));	
-		        }
-		    };
-		    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
-
-//			frame_addsleep = new JButton("Add Sleep");
-//			top2top1.add(frame_addsleep);
-//			frame_addsleep.addActionListener(this);
-
-			JLabel speechLabel = new JLabel("Speech");
-			bottomTop.add(speechLabel);			
-			frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
-			bottomTop.add(frameSpeechTextField);
-
-			PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-					frame.setSpeech(text);	
-		        }
-		    };
-		    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
-
-//			frame_addspeech = new JButton("Add Speech");
-//			top2top1.add(frame_addspeech);
-//			frame_addspeech.addActionListener(this);
+			if(frameItemHolderIndex != -1) {
+				Frame frame = frames.get(frameItemHolderIndex);
+				JLabel frameNameLabel = new JLabel("Frame Name");
+				bottomTop.add(frameNameLabel);
+	
+				frameMoveRealTime = new JCheckBox("Move Real Time");
+				frameMoveRealTime.setSelected(false);
+				bottomTop.add(frameMoveRealTime);
+				//TODO
+	//			frameMoveRealTime.addItemListener(this);
+				
+				frameNameTextField = new JFormattedTextField(frame.getName());
+				bottomTop.add(frameNameTextField);
+	
+				PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
+			        @Override
+			        public void propertyChange(PropertyChangeEvent evt) {
+			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+						frame.setName(text);	
+			        }
+			    };
+			    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
+	
+	//			frame_add = new JButton("Add");
+	//			bottomTop.add(frame_add);
+	//			frame_add.addActionListener(this);
+	
+	//			frame_addspeed = new JButton("Add Speed");
+	//			top2top1.add(frame_addspeed);
+	//			frame_addspeed.addActionListener(this);
+	
+				JLabel sleepLabel = new JLabel("Sleep (s)");
+				bottomTop.add(sleepLabel);
+				frameSleepTextField = new JFormattedTextField(decimalFormat);
+				frameSleepTextField.setColumns(3);
+				frameSleepTextField.setValue(frame.getSleep());
+				bottomTop.add(frameSleepTextField);
+	
+				PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
+			        @Override
+			        public void propertyChange(PropertyChangeEvent evt) {
+			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+						frame.setSleep(Integer.valueOf(text));	
+			        }
+			    };
+			    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
+	
+	//			frame_addsleep = new JButton("Add Sleep");
+	//			top2top1.add(frame_addsleep);
+	//			frame_addsleep.addActionListener(this);
+	
+				JLabel speechLabel = new JLabel("Speech");
+				bottomTop.add(speechLabel);			
+				frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
+				bottomTop.add(frameSpeechTextField);
+	
+				PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
+			        @Override
+			        public void propertyChange(PropertyChangeEvent evt) {
+			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+						frame.setSpeech(text);	
+			        }
+			    };
+			    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
+	
+	//			frame_addspeech = new JButton("Add Speech");
+	//			top2top1.add(frame_addspeech);
+	//			frame_addspeech.addActionListener(this);
+			}
 		} catch (Exception e) {
 			LOGGER.warn("addBottomTopPane error: ", e);
 		}
@@ -2550,28 +2431,44 @@ public class InMoovGestureCreator extends Service {
 			int frameItemHolderIndex) {
 		LOGGER.trace("frameSelectionChanged [START]");
 		try {
-			Frame frame = frames.get(frameItemHolderIndex);
-			// add elements and listeners, and make panel hierarchy
-			for (RobotSection robotSection : RobotSection.values()) {
-				LOGGER.trace("robotSection: \"" + robotSection + "\"");
-				// adding MOVE elements
-				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
-				JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
-				robotSectionMovePanel.removeAll();
-				robotSectionSlidersPanel.removeAll();
-				addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
-				addMoveSlidersToSectionPane(robotSectionSlidersPanel, frame, robotSection);
-				robotSectionMovePanel.add(robotSectionSlidersPanel);
-				setPanelEnabled(robotSectionSlidersPanel, frame.getMoveSet(robotSection));
-				// adding SPEED elements
-				JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
-				JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
-				robotSectionSpeedPanel.removeAll();
-				robotSectionSpeedNumberBoxesPanel.removeAll();
-				addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
-				addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanel, frame, robotSection);
-				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
-				setPanelEnabled(robotSectionSpeedNumberBoxesPanel, frame.getSpeedSet(robotSection));
+			if(frameItemHolderIndex != -1) {
+				Frame frame = frames.get(frameItemHolderIndex);
+				// add elements and listeners, and make panel hierarchy
+				for (RobotSection robotSection : RobotSection.values()) {
+					LOGGER.trace("robotSection: \"" + robotSection + "\"");
+					// cleanup
+					JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
+					JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
+					robotSectionMovePanel.removeAll();
+					robotSectionSlidersPanel.removeAll();
+					// adding MOVE elements
+					addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
+					addMoveSlidersToSectionPane(robotSectionSlidersPanel, frame, robotSection);
+					robotSectionMovePanel.add(robotSectionSlidersPanel);
+					setPanelEnabled(robotSectionSlidersPanel, frame.getMoveSet(robotSection));
+					// cleanup
+					JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
+					JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
+					robotSectionSpeedPanel.removeAll();
+					robotSectionSpeedNumberBoxesPanel.removeAll();
+					// adding SPEED elements
+					addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
+					addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanel, frame, robotSection);
+					robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
+					setPanelEnabled(robotSectionSpeedNumberBoxesPanel, frame.getSpeedSet(robotSection));
+				}
+			} else {
+				for (RobotSection robotSection : RobotSection.values()) {
+					LOGGER.trace("robotSection: \"" + robotSection + "\"");
+					JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
+					JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
+					robotSectionMovePanel.removeAll();
+					robotSectionSlidersPanel.removeAll();
+					JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
+					JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
+					robotSectionSpeedPanel.removeAll();
+					robotSectionSpeedNumberBoxesPanel.removeAll();
+				}
 			}
 			top.revalidate();
 			top.repaint();

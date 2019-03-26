@@ -42,46 +42,55 @@ import org.slf4j.Logger;
  */
 public class InMoovGestureCreatorGui extends ServiceGui implements ActionListener, ItemListener {
 
-  static final long serialVersionUID = 1L;
-  private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
+	static final long serialVersionUID = 1L;
+	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
 
-  JTextField control_gestname;
-  JTextField control_funcname;
+	JTextField controlGestureName;
+//  JTextField control_funcname;
 
-  JButton control_ScriptFolder;
-  JButton control_connect;
-  JButton control_loadscri;
-  JButton control_savescri;
-  JButton control_loadgest;
-  JButton control_addgest;
-  JButton control_updategest;
-  JButton control_removegest;
-  JButton control_testgest;
+	JButton controlConnect;
+	JButton controlScriptFolder;
+	JButton controlLoadScript;
+	JButton controlSaveScript;
+//  JButton control_loadgest;
+	JButton controlNewGesture;
+//  JButton control_updategest;
+//  JButton control_removegest;
+	JButton controlExecuteGesture;
+	JFormattedTextField frameNameTextField;
+	JButton frame_add;
+	JButton frame_addspeed;
+	JFormattedTextField frameSleepTextField;
+	JButton frame_addsleep;
+	JFormattedTextField frameSpeechTextField;
+	JButton frame_addspeech;
 
-  JList control_list;
+	JButton frame_importminresmax;
+	JButton frame_remove;
+	JButton frame_load;
+	JButton frame_update;
+	JButton frame_copy;
+	JButton frame_up;
+	JButton frame_down;
+	JButton frame_test;
+	JCheckBox frameMoveRealTime;
 
-  JFormattedTextField frameNameTextField;
-  JButton frame_add;
-  JButton frame_addspeed;
-  JFormattedTextField frameSleepTextField;
-  JButton frame_addsleep;
-  JFormattedTextField frameSpeechTextField;
-  JButton frame_addspeech;
+	private static final String[] GESTURE_LIST_PLACEHOLDER = { "Load folder with scripts" };
+	private static final String[] FRAME_LIST_PLACEHOLDER = {"Load a script to see frames..."}; 
 
-  JButton frame_importminresmax;
-  JButton frame_remove;
-  JButton frame_load;
-  JButton frame_update;
-  JButton frame_copy;
-  JButton frame_up;
-  JButton frame_down;
-  JButton frame_test;
-  JCheckBox frame_moverealtime;
+	private final JList<String> gestureList = new JList<String>(GESTURE_LIST_PLACEHOLDER);
+	private final JList<String> frameList = new JList<String>(FRAME_LIST_PLACEHOLDER);
+	
+	private final JPanel bottomTop = new JPanel();
+	private final JPanel top = new JPanel();
+  
+  	private final Map<RobotSection, JPanel> robotSectionMovePanels = new HashMap<RobotSection, JPanel>();
+  	private final Map<RobotSection, JPanel> robotSectionSlidersPanels = new HashMap<RobotSection, JPanel>();
+  	private final Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
+  	private final Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
 
-  JList frameList;
-
-	public InMoovGestureCreatorGui(final String boundServiceName, final SwingGui myService) {
-		super(boundServiceName, myService);
+  	public InMoovGestureCreatorGui(final String boundServiceName, final SwingGui myService) {
+  		super(boundServiceName, myService);
 		LOGGER.info("InMoovGestureCreatorGui constructor [START]");
 		try {
 
@@ -107,7 +116,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			// |----------|
 			// |top1top| <- JTextField's: gestname, funcname & JButton: connect
 			// |----------|
-			// |##########| <- JList: control_list & JButton's: loadscript,
+			// |##########| <- JList: gestureList & JButton's: loadscript,
 			// savescript, loadgest, addgest, updategest, removegest, testgest
 			// |##########|
 			// |----------|
@@ -125,69 +134,64 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			// |----------|
 
 
-
-			JPanel top = new JPanel();
-
 			JPanel topLeft = new JPanel();
 			topLeft.setLayout(new BorderLayout());
 
 			JPanel topLefttop = new JPanel();
 			topLefttop.setLayout(new BoxLayout(topLefttop, BoxLayout.X_AXIS));
 
-			control_gestname = new JTextField("Gest. Name");
-			topLefttop.add(control_gestname);
+//			control_funcname = new JTextField("Func. Name");
+//			topLefttop.add(control_funcname);
 
-			control_funcname = new JTextField("Func. Name");
-			topLefttop.add(control_funcname);
-
-			control_connect = new JButton("Connect");
-			topLefttop.add(control_connect);
-			control_connect.addActionListener(this);
-
-			control_ScriptFolder = new JButton("Scri Fldr");
-			topLefttop.add(control_ScriptFolder);
-			control_ScriptFolder.addActionListener(this);
+			JLabel gesturePanelLabel = new JLabel("Gestures");
+			topLefttop.add(gesturePanelLabel);
+			
+			controlConnect = new JButton("Connect");
+			topLefttop.add(controlConnect);
+			controlConnect.addActionListener(this);
 
 			topLeft.add(BorderLayout.NORTH, topLefttop);
 
 			JPanel topLeftright = new JPanel();
 			topLeftright.setLayout(new BoxLayout(topLeftright, BoxLayout.Y_AXIS));
 
-			control_loadscri = new JButton("Load Scri");
-			topLeftright.add(control_loadscri);
-			control_loadscri.addActionListener(this);
+			controlScriptFolder = new JButton("Open Folder");
+			topLeftright.add(controlScriptFolder);
+			controlScriptFolder.addActionListener(this);
 
-			control_savescri = new JButton("Save Scri");
-			topLeftright.add(control_savescri);
-			control_savescri.addActionListener(this);
+			controlLoadScript = new JButton("Load");
+			topLeftright.add(controlLoadScript);
+			controlLoadScript.addActionListener(this);
 
-			control_loadgest = new JButton("Load Gest");
-			topLeftright.add(control_loadgest);
-			control_loadgest.addActionListener(this);
+			controlSaveScript = new JButton("Save");
+			topLeftright.add(controlSaveScript);
+			controlSaveScript.addActionListener(this);
 
-			control_addgest = new JButton("Add Gest");
-			topLeftright.add(control_addgest);
-			control_addgest.addActionListener(this);
+//			control_loadgest = new JButton("Load Gest");
+//			topLeftright.add(control_loadgest);
+//			control_loadgest.addActionListener(this);
 
-			control_updategest = new JButton("Update Gest");
-			topLeftright.add(control_updategest);
-			control_updategest.addActionListener(this);
+			controlNewGesture = new JButton("New");
+			topLeftright.add(controlNewGesture);
+			controlNewGesture.addActionListener(this);
 
-			control_removegest = new JButton("Remove Gest");
-			topLeftright.add(control_removegest);
-			control_removegest.addActionListener(this);
+//			control_updategest = new JButton("Update Gest");
+//			topLeftright.add(control_updategest);
+//			control_updategest.addActionListener(this);
 
-			control_testgest = new JButton("Test Gest");
-			topLeftright.add(control_testgest);
-			control_testgest.addActionListener(this);
+//			control_removegest = new JButton("Remove Gest");
+//			topLeftright.add(control_removegest);
+//			control_removegest.addActionListener(this);
+
+			controlExecuteGesture = new JButton("Execute");
+			topLeftright.add(controlExecuteGesture);
+			controlExecuteGesture.addActionListener(this);
 
 			topLeft.add(BorderLayout.EAST, topLeftright);
 			
-			String[] te1 = { "Load folder with scripts" };
-			control_list = new JList(te1);
-			control_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			gestureList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			JScrollPane control_listscroller = new JScrollPane(control_list);
+			JScrollPane control_listscroller = new JScrollPane(gestureList);
 			control_listscroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			control_listscroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -204,6 +208,9 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			JPanel top2top2 = new JPanel();
 			top2top2.setLayout(new BoxLayout(top2top2, BoxLayout.X_AXIS));
+			
+			controlGestureName = new JTextField("Gesture Name");
+			top2top2.add(controlGestureName);
 
 			frame_importminresmax = new JButton("Import Min Rest Max");
 			top2top2.add(frame_importminresmax);
@@ -237,26 +244,21 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			top2top2.add(frame_test);
 			frame_test.addActionListener(this);
 
-			frame_moverealtime = new JCheckBox("Move Real Time");
-			frame_moverealtime.setSelected(false);
-			top2top2.add(frame_moverealtime);
-			frame_moverealtime.addItemListener(this);
-
 //			top2top.add(top2top2);
 
 			topRight.add(BorderLayout.NORTH, top2top2);
 
-			String[] te2 = {"Load a script to see frames..."}; 
-
-			frameList = new JList(te2);
 			frameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			JPanel bottom = new JPanel();
 			bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
-			JPanel bottomTop = new JPanel();
-			Dimension maximumSize = new Dimension(Integer.MAX_VALUE, 40);
+			
+			Dimension maximumSize = new Dimension(Integer.MAX_VALUE, 50);
 			bottomTop.setMaximumSize(maximumSize);
-			bottomTop.setLayout(new BoxLayout(bottomTop, BoxLayout.X_AXIS));			
+			bottomTop.setMinimumSize(maximumSize);
+			bottomTop.setLayout(new BoxLayout(bottomTop, BoxLayout.X_AXIS));	
+			bottomTop.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
+			
 			JPanel bottomBottom = new JPanel();
 			bottomBottom.setLayout(new BoxLayout(bottomBottom, BoxLayout.X_AXIS));
 
@@ -311,7 +313,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			final JPanel torsoMovePanel = new JPanel();
 			torsoMovePanel.setLayout(new BoxLayout(torsoMovePanel, BoxLayout.Y_AXIS));
 			// add to map
-			final Map<RobotSection, JPanel> robotSectionMovePanels = new HashMap<RobotSection, JPanel>();
+			robotSectionMovePanels.clear();
 			robotSectionMovePanels.put(RobotSection.RIGHT_HAND, rightHandMovePanel);
 			robotSectionMovePanels.put(RobotSection.RIGHT_ARM, rightArmMovePanel);
 			robotSectionMovePanels.put(RobotSection.LEFT_HAND, leftHandMovePanel);
@@ -332,7 +334,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			final JPanel torsoSlidersPanel = new JPanel();
 			torsoSlidersPanel.setLayout(new BoxLayout(torsoSlidersPanel, BoxLayout.X_AXIS));
 			// add to map
-			final Map<RobotSection, JPanel> robotSectionSlidersPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSlidersPanels.clear();
 			robotSectionSlidersPanels.put(RobotSection.RIGHT_HAND, rightHandSlidersPanel);
 			robotSectionSlidersPanels.put(RobotSection.RIGHT_ARM, rightArmSlidersPanel);
 			robotSectionSlidersPanels.put(RobotSection.LEFT_HAND, leftHandSlidersPanel);
@@ -366,7 +368,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			torsoPanel.add(BorderLayout.CENTER, torsoMovePanel);
 			torsoPanel.add(BorderLayout.SOUTH, torsoSpeedPanel);
 			// add to map
-			final Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSpeedPanels.clear();
 			robotSectionSpeedPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedPanel);
 			robotSectionSpeedPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedPanel);
 			robotSectionSpeedPanels.put(RobotSection.LEFT_HAND, leftHandSpeedPanel);
@@ -387,7 +389,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			final JPanel torsoSpeedNumberBoxesPanel = new JPanel();
 			torsoSpeedNumberBoxesPanel.setLayout(new BoxLayout(torsoSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
 			// add to map
-			final Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
+			robotSectionSpeedNumberBoxesPanels.clear();
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_HAND, rightHandSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.RIGHT_ARM, rightArmSpeedNumberBoxesPanel);
 			robotSectionSpeedNumberBoxesPanels.put(RobotSection.LEFT_HAND, leftHandSpeedNumberBoxesPanel);
@@ -409,6 +411,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	                			frameNameTextField,
 	                			frameSleepTextField, 
 	                			frameSpeechTextField, 
+	                			frameMoveRealTime,
 	                			frameList.getSelectedIndex());			
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
 	                			top,
@@ -446,25 +449,30 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		Object o = ae.getSource();
 
 		// Button - Events
-		if (o == control_connect) {
-			swingGui.send(boundServiceName, "control_connect", control_connect);
-		} else if (o == control_ScriptFolder) {
-			swingGui.send(boundServiceName, "control_ScriptFolder", control_list);
-		} else if (o == control_loadscri) {
-			swingGui.send(boundServiceName, "control_loadscri", control_list, frameList);
-		} else if (o == control_savescri) {
-			swingGui.send(boundServiceName, "control_savescri");
-		} else if (o == control_loadgest) {
-			swingGui.send(boundServiceName, "control_loadgest", control_list, frameList, control_gestname,
-					control_funcname);
-		} else if (o == control_addgest) {
-			swingGui.send(boundServiceName, "control_addgest", control_list, control_gestname, control_funcname);
-		} else if (o == control_updategest) {
-			swingGui.send(boundServiceName, "control_updategest", control_list, control_gestname, control_funcname);
-		} else if (o == control_removegest) {
-			swingGui.send(boundServiceName, "control_removegest", control_list);
-		} else if (o == control_testgest) {
-			swingGui.send(boundServiceName, "control_testgest");
+		if (o == controlConnect) {
+			swingGui.send(boundServiceName, "controlConnect", controlConnect);
+		} else if (o == controlScriptFolder) {
+			swingGui.send(boundServiceName, "controlScriptFolder", gestureList);
+		} else if (o == controlLoadScript) {
+			swingGui.send(boundServiceName, "controlLoadScript", gestureList, frameList);
+		} else if (o == controlSaveScript) {
+			swingGui.send(boundServiceName, "controlSaveScript");
+//		} else if (o == control_loadgest) {
+//			swingGui.send(boundServiceName, "control_loadgest", gestureList, frameList, controlGestureName,
+//					control_funcname);
+		} else if (o == controlNewGesture) {
+			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
+					frameList, bottomTop, top,
+        			robotSectionMovePanels, 
+        			robotSectionSlidersPanels,
+        			robotSectionSpeedPanels,
+        			robotSectionSpeedNumberBoxesPanels);
+//		} else if (o == control_updategest) {
+//			swingGui.send(boundServiceName, "control_updategest", gestureList, controlGestureName, control_funcname);
+//		} else if (o == control_removegest) {
+//			swingGui.send(boundServiceName, "control_removegest", gestureList);
+		} else if (o == controlExecuteGesture) {
+			swingGui.send(boundServiceName, "controlExecuteGesture");
 		} else if (o == frame_add) {
 			swingGui.send(boundServiceName, "frame_add", frameList, frameNameTextField);
 		} else if (o == frame_addspeed) {
@@ -525,8 +533,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	public void itemStateChanged(ItemEvent ie) {
 		Object o = ie.getSource();
 		// CheckBox - Events
-		if (o == frame_moverealtime) {
-			swingGui.send(boundServiceName, "frame_moverealtime", frame_moverealtime);
+		if (o == frameMoveRealTime) {
+			swingGui.send(boundServiceName, "frameMoveRealTime", frameMoveRealTime);
 		}
 	}
 }
