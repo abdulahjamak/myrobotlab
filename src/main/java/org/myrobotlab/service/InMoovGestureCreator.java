@@ -25,16 +25,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -88,25 +85,18 @@ public class InMoovGestureCreator extends Service {
 	private final List<Frame> frames = gesture.getFrames();
 
 	private final List<File> scriptFiles = new ArrayList<File>();
+	
+	private InMoov i01;
 
 	transient ServoItemHolder[][] servoitemholder;
 
 	transient ArrayList<PythonItemHolder> pythonitemholder;
 
 	boolean moverealtime = false;
-	InMoov i01;
 
 	String pythonscript;
-
 	String pythonname;
-
 	String referencename;
-
-	String parsirani_kod;
-
-	String ime_funkcije = null;
-
-	String ime_gest = null;
 
 	/**
 	 * This static method returns all the details of the class without it having to
@@ -902,6 +892,7 @@ public class InMoovGestureCreator extends Service {
 			Map<RobotSection, JPanel> robotSectionSpeedPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
 		this.gesture.setGestureName(null);
+		this.gesture.setGestureFile(null);
 		this.frames.clear();
 		gestureListReload(framelist);
 		clearSelectedFrame(bottomTop, top, robotSectionMovePanels, 
@@ -923,29 +914,74 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	public void controlSaveScript() {
-		// Save the Python-Script (in Python-Service) (button bottom-left)
-		JFrame frame = new JFrame();
-		JTextArea textarea = new JTextArea();
-		parse_frame_to_script();
-		textarea.setText(parsirani_kod);
-		textarea.setEditable(false);
-		textarea.setLineWrap(true);
-		JScrollPane scrollpane = new JScrollPane(textarea);
-		scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		frame.add(scrollpane);
-		frame.pack();
-		frame.setVisible(true);
-
-		FileWriter fileWriter;
+		FileWriter fileWriter = null;
 		try {
-			/* "/home/abe/ws-fx/inmoov/InMoov/gestures/abetova.py" */
-			fileWriter = new FileWriter("/home/abe/ws-fx/inmoov/InMoov/gestures/"
-					+ parsirani_kod.substring(4, parsirani_kod.indexOf('(')) + "_abetovo" + ".py");
-			fileWriter.write(parsirani_kod);
-			fileWriter.close();
+			if(gesture.getGestureFile() != null) {
+				// overwrite the existing file
+				int dialogResult = JOptionPane.showConfirmDialog (null, 
+						"Do you want to overwrite the existing file \""+gesture.getGestureFile()+"\"?",
+						"Warning",JOptionPane.YES_NO_CANCEL_OPTION);
+				if(dialogResult == JOptionPane.YES_OPTION) {
+					// overwrite
+					fileWriter = new FileWriter(gesture.getGestureFile());
+					fileWriter.write(gesture.toPythonGesture());
+					JOptionPane.showMessageDialog(null, 
+							"File \""+gesture.getGestureFile().getAbsolutePath()+"\" succesfully saved!", 
+							"Info", JOptionPane.INFORMATION_MESSAGE);
+				} else if(dialogResult == JOptionPane.NO_OPTION) {
+					// open file dialog
+					JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+					jfc.setDialogTitle("Gesture file name");
+					int returnValue = jfc.showSaveDialog(null);
+
+					if (returnValue == JFileChooser.APPROVE_OPTION) {
+						File selectedFile = jfc.getSelectedFile();
+						gesture.setGestureFile(selectedFile);
+						LOGGER.info("Saving to \""+selectedFile.getAbsolutePath()+"\"");
+						fileWriter = new FileWriter(gesture.getGestureFile());
+						fileWriter.write(gesture.toPythonGesture());
+						JOptionPane.showMessageDialog(null, 
+								"File \""+selectedFile.getAbsolutePath()+"\" succesfully saved!", 
+								"Info", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						// user did not choose a file to save
+						JOptionPane.showMessageDialog(null, 
+								"No file selected,nothing saved!", "Info", 
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+				} else {
+					// cancel option
+					return;
+				}
+			} else {
+				// open file dialog
+				JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				jfc.setDialogTitle("Gesture file name");
+				int returnValue = jfc.showSaveDialog(null);
+
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = jfc.getSelectedFile();
+					gesture.setGestureFile(selectedFile);
+					LOGGER.info("Saving to \""+selectedFile.getAbsolutePath()+"\"");
+					fileWriter = new FileWriter(gesture.getGestureFile());
+					fileWriter.write(gesture.toPythonGesture());
+					JOptionPane.showMessageDialog(null, 
+							"File \""+selectedFile.getAbsolutePath()+"\" succesfully saved!", 
+							"Info", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					// user did not choose a file to save
+					JOptionPane.showMessageDialog(null, "No file selected,nothing saved!", "Info", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.warn("Could not save script.", e);
+		} finally {
+			if(fileWriter != null) {
+				try {
+					fileWriter.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 		
@@ -1618,8 +1654,9 @@ public class InMoovGestureCreator extends Service {
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
+		File selectedFile = null;
 		try {
-			File selectedFile = scriptFiles.get(control_list.getSelectedIndex());
+			selectedFile = scriptFiles.get(control_list.getSelectedIndex());
 			LOGGER.info("Loading script \"" + selectedFile.getAbsolutePath() + "\"...");
 			fileReader = new FileReader(selectedFile);
 //			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + gestureList.getSelectedValue().toString());
@@ -1649,6 +1686,7 @@ public class InMoovGestureCreator extends Service {
 		}
 		try {
 			frames.clear();
+			gesture.setGestureFile(selectedFile);
 			parseScriptToGesture(scriptLines);
 			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
 			// loading parsed frames into GUI list
@@ -2027,80 +2065,6 @@ public class InMoovGestureCreator extends Service {
 		} catch (Exception e) {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
-	}
-
-	public void parse_frame_to_script() {
-		String code = "def " + /* ime_funkcije */"test" + "():\n  i01.startedGesture()\n  "; // def + ime plus () +
-																								// enter i dva spejsa +
-																								// i01.
-		for (int i = 0; i < frames.size(); i++) {
-			Frame fih = frames.get(i);
-
-			if (fih.getName() == null && fih.getSleep() == -1) {
-				String speeds[] = { "", "", "", "", "", "" };
-				if (fih.getRightHandMoveSet())
-					speeds[0] = "i01.setHeadVelocity(" + fih.getHeadRotateSpeed() + "," + fih.getNeckSpeed() + ")";
-				if (fih.getRightArmMoveSet())
-					speeds[1] = "i01.setArmVelocity(\"left\"," + fih.getLeftBicepsSpeed() + ","
-							+ fih.getLeftRotateSpeed() + "," + fih.getLeftShoulderSpeed() + ","
-							+ fih.getLeftOmoplateSpeed() + ")";
-				if (fih.getLeftHandMoveSet())
-					speeds[2] = "i01.setArmVelocity(\"right\"," + fih.getRightBicepsSpeed() + ","
-							+ fih.getRightRotateSpeed() + "," + fih.getRightShoulderSpeed() + ","
-							+ fih.getRightOmoplateSpeed() + ")";
-				if (fih.getLeftArmMoveSet())
-					speeds[3] = "i01.setHandVelocity(\"left\"," + fih.getLeftThumbFingerSpeed() + ","
-							+ fih.getLeftPinkyFingerSpeed() + "," + fih.getLeftMajeureFingerSpeed() + ","
-							+ fih.getLeftRingFingerSpeed() + "," + fih.getLeftPinkyFingerSpeed() + ","
-							+ fih.getLeftWristSpeed() + ")";
-				if (fih.getHeadMoveSet())
-					speeds[4] = "i01.setHandVelocity(\"right\"," + fih.getRightThumbFingerSpeed() + ","
-							+ fih.getRightPinkyFingerSpeed() + "," + fih.getRightMajeureFingerSpeed() + ","
-							+ fih.getRightRingFingerSpeed() + "," + fih.getRightPinkyFingerMove() + ","
-							+ fih.getRightWristSpeed() + ")";
-				if (fih.getTorsoMoveSet())
-					speeds[5] = "i01.setTorsoVelocity(" + fih.getTopStomSpeed() + "," + fih.getMidStomSpeed() + ","
-							+ fih.getLowStomSpeed() + ")";
-				for (int j = 0; j <= 5; j++) {
-					// TODO
-//    			  if(fih.getMoveSet()[j]) 
-					code += (speeds[j] + "\n  ");
-				}
-			} else if (fih.getName() == null && fih.getSleep() != -1) {
-				code += "sleep(" + fih.getSleep() + ")\n  ";
-			} else {
-				String movements[] = { "", "", "", "", "", "" };
-				if (fih.getRightHandMoveSet())
-					movements[0] = "i01.moveHead(" + fih.getNeckMove() + "," + fih.getHeadRotateMove() + ","
-							+ fih.getEyeXMove() + "," + fih.getEyeYMove() + "," + fih.getJawMove() + ")";
-				if (fih.getRightArmMoveSet())
-					movements[1] = "i01.moveArm(\"left\"," + fih.getLeftBicepsMove() + "," + fih.getLeftRotateMove()
-							+ "," + fih.getLeftShoulderMove() + "," + fih.getLeftOmoplateMove() + ")";
-				if (fih.getLeftHandMoveSet())
-					movements[2] = "i01.moveArm(\"right\"," + fih.getRightBicepsMove() + "," + fih.getRightRotateMove()
-							+ "," + fih.getRightShoulderMove() + "," + fih.getRightOmoplateMove() + ")";
-				if (fih.getLeftArmMoveSet())
-					movements[3] = "i01.moveHand(\"left\"," + fih.getLeftThumbFingerMove() + ","
-							+ fih.getLeftPinkyFingerMove() + "," + fih.getLeftMajeureFingerMove() + ","
-							+ fih.getLeftRingFingerMove() + "," + fih.getLeftPinkyFingerMove() + ","
-							+ fih.getLeftWristMove() + ")";
-				if (fih.getHeadMoveSet())
-					movements[4] = "i01.moveHand(\"right\"," + fih.getRightThumbFingerMove() + ","
-							+ fih.getRightPinkyFingerMove() + "," + fih.getRightMajeureFingerMove() + ","
-							+ fih.getRightRingFingerMove() + "," + fih.getRightPinkyFingerMove() + ","
-							+ fih.getRightWristMove() + ")";
-				if (fih.getTorsoMoveSet())
-					movements[5] = "i01.moveTorso(" + fih.getTopStomMove() + "," + fih.getMidStomMove() + ","
-							+ fih.getLowStomMove() + ")";
-				for (int j = 0; j <= 5; j++) {
-					// TODO
-//    			  if(fih.getMoveSet()[j]) 
-					code += (movements[j] + "\n  ");
-				}
-			}
-		}
-		// code += "i01.finishedGesture()";
-		parsirani_kod = code;
 	}
 
 	public void frame_add(JList<String> framelist, JTextField frame_add_textfield) {

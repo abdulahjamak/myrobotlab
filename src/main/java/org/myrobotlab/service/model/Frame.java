@@ -94,25 +94,162 @@ public class Frame implements Serializable {
 	private static final String STAR_SYMBOL = "* ";
 	private static final String SPACE_SYMBOL = " ";
 	private static final String PIPE_SYMBOL = " | ";
-	private static final String NEW_LINE = "<br/>";
+	private static final String NEW_LINE_HTML = "<br/>";
+	private static final String NEW_LINE = System.lineSeparator();
+	private static final String DOUBLE_SPACE = "  ";
+	private static final String COMMA = ",";
 
 	public Frame() {
-//		this.frameType = frameType;
 		resetValues();
+	}
+	
+	public String toPythonFrame() {
+		StringBuffer pythonFrameString = new StringBuffer();
+		/* SPEECH */
+		if (speechSet) {
+			pythonFrameString
+			.append(DOUBLE_SPACE).append("i01.mouth.speak(\"")
+				.append(speech).append("\")").append(NEW_LINE);
+		}
+		/* SPEED */
+		// right hand speed
+		if (speedSets[0]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setHandSpeed(\"right\",");
+			for(Double speed : rightHandSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// right arm
+		if (speedSets[1]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setArmSpeed(\"right\",");
+			for(Double speed : rightArmSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// left hand
+		if (speedSets[2]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setHandSpeed(\"left\",");
+			for(Double speed : leftHandSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// left arm
+		if (speedSets[3]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setArmSpeed(\"left\",");
+			for(Double speed : leftArmSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// head
+		if (speedSets[4]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setHeadSpeed(");
+			for(Double speed : headSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// torso
+		if (speedSets[5]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.setTorsoSpeed(");
+			for(Double speed : torsoSpeeds) {
+				pythonFrameString.append(speed).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		/* MOVE */
+		// right hand
+		if (moveSets[0]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveHand(\"right\",");
+			for(Integer move : rightHandMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// right arm
+		if (moveSets[1]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveArm(\"right\",");
+			for(Integer move : rightArmMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// left hand
+		if (moveSets[2]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveHand(\"left\",");
+			for(Integer move : leftHandMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// left arm
+		if (moveSets[3]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveArm(\"left\",");
+			for(Integer move : leftArmMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// head
+		if (moveSets[4]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveHead(");
+			for(Integer move : headMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		// torso
+		if (moveSets[5]) {
+			pythonFrameString.append(DOUBLE_SPACE).append("i01.moveTorso(");
+			for(Integer move : torsoMoves) {
+				pythonFrameString.append(move).append(COMMA);
+			}
+			// remove the last comma
+			pythonFrameString.setLength(pythonFrameString.length() - 1);
+			pythonFrameString.append(")").append(NEW_LINE);
+		}
+		/* SLEEP */
+		pythonFrameString.append(DOUBLE_SPACE).append("sleep(").append(this.sleep).append(")").append(NEW_LINE);
+		return pythonFrameString.toString();
 	}
 
 	@Override
 	public String toString() {
 		StringBuffer frameString = new StringBuffer();
 		// speech frame
-		frameString.append("<html>FRAME: ").append(this.name).append(NEW_LINE);
+		frameString.append("<html>FRAME: ").append(this.name).append(NEW_LINE_HTML);
 		frameString.append("- SPEECH ");
 		if (speechSet) {
 			frameString.append(this.speech);
 		} else {
 			frameString.append(STAR_SYMBOL);
 		}
-		frameString.append(NEW_LINE);
+		frameString.append(NEW_LINE_HTML);
 		// speed frame
 		frameString.append("- SPEED ");
 		// right hand
@@ -167,7 +304,7 @@ public class Frame implements Serializable {
 		} else {
 			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 		}
-		frameString.append(NEW_LINE);
+		frameString.append(NEW_LINE_HTML);
 		// move frame
 		frameString.append("- MOVE ");
 		// right hand
@@ -224,7 +361,7 @@ public class Frame implements Serializable {
 		} else {
 			frameString.append(STAR_SYMBOL).append(STAR_SYMBOL).append(STAR_SYMBOL);
 		}
-		frameString.append(NEW_LINE);
+		frameString.append(NEW_LINE_HTML);
 		// sleep frame
 		frameString.append("- SLEEP ").append(this.sleep).append("</html>");
 		//
