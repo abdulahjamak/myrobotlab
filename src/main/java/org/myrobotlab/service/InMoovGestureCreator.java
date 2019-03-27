@@ -113,7 +113,7 @@ public class InMoovGestureCreator extends Service {
 		return meta;
 	}
 	
-	public void clearGestureAndSelectedFrame(JList<String> framelist, 
+	public void clearGestureAndSelectedFrame(JList<String> frameList, 
 			JPanel bottomTop, 
 			JPanel top, 
 			JTextField controlGestureName,
@@ -125,7 +125,7 @@ public class InMoovGestureCreator extends Service {
 		this.gesture.setGestureFile(null);
 		controlGestureName.setText("Gesture name here");
 		this.frames.clear();
-		frameListReload(framelist);
+		frameListReload(frameList);
 		clearSelectedFrame(bottomTop, top, robotSectionMovePanels, 
 				robotSectionSlidersPanels, robotSectionSpeedPanels, 
 				robotSectionSpeedNumberBoxesPanels);
@@ -138,10 +138,10 @@ public class InMoovGestureCreator extends Service {
 			Map<RobotSection, JPanel> robotSectionSlidersPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
-		addBottomTopPane(bottomTop, null, null, null, null, -1);
+		addBottomTopPane(bottomTop, null, null, null, null, null);
 		frameSelectionChanged(top, robotSectionMovePanels, 
 				robotSectionSlidersPanels, robotSectionSpeedPanels, 
-				robotSectionSpeedNumberBoxesPanels, -1);
+				robotSectionSpeedNumberBoxesPanels, null);
 	}
 
 	public void controlSaveScript() {
@@ -264,27 +264,27 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frameCopy(JList<String> framelist) {
-		// Copy this frame on the framelist (button bottom-right)
-		int pos = framelist.getSelectedIndex();
+	public void frameCopy(JList<String> frameList) {
+		// Copy this frame on the frameList (button bottom-right)
+		int pos = frameList.getSelectedIndex();
 
 		if (pos != -1) {
 			Frame fih = frames.get(pos);
 			frames.add(fih);
 
-			frameListReload(framelist);
+			frameListReload(frameList);
 		}
 	}
 
-	public void frameDown(JList<String> framelist) {
-		// Move this frame one down on the framelist (button bottom-right)
-		int pos = framelist.getSelectedIndex();
+	public void frameDown(JList<String> frameList) {
+		// Move this frame one down on the frameList (button bottom-right)
+		int pos = frameList.getSelectedIndex();
 
 		if (pos != -1) {
 			Frame fih = frames.remove(pos);
 			frames.add(pos + 1, fih);
 
-			frameListReload(framelist);
+			frameListReload(frameList);
 		}
 	}
 
@@ -292,17 +292,28 @@ public class InMoovGestureCreator extends Service {
 		moverealtime = frame_moverealtime.isSelected();
 	}
 
-	public void frameNew(JList<String> framelist) {
-		// TODO
+	public void frameNew(JList<String> frameList) {
+		LOGGER.info("frameNew frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
+		int frameIndex = frameList.getSelectedIndex();
+		if(frameIndex >= 0) {
+			frames.add(frameIndex, new Frame());
+		} else {
+			frames.add(new Frame());
+		}
+		frameListReload(frameList);
+		frameList.setSelectedIndex(frameIndex);
 	}
 	
-	public void frameRemove(JList<String> framelist) {
-		// Remove this frame from the framelist (button bottom-right)
-		int pos = framelist.getSelectedIndex();
-		if (pos != -1) {
-			frames.remove(pos);
-
-			frameListReload(framelist);
+	public void frameRemove(JList<String> frameList) {
+		LOGGER.info("frameRemove frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
+		int frameIndex = frameList.getSelectedIndex();
+		if (frameIndex >= 0) {
+			frames.remove(frameIndex);
+			frameListReload(frameList);
+		} else {
+			JOptionPane.showMessageDialog(null, 
+					"No frame selected to remove", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -394,9 +405,9 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.info("Finished frame execution.");
 	}
 
-	public void frameExecute(JList<String> framelist) {
+	public void frameExecute(JList<String> frameList) {
 		// Test selected frame
-		int selectedFrameIndex = framelist.getSelectedIndex();
+		int selectedFrameIndex = frameList.getSelectedIndex();
 		if (i01 != null && selectedFrameIndex != -1) {
 			Frame fih = frames.get(selectedFrameIndex);
 			executeFrameOnRobot(fih);
@@ -411,15 +422,15 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void frameUp(JList<String> framelist) {
-		// Move this frame one up on the framelist (button bottom-right)
-		int pos = framelist.getSelectedIndex();
+	public void frameUp(JList<String> frameList) {
+		// Move this frame one up on the frameList (button bottom-right)
+		int pos = frameList.getSelectedIndex();
 
 		if (pos != -1) {
 			Frame fih = frames.remove(pos);
 			frames.add(pos - 1, fih);
 
-			frameListReload(framelist);
+			frameListReload(frameList);
 		}
 	}
 
@@ -499,12 +510,12 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	private void frameListReload(JList framelist) {
+	private void frameListReload(JList frameList) {
 		List<String> listdata = new ArrayList<String>();
 		for (Frame fih : frames) {
 			listdata.add(fih.toString());
 		}
-		framelist.setListData(listdata.toArray());
+		frameList.setListData(listdata.toArray());
 	}
 
 	private void parseScriptToGesture(List<String> scriptLines) throws Exception {
@@ -870,7 +881,10 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	private void addMoveSlidersToSectionPane(JPanel panel, final Frame frame, RobotSection robotSection) {
+	private void addMoveSlidersToSectionPane(JPanel panel, 
+			final Frame frame, 
+			RobotSection robotSection,
+			JList<String> frameList) {
 		LOGGER.trace("addMoveSlidersToSectionPane for \"" + robotSection +
 					"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
 		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
@@ -891,7 +905,10 @@ public class InMoovGestureCreator extends Service {
 			slider.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent ce) {
-					frame.setMoveValue(robotSection, sectionIndex, slider.getValue());	
+					frame.setMoveValue(robotSection, sectionIndex, slider.getValue());
+				    if (!slider.getValueIsAdjusting()) {
+				    	frameListReload(frameList);
+				    }
 				}
 			});
 			final JPanel sliderLabelContainer = new JPanel();
@@ -969,79 +986,82 @@ public class InMoovGestureCreator extends Service {
 			JFormattedTextField frameSleepTextField, 
 			JFormattedTextField frameSpeechTextField, 
 			JCheckBox frameMoveRealTime,
-			int frameItemHolderIndex) {
-		LOGGER.info("addBottomTopPane [START]");
+			JList<String> frameList) {
+		LOGGER.trace("addBottomTopPane [START]");
 		try {
 			bottomTop.removeAll();
-			if(frameItemHolderIndex != -1) {
-				Frame frame = frames.get(frameItemHolderIndex);
-	
-				frameMoveRealTime = new JCheckBox("Move Real Time");
-				frameMoveRealTime.setSelected(false);
-				bottomTop.add(frameMoveRealTime);
-				
-				JLabel frameNameLabel = new JLabel("Frame Name");
-				bottomTop.add(frameNameLabel);
-				//TODO
-	//			frameMoveRealTime.addItemListener(this);
-				
-				frameNameTextField = new JFormattedTextField(frame.getName());
-				bottomTop.add(frameNameTextField);
-	
-				PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
-			        @Override
-			        public void propertyChange(PropertyChangeEvent evt) {
-			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-						frame.setName(text);	
-			        }
-			    };
-			    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
-	
-	//			frame_add = new JButton("Add");
-	//			bottomTop.add(frame_add);
-	//			frame_add.addActionListener(this);
-	
-	//			frame_addspeed = new JButton("Add Speed");
-	//			top2top1.add(frame_addspeed);
-	//			frame_addspeed.addActionListener(this);
-	
-				JLabel sleepLabel = new JLabel("Sleep (s)");
-				bottomTop.add(sleepLabel);
-				frameSleepTextField = new JFormattedTextField(decimalFormat);
-				frameSleepTextField.setColumns(3);
-				frameSleepTextField.setValue(frame.getSleep());
-				bottomTop.add(frameSleepTextField);
-	
-				PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
-			        @Override
-			        public void propertyChange(PropertyChangeEvent evt) {
-			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-						frame.setSleep(Integer.valueOf(text));	
-			        }
-			    };
-			    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
-	
-	//			frame_addsleep = new JButton("Add Sleep");
-	//			top2top1.add(frame_addsleep);
-	//			frame_addsleep.addActionListener(this);
-	
-				JLabel speechLabel = new JLabel("Speech");
-				bottomTop.add(speechLabel);			
-				frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
-				bottomTop.add(frameSpeechTextField);
-	
-				PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
-			        @Override
-			        public void propertyChange(PropertyChangeEvent evt) {
-			            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-						frame.setSpeech(text);	
-			        }
-			    };
-			    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
-	
-	//			frame_addspeech = new JButton("Add Speech");
-	//			top2top1.add(frame_addspeech);
-	//			frame_addspeech.addActionListener(this);
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+		
+					frameMoveRealTime = new JCheckBox("Move Real Time");
+					frameMoveRealTime.setSelected(false);
+					bottomTop.add(frameMoveRealTime);
+					
+					JLabel frameNameLabel = new JLabel("Frame Name");
+					bottomTop.add(frameNameLabel);
+					//TODO
+		//			frameMoveRealTime.addItemListener(this);
+					
+					frameNameTextField = new JFormattedTextField(frame.getName());
+					bottomTop.add(frameNameTextField);
+		
+					PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
+				        @Override
+				        public void propertyChange(PropertyChangeEvent evt) {
+				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+							frame.setName(text);	
+				        }
+				    };
+				    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
+		
+		//			frame_add = new JButton("Add");
+		//			bottomTop.add(frame_add);
+		//			frame_add.addActionListener(this);
+		
+		//			frame_addspeed = new JButton("Add Speed");
+		//			top2top1.add(frame_addspeed);
+		//			frame_addspeed.addActionListener(this);
+		
+					JLabel sleepLabel = new JLabel("Sleep (s)");
+					bottomTop.add(sleepLabel);
+					frameSleepTextField = new JFormattedTextField(decimalFormat);
+					frameSleepTextField.setColumns(3);
+					frameSleepTextField.setValue(frame.getSleep());
+					bottomTop.add(frameSleepTextField);
+		
+					PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
+				        @Override
+				        public void propertyChange(PropertyChangeEvent evt) {
+				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+							frame.setSleep(Integer.valueOf(text));	
+				        }
+				    };
+				    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
+		
+		//			frame_addsleep = new JButton("Add Sleep");
+		//			top2top1.add(frame_addsleep);
+		//			frame_addsleep.addActionListener(this);
+		
+					JLabel speechLabel = new JLabel("Speech");
+					bottomTop.add(speechLabel);			
+					frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
+					bottomTop.add(frameSpeechTextField);
+		
+					PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
+				        @Override
+				        public void propertyChange(PropertyChangeEvent evt) {
+				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+							frame.setSpeech(text);	
+				        }
+				    };
+				    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
+		
+		//			frame_addspeech = new JButton("Add Speech");
+		//			top2top1.add(frame_addspeech);
+		//			frame_addspeech.addActionListener(this);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.warn("addBottomTopPane error: ", e);
@@ -1054,34 +1074,37 @@ public class InMoovGestureCreator extends Service {
 			Map<RobotSection, JPanel> robotSectionSlidersPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels,
-			int frameItemHolderIndex) {
+			JList<String> frameList) {
 		LOGGER.trace("frameSelectionChanged [START]");
 		try {
-			if(frameItemHolderIndex != -1) {
-				Frame frame = frames.get(frameItemHolderIndex);
-				// add elements and listeners, and make panel hierarchy
-				for (RobotSection robotSection : RobotSection.values()) {
-					LOGGER.trace("robotSection: \"" + robotSection + "\"");
-					// cleanup
-					JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
-					JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
-					robotSectionMovePanel.removeAll();
-					robotSectionSlidersPanel.removeAll();
-					// adding MOVE elements
-					addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
-					addMoveSlidersToSectionPane(robotSectionSlidersPanel, frame, robotSection);
-					robotSectionMovePanel.add(robotSectionSlidersPanel);
-					setPanelEnabled(robotSectionSlidersPanel, frame.getMoveSet(robotSection));
-					// cleanup
-					JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
-					JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
-					robotSectionSpeedPanel.removeAll();
-					robotSectionSpeedNumberBoxesPanel.removeAll();
-					// adding SPEED elements
-					addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
-					addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanel, frame, robotSection);
-					robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
-					setPanelEnabled(robotSectionSpeedNumberBoxesPanel, frame.getSpeedSet(robotSection));
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					// add elements and listeners, and make panel hierarchy
+					for (RobotSection robotSection : RobotSection.values()) {
+						LOGGER.trace("robotSection: \"" + robotSection + "\"");
+						// cleanup
+						JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
+						JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
+						robotSectionMovePanel.removeAll();
+						robotSectionSlidersPanel.removeAll();
+						// adding MOVE elements
+						addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
+						addMoveSlidersToSectionPane(robotSectionSlidersPanel, frame, robotSection, frameList);
+						robotSectionMovePanel.add(robotSectionSlidersPanel);
+						setPanelEnabled(robotSectionSlidersPanel, frame.getMoveSet(robotSection));
+						// cleanup
+						JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
+						JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
+						robotSectionSpeedPanel.removeAll();
+						robotSectionSpeedNumberBoxesPanel.removeAll();
+						// adding SPEED elements
+						addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
+						addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanel, frame, robotSection);
+						robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
+						setPanelEnabled(robotSectionSpeedNumberBoxesPanel, frame.getSpeedSet(robotSection));
+					}
 				}
 			} else {
 				for (RobotSection robotSection : RobotSection.values()) {
@@ -1204,8 +1227,8 @@ public class InMoovGestureCreator extends Service {
 //		}
 //	}
 
-//	public void frame_add(JList<String> framelist, JTextField frame_add_textfield) {
-//		// Add a servo movement frame to the framelist (button bottom-right)
+//	public void frame_add(JList<String> frameList, JTextField frame_add_textfield) {
+//		// Add a servo movement frame to the frameList (button bottom-right)
 //		Frame fih = new Frame();
 //
 //		fih.setRightThumbFingerMove(servoitemholder[0][0].sli.getValue());
@@ -1248,7 +1271,7 @@ public class InMoovGestureCreator extends Service {
 //
 //		frames.add(fih);
 //
-//		frameListReload(framelist);
+//		frameListReload(frameList);
 //	}
 	
 //	public void frame_importminresmax() {
@@ -1731,7 +1754,7 @@ public class InMoovGestureCreator extends Service {
 //		parsescript(gestureList);
 //	}
 
-//	public void control_loadgest(JList<String> gestureList, JList<String> framelist, JTextField gestureName,
+//	public void control_loadgest(JList<String> gestureList, JList<String> frameList, JTextField gestureName,
 //			JTextField control_funcname) {
 //		// Load the current gesture from the script (button bottom-left)
 //		int posl = gestureList.getSelectedIndex();
@@ -2202,7 +2225,7 @@ public class InMoovGestureCreator extends Service {
 //					}
 //				}
 //
-//				frameListReload(framelist);
+//				frameListReload(frameList);
 //
 //				int defnamepos = pythonscript.indexOf(defname);
 //				int earpos1 = pythonscript.lastIndexOf("\n", defnamepos);
@@ -2379,10 +2402,10 @@ public class InMoovGestureCreator extends Service {
 //		}
 //	}
 
-//	public void frame_load(JList<String> framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
+//	public void frame_load(JList<String> frameList, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
 //			JTextField frame_addspeech_textfield) {
-//		// Load this frame from the framelist (button bottom-right)
-//		int pos = framelist.getSelectedIndex();
+//		// Load this frame from the frameList (button bottom-right)
+//		int pos = frameList.getSelectedIndex();
 //
 //		if (pos != -1) {
 //
@@ -2464,11 +2487,11 @@ public class InMoovGestureCreator extends Service {
 //		}
 //	}
 
-//	public void frame_update(JList<String> framelist, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
+//	public void frame_update(JList<String> frameList, JTextField frame_add_textfield, JTextField frame_addsleep_textfield,
 //			JTextField frame_addspeech_textfield) {
-//		// Update this frame on the framelist (button bottom-right)
+//		// Update this frame on the frameList (button bottom-right)
 //
-//		int pos = framelist.getSelectedIndex();
+//		int pos = frameList.getSelectedIndex();
 //
 //		if (pos != -1) {
 //			Frame fih = new Frame();
@@ -2561,12 +2584,12 @@ public class InMoovGestureCreator extends Service {
 //			}
 //			frames.set(pos, fih);
 //
-//			frameListReload(framelist);
+//			frameListReload(frameList);
 //		}
 //	}	
 
-//	public void frame_addsleep(JList<String> framelist, JTextField frame_addsleep_textfield) {
-//		// Add a sleep frame to the framelist (button bottom-right)
+//	public void frame_addsleep(JList<String> frameList, JTextField frame_addsleep_textfield) {
+//		// Add a sleep frame to the frameList (button bottom-right)
 //		Frame fih = new Frame();
 //
 //		fih.setSleep(Integer.parseInt(frame_addsleep_textfield.getText()));
@@ -2575,11 +2598,11 @@ public class InMoovGestureCreator extends Service {
 //
 //		frames.add(fih);
 //
-//		frameListReload(framelist);
+//		frameListReload(frameList);
 //	}
 //
-//	public void frame_addspeech(JList<String> framelist, JTextField frame_addspeech_textfield) {
-//		// Add a speech frame to the framelist (button bottom-right)
+//	public void frame_addspeech(JList<String> frameList, JTextField frame_addspeech_textfield) {
+//		// Add a speech frame to the frameList (button bottom-right)
 //		Frame fih = new Frame();
 //
 //		fih.setSleep(-1);
@@ -2588,11 +2611,11 @@ public class InMoovGestureCreator extends Service {
 //
 //		frames.add(fih);
 //
-//		frameListReload(framelist);
+//		frameListReload(frameList);
 //	}
 //
-//	public void frame_addspeed(JList<String> framelist) {
-//		// Add a speed setting frame to the framelist (button bottom-right)
+//	public void frame_addspeed(JList<String> frameList) {
+//		// Add a speed setting frame to the frameList (button bottom-right)
 //		Frame fih = new Frame();
 //
 //		fih.setRightThumbFingerSpeed(Double.parseDouble(servoitemholder[0][0].spe.getText()));
@@ -2635,7 +2658,7 @@ public class InMoovGestureCreator extends Service {
 //
 //		frames.add(fih);
 //
-//		frameListReload(framelist);
+//		frameListReload(frameList);
 //	}
 	
 }

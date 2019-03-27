@@ -426,14 +426,14 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	                			frameSleepTextField, 
 	                			frameSpeechTextField, 
 	                			frameMoveRealTime,
-	                			frameList.getSelectedIndex());			
+	                			frameList);			
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
 	                			top,
 	                			robotSectionMovePanels, 
 	                			robotSectionSlidersPanels,
 	                			robotSectionSpeedPanels,
 	                			robotSectionSpeedNumberBoxesPanels, 
-	                			frameList.getSelectedIndex());
+	                			frameList);
 	                }
 	            }
 	        });
