@@ -33,6 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.myrobotlab.framework.Service;
 import org.myrobotlab.framework.ServiceType;
 import org.myrobotlab.logging.LoggerFactory;
@@ -265,26 +266,52 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	public void frameCopy(JList<String> frameList) {
-		// Copy this frame on the frameList (button bottom-right)
-		int pos = frameList.getSelectedIndex();
-
-		if (pos != -1) {
-			Frame fih = frames.get(pos);
-			frames.add(fih);
-
+		LOGGER.info("frameCopy frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
+		int selectedFrameIndex = frameList.getSelectedIndex();
+		if (selectedFrameIndex >= 0 && selectedFrameIndex < frames.size()) {
+			Frame frame = frames.get(selectedFrameIndex);
+			frames.add(SerializationUtils.clone(frame));
 			frameListReload(frameList);
+		} else {
+			JOptionPane.showMessageDialog(null, 
+					"No frame selected to remove", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
 	public void frameDown(JList<String> frameList) {
-		// Move this frame one down on the frameList (button bottom-right)
-		int pos = frameList.getSelectedIndex();
-
-		if (pos != -1) {
-			Frame fih = frames.remove(pos);
-			frames.add(pos + 1, fih);
-
+		LOGGER.info("frameDown frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
+		int selectedFrameIndex = frameList.getSelectedIndex();
+		if (selectedFrameIndex >= 0 && selectedFrameIndex < frames.size()-1) {
+			Frame frame = frames.remove(selectedFrameIndex);
+			frames.add(selectedFrameIndex + 1, frame);
 			frameListReload(frameList);
+		} else if (selectedFrameIndex == frames.size()-1) {
+			JOptionPane.showMessageDialog(null, 
+					"Alreay at the bottom", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, 
+					"No frame selected to remove", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	public void frameUp(JList<String> frameList) {
+		LOGGER.info("frameUps frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
+		int selectedFrameIndex = frameList.getSelectedIndex();
+		if (selectedFrameIndex > 0 && selectedFrameIndex < frames.size()) {
+			Frame frame = frames.remove(selectedFrameIndex);
+			frames.add(selectedFrameIndex - 1, frame);
+			frameListReload(frameList);
+		} else if (selectedFrameIndex == 0) {
+			JOptionPane.showMessageDialog(null, 
+					"Alreay at the top", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, 
+					"No frame selected to remove", 
+					"Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -319,7 +346,7 @@ public class InMoovGestureCreator extends Service {
 
 	private void robotRelax() {
 		try {
-			LOGGER.info("Running [RELAX] frame ");
+			LOGGER.info("Running [RELAX] line...");
 			i01.rest();
 		} catch (Exception e) {
 			LOGGER.warn("Relax error", e);
@@ -419,18 +446,6 @@ public class InMoovGestureCreator extends Service {
 				// this should go into some kind of message to the user
 				LOGGER.info("Testing of frame is not possible! Robot is not initialised!");
 			}
-		}
-	}
-
-	public void frameUp(JList<String> frameList) {
-		// Move this frame one up on the frameList (button bottom-right)
-		int pos = frameList.getSelectedIndex();
-
-		if (pos != -1) {
-			Frame fih = frames.remove(pos);
-			frames.add(pos - 1, fih);
-
-			frameListReload(frameList);
 		}
 	}
 
