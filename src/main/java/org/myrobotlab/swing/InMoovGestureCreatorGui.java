@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +22,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -45,12 +46,12 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	static final long serialVersionUID = 1L;
 	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
 
-	JTextField controlGestureName;
+	JFormattedTextField gestureName;
 //  JTextField control_funcname;
 
 	JButton controlConnect;
-	JButton controlScriptFolder;
-	JButton controlLoadScript;
+	JButton loadScriptFolder;
+	JButton loadGestureScript;
 	JButton controlSaveScript;
 //  JButton control_loadgest;
 	JButton controlNewGesture;
@@ -58,21 +59,22 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 //  JButton control_removegest;
 	JButton controlExecuteGesture;
 	JFormattedTextField frameNameTextField;
-	JButton frame_add;
-	JButton frame_addspeed;
+//	JButton frame_add;
+//	JButton frame_addspeed;
 	JFormattedTextField frameSleepTextField;
-	JButton frame_addsleep;
+//	JButton frame_addsleep;
 	JFormattedTextField frameSpeechTextField;
-	JButton frame_addspeech;
+//	JButton frame_addspeech;
 
-	JButton frame_importminresmax;
-	JButton frame_remove;
-	JButton frame_load;
-	JButton frame_update;
-	JButton frame_copy;
-	JButton frame_up;
-	JButton frame_down;
-	JButton frame_test;
+//	JButton frame_importminresmax;
+//	JButton frame_load;
+//	JButton frame_update;
+	JButton frameNew;
+	JButton frameRemove;
+	JButton frameCopy;
+	JButton frameUp;
+	JButton frameDown;
+	JButton frameExecute;
 	JCheckBox frameMoveRealTime;
 
 	private static final String[] GESTURE_LIST_PLACEHOLDER = { "Load folder with scripts" };
@@ -155,13 +157,13 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel topLeftright = new JPanel();
 			topLeftright.setLayout(new BoxLayout(topLeftright, BoxLayout.Y_AXIS));
 
-			controlScriptFolder = new JButton("Open Folder");
-			topLeftright.add(controlScriptFolder);
-			controlScriptFolder.addActionListener(this);
+			loadScriptFolder = new JButton("Open Folder");
+			topLeftright.add(loadScriptFolder);
+			loadScriptFolder.addActionListener(this);
 
-			controlLoadScript = new JButton("Load");
-			topLeftright.add(controlLoadScript);
-			controlLoadScript.addActionListener(this);
+			loadGestureScript = new JButton("Load");
+			topLeftright.add(loadGestureScript);
+			loadGestureScript.addActionListener(this);
 
 			controlSaveScript = new JButton("Save");
 			topLeftright.add(controlSaveScript);
@@ -191,11 +193,11 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			
 			gestureList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			JScrollPane control_listscroller = new JScrollPane(gestureList);
-			control_listscroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			control_listscroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane gestureListScroller = new JScrollPane(gestureList);
+			gestureListScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			gestureListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-			topLeft.add(BorderLayout.CENTER, control_listscroller);
+			topLeft.add(BorderLayout.CENTER, gestureListScroller);
 
 			JPanel topRight = new JPanel();
 			topRight.setLayout(new BoxLayout(topRight, BoxLayout.Y_AXIS));
@@ -209,40 +211,52 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel top2top2 = new JPanel();
 			top2top2.setLayout(new BoxLayout(top2top2, BoxLayout.X_AXIS));
 			
-			controlGestureName = new JTextField("Gesture Name");
-			top2top2.add(controlGestureName);
+			gestureName = new JFormattedTextField("Gesture Name");
+			PropertyChangeListener gestureNameTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+                	myService.send(boundServiceName, "updateGestureName", text);	
+		        }
+		    };
+		    gestureName.addPropertyChangeListener("value", gestureNameTextListener);
+			top2top2.add(gestureName);
 
-			frame_importminresmax = new JButton("Import Min Rest Max");
-			top2top2.add(frame_importminresmax);
-			frame_importminresmax.addActionListener(this);
+//			frame_importminresmax = new JButton("Import Min Rest Max");
+//			top2top2.add(frame_importminresmax);
+//			frame_importminresmax.addActionListener(this);
 
-			frame_remove = new JButton("Remove");
-			top2top2.add(frame_remove);
-			frame_remove.addActionListener(this);
+		    frameNew = new JButton("New");
+			top2top2.add(frameNew);
+			frameNew.addActionListener(this);
+			
+			frameRemove = new JButton("Remove");
+			top2top2.add(frameRemove);
+			frameRemove.addActionListener(this);
 
-			frame_load = new JButton("Load");
-			top2top2.add(frame_load);
-			frame_load.addActionListener(this);
+//			frame_load = new JButton("Load");
+//			top2top2.add(frame_load);
+//			frame_load.addActionListener(this);
 
-			frame_update = new JButton("Update");
-			top2top2.add(frame_update);
-			frame_update.addActionListener(this);
+//			frame_update = new JButton("Update");
+//			top2top2.add(frame_update);
+//			frame_update.addActionListener(this);
 
-			frame_copy = new JButton("Copy");
-			top2top2.add(frame_copy);
-			frame_copy.addActionListener(this);
+			frameCopy = new JButton("Copy");
+			top2top2.add(frameCopy);
+			frameCopy.addActionListener(this);
 
-			frame_up = new JButton("Up");
-			top2top2.add(frame_up);
-			frame_up.addActionListener(this);
+			frameUp = new JButton("Up");
+			top2top2.add(frameUp);
+			frameUp.addActionListener(this);
 
-			frame_down = new JButton("Down");
-			top2top2.add(frame_down);
-			frame_down.addActionListener(this);
+			frameDown = new JButton("Down");
+			top2top2.add(frameDown);
+			frameDown.addActionListener(this);
 
-			frame_test = new JButton("Test");
-			top2top2.add(frame_test);
-			frame_test.addActionListener(this);
+			frameExecute = new JButton("Execute");
+			top2top2.add(frameExecute);
+			frameExecute.addActionListener(this);
 
 //			top2top.add(top2top2);
 
@@ -451,55 +465,57 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		// Button - Events
 		if (o == controlConnect) {
 			swingGui.send(boundServiceName, "controlConnect", controlConnect);
-		} else if (o == controlScriptFolder) {
-			swingGui.send(boundServiceName, "controlScriptFolder", gestureList);
-		} else if (o == controlLoadScript) {
-			swingGui.send(boundServiceName, "controlLoadScript", gestureList, frameList, controlGestureName);
+		} else if (o == loadScriptFolder) {
+			swingGui.send(boundServiceName, "loadScriptFolder", gestureList);
+		} else if (o == loadGestureScript) {
+			swingGui.send(boundServiceName, "loadGestureScript", gestureList, frameList, gestureName);
 		} else if (o == controlSaveScript) {
 			swingGui.send(boundServiceName, "controlSaveScript");
 //		} else if (o == control_loadgest) {
-//			swingGui.send(boundServiceName, "control_loadgest", gestureList, frameList, controlGestureName,
+//			swingGui.send(boundServiceName, "control_loadgest", gestureList, frameList, gestureName,
 //					control_funcname);
 		} else if (o == controlNewGesture) {
 			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
 					frameList, bottomTop, top,
-					controlGestureName,
+					gestureName,
         			robotSectionMovePanels, 
         			robotSectionSlidersPanels,
         			robotSectionSpeedPanels,
         			robotSectionSpeedNumberBoxesPanels);
 //		} else if (o == control_updategest) {
-//			swingGui.send(boundServiceName, "control_updategest", gestureList, controlGestureName, control_funcname);
+//			swingGui.send(boundServiceName, "control_updategest", gestureList, gestureName, control_funcname);
 //		} else if (o == control_removegest) {
 //			swingGui.send(boundServiceName, "control_removegest", gestureList);
 		} else if (o == controlExecuteGesture) {
 			swingGui.send(boundServiceName, "controlExecuteGesture");
-		} else if (o == frame_add) {
-			swingGui.send(boundServiceName, "frame_add", frameList, frameNameTextField);
-		} else if (o == frame_addspeed) {
-			swingGui.send(boundServiceName, "frame_addspeed", frameList);
-		} else if (o == frame_addsleep) {
-			swingGui.send(boundServiceName, "frame_addsleep", frameList, frameSleepTextField);
-		} else if (o == frame_addspeech) {
-			swingGui.send(boundServiceName, "frame_addspeech", frameList, frameSpeechTextField);
-		} else if (o == frame_importminresmax) {
-			swingGui.send(boundServiceName, "frame_importminresmax");
-		} else if (o == frame_remove) {
-			swingGui.send(boundServiceName, "frame_remove", frameList);
-		} else if (o == frame_load) {
-			swingGui.send(boundServiceName, "frame_load", frameList, frameNameTextField, frameSleepTextField,
-					frameSpeechTextField);
-		} else if (o == frame_update) {
-			swingGui.send(boundServiceName, "frame_update", frameList, frameNameTextField, frameSleepTextField,
-					frameSpeechTextField);
-		} else if (o == frame_copy) {
-			swingGui.send(boundServiceName, "frame_copy", frameList);
-		} else if (o == frame_up) {
-			swingGui.send(boundServiceName, "frame_up", frameList);
-		} else if (o == frame_down) {
-			swingGui.send(boundServiceName, "frame_down", frameList);
-		} else if (o == frame_test) {
-			swingGui.send(boundServiceName, "frame_test", frameList);
+//		} else if (o == frame_add) {
+//			swingGui.send(boundServiceName, "frame_add", frameList, frameNameTextField);
+//		} else if (o == frame_addspeed) {
+//			swingGui.send(boundServiceName, "frame_addspeed", frameList);
+//		} else if (o == frame_addsleep) {
+//			swingGui.send(boundServiceName, "frame_addsleep", frameList, frameSleepTextField);
+//		} else if (o == frame_addspeech) {
+//			swingGui.send(boundServiceName, "frame_addspeech", frameList, frameSpeechTextField);
+//		} else if (o == frame_importminresmax) {
+//			swingGui.send(boundServiceName, "frame_importminresmax");
+		} else if (o == frameNew) {
+			swingGui.send(boundServiceName, "frameNew", frameList);
+		} else if (o == frameRemove) {
+			swingGui.send(boundServiceName, "frameRemove", frameList);
+//		} else if (o == frame_load) {
+//			swingGui.send(boundServiceName, "frame_load", frameList, frameNameTextField, frameSleepTextField,
+//					frameSpeechTextField);
+//		} else if (o == frame_update) {
+//			swingGui.send(boundServiceName, "frame_update", frameList, frameNameTextField, frameSleepTextField,
+//					frameSpeechTextField);
+		} else if (o == frameCopy) {
+			swingGui.send(boundServiceName, "frameCopy", frameList);
+		} else if (o == frameUp) {
+			swingGui.send(boundServiceName, "frameUp", frameList);
+		} else if (o == frameDown) {
+			swingGui.send(boundServiceName, "frameDown", frameList);
+		} else if (o == frameExecute) {
+			swingGui.send(boundServiceName, "frameExecute", frameList);
 		}
 		swingGui.send(boundServiceName, "publishState");
 	}
