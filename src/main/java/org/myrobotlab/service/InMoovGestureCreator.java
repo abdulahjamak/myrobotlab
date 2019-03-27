@@ -887,12 +887,14 @@ public class InMoovGestureCreator extends Service {
 	public void clearGestureAndSelectedFrame(JList<String> framelist, 
 			JPanel bottomTop, 
 			JPanel top, 
+			JTextField controlGestureName,
 			Map<RobotSection, JPanel> robotSectionMovePanels, 
 			Map<RobotSection, JPanel> robotSectionSlidersPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedPanels,
 			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
 		this.gesture.setGestureName(null);
 		this.gesture.setGestureFile(null);
+		controlGestureName.setText("Gesture name here");
 		this.frames.clear();
 		gestureListReload(framelist);
 		clearSelectedFrame(bottomTop, top, robotSectionMovePanels, 
@@ -1623,7 +1625,7 @@ public class InMoovGestureCreator extends Service {
 		framelist.setListData(listdata);
 	}
 
-	public void controlScriptFolder(JList control_list) {
+	public void controlScriptFolder(JList gestureList) {
 		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		jfc.setDialogTitle("Choose a directory with Gesture scripts in Python");
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -1644,23 +1646,24 @@ public class InMoovGestureCreator extends Service {
 					}
 				}
 				if (scriptFileNames != null && scriptFileNames.size() > 0) {
-					control_list.setListData(scriptFileNames.toArray());
+					gestureList.setListData(scriptFileNames.toArray());
 				}
 			}
 		}
 	}
 
-	public void controlLoadScript(JList<String> control_list, JList<String> frameListGui) {
+	public void controlLoadScript(
+			JList<String> gestureList, 
+			JList<String> frameListGui,
+			JTextField controlGestureName) {
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
 		File selectedFile = null;
 		try {
-			selectedFile = scriptFiles.get(control_list.getSelectedIndex());
+			selectedFile = scriptFiles.get(gestureList.getSelectedIndex());
 			LOGGER.info("Loading script \"" + selectedFile.getAbsolutePath() + "\"...");
 			fileReader = new FileReader(selectedFile);
-//			fileReader = new FileReader("/home/abe/ws-fx/inmoov/InMoov/gestures/" + gestureList.getSelectedValue().toString());
-//			fileReader = new FileReader("/d:/balance.py");
 			bufferedReader = new BufferedReader(fileReader);
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
@@ -1688,6 +1691,7 @@ public class InMoovGestureCreator extends Service {
 			frames.clear();
 			gesture.setGestureFile(selectedFile);
 			parseScriptToGesture(scriptLines);
+			controlGestureName.setText(gesture.getGestureName());
 			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
 			// loading parsed frames into GUI list
 			gestureListReload(frameListGui);
@@ -2114,7 +2118,7 @@ public class InMoovGestureCreator extends Service {
 		framelistact(framelist);
 	}
 
-	public void gestureListAct(JList<String> control_list) {
+	public void gestureListAct(JList<String> gestureList) {
 		String[] listdata = new String[pythonitemholder.size()];
 		for (int i = 0; i < pythonitemholder.size(); i++) {
 			PythonItemHolder pih = pythonitemholder.get(i);
@@ -2136,7 +2140,7 @@ public class InMoovGestureCreator extends Service {
 			String displaytext = pre + des;
 			listdata[i] = displaytext;
 		}
-		control_list.setListData(listdata);
+		gestureList.setListData(listdata);
 	}
 
 	public void servoitemholder_set_sih1(int i1, ServoItemHolder[] sih1) {
@@ -2232,10 +2236,8 @@ public class InMoovGestureCreator extends Service {
 			slider.setValue(frame.getMoveValue(robotSection, i));
 
 			slider.addChangeListener(new ChangeListener() {
-
 				@Override
 				public void stateChanged(ChangeEvent ce) {
-//					servoitemholder_slider_changed(t1, t2);
 					frame.setMoveValue(robotSection, sectionIndex, slider.getValue());	
 				}
 			});

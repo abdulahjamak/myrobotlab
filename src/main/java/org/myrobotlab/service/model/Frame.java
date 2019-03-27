@@ -449,21 +449,27 @@ public class Frame implements Serializable {
 	}
 
 	public void setMoveValue(RobotSection robotSection, int sectionIndex, Integer moveValue) {
-		LOGGER.debug("setMoveValue robotSection: [{}] sectionIndex: [{}] moveValue: [{}]", 
+		LOGGER.trace("setMoveValue robotSection: [{}] sectionIndex: [{}] moveValue: [{}]", 
 				robotSection, sectionIndex, moveValue);
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.rightHandMoves[sectionIndex] = moveValue;
+			return;
 		case RIGHT_ARM:
 			this.rightArmMoves[sectionIndex] = moveValue;
+			return;
 		case LEFT_HAND:
 			this.leftHandMoves[sectionIndex] = moveValue;
+			return;
 		case LEFT_ARM:
 			this.leftArmMoves[sectionIndex] = moveValue;
+			return;
 		case HEAD:
 			this.headMoves[sectionIndex] = moveValue;
+			return;
 		case TORSO:
 			this.torsoMoves[sectionIndex] = moveValue;
+			return;
 		default:
 		}
 	}
@@ -494,16 +500,22 @@ public class Frame implements Serializable {
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.rightHandSpeeds[sectionIndex] = speedValue;
+			return;
 		case RIGHT_ARM:
 			this.rightArmSpeeds[sectionIndex] = speedValue;
+			return;
 		case LEFT_HAND:
 			this.leftHandSpeeds[sectionIndex] = speedValue;
+			return;
 		case LEFT_ARM:
 			this.leftArmSpeeds[sectionIndex] = speedValue;
+			return;
 		case HEAD:
 			this.headSpeeds[sectionIndex] = speedValue;
+			return;
 		case TORSO:
 			this.torsoSpeeds[sectionIndex] = speedValue;
+			return;
 		default:
 		}
 	}
@@ -533,16 +545,22 @@ public class Frame implements Serializable {
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.moveSets[0] = moveSet;
+			return;
 		case RIGHT_ARM:
 			this.moveSets[1] = moveSet;
+			return;
 		case LEFT_HAND:
 			this.moveSets[2] = moveSet;
+			return;
 		case LEFT_ARM:
 			this.moveSets[3] = moveSet;
+			return;
 		case HEAD:
 			this.moveSets[4] = moveSet;
+			return;
 		case TORSO:
 			this.moveSets[5] = moveSet;
+			return;
 		default:
 		}
 	}
@@ -572,16 +590,22 @@ public class Frame implements Serializable {
 		switch (robotSection) {
 		case RIGHT_HAND:
 			this.speedSets[0] = speedSet;
+			return;
 		case RIGHT_ARM:
 			this.speedSets[1] = speedSet;
+			return;
 		case LEFT_HAND:
 			this.speedSets[2] = speedSet;
+			return;
 		case LEFT_ARM:
 			this.speedSets[3] = speedSet;
+			return;
 		case HEAD:
 			this.speedSets[4] = speedSet;
+			return;
 		case TORSO:
 			this.speedSets[5] = speedSet;
+			return;
 		default:
 		}
 	}

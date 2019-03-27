@@ -454,7 +454,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		} else if (o == controlScriptFolder) {
 			swingGui.send(boundServiceName, "controlScriptFolder", gestureList);
 		} else if (o == controlLoadScript) {
-			swingGui.send(boundServiceName, "controlLoadScript", gestureList, frameList);
+			swingGui.send(boundServiceName, "controlLoadScript", gestureList, frameList, controlGestureName);
 		} else if (o == controlSaveScript) {
 			swingGui.send(boundServiceName, "controlSaveScript");
 //		} else if (o == control_loadgest) {
@@ -463,6 +463,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		} else if (o == controlNewGesture) {
 			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
 					frameList, bottomTop, top,
+					controlGestureName,
         			robotSectionMovePanels, 
         			robotSectionSlidersPanels,
         			robotSectionSpeedPanels,
