@@ -69,13 +69,13 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 //	JButton frame_importminresmax;
 //	JButton frame_load;
 //	JButton frame_update;
-	JButton frameNew;
-	JButton frameRemove;
-	JButton frameCopy;
-	JButton frameUp;
-	JButton frameDown;
-	JButton frameExecute;
-	JCheckBox frameMoveRealTime;
+	private final JButton frameNew = new JButton("New");
+	private final JButton frameRemove = new JButton("Remove");
+	private final JButton frameCopy = new JButton("Copy");
+	private final JButton frameUp = new JButton("Up");
+	private final JButton frameDown = new JButton("Down");
+	private final JButton frameExecute = new JButton("Execute");
+	private final JCheckBox frameMoveRealTime = new JCheckBox("Move Real Time");
 
 	private static final String[] GESTURE_LIST_PLACEHOLDER = { "Load folder with scripts" };
 	private static final String[] FRAME_LIST_PLACEHOLDER = {"Load a script to see frames..."}; 
@@ -202,14 +202,11 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel topRight = new JPanel();
 			topRight.setLayout(new BoxLayout(topRight, BoxLayout.Y_AXIS));
 
-//			JPanel top2top = new JPanel();
-//			top2top.setLayout(new BoxLayout(top2top, BoxLayout.Y_AXIS));
-//
-//
-//			top2top.add(top2top1);
+			JPanel topRightTop = new JPanel();
+			topRightTop.setLayout(new BoxLayout(topRightTop, BoxLayout.X_AXIS));
 
-			JPanel top2top2 = new JPanel();
-			top2top2.setLayout(new BoxLayout(top2top2, BoxLayout.X_AXIS));
+			JLabel gestureNameLabel = new JLabel("Gesture name");
+			topRightTop.add(gestureNameLabel);
 			
 			gestureName = new JFormattedTextField("Gesture Name");
 			PropertyChangeListener gestureNameTextListener = new PropertyChangeListener() {
@@ -220,18 +217,16 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		        }
 		    };
 		    gestureName.addPropertyChangeListener("value", gestureNameTextListener);
-			top2top2.add(gestureName);
+			topRightTop.add(gestureName);
 
 //			frame_importminresmax = new JButton("Import Min Rest Max");
 //			top2top2.add(frame_importminresmax);
 //			frame_importminresmax.addActionListener(this);
 
-		    frameNew = new JButton("New");
-			top2top2.add(frameNew);
+			topRightTop.add(frameNew);
 			frameNew.addActionListener(this);
 			
-			frameRemove = new JButton("Remove");
-			top2top2.add(frameRemove);
+			topRightTop.add(frameRemove);
 			frameRemove.addActionListener(this);
 
 //			frame_load = new JButton("Load");
@@ -242,25 +237,21 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 //			top2top2.add(frame_update);
 //			frame_update.addActionListener(this);
 
-			frameCopy = new JButton("Copy");
-			top2top2.add(frameCopy);
+			topRightTop.add(frameCopy);
 			frameCopy.addActionListener(this);
 
-			frameUp = new JButton("Up");
-			top2top2.add(frameUp);
+			topRightTop.add(frameUp);
 			frameUp.addActionListener(this);
 
-			frameDown = new JButton("Down");
-			top2top2.add(frameDown);
+			topRightTop.add(frameDown);
 			frameDown.addActionListener(this);
 
-			frameExecute = new JButton("Execute");
-			top2top2.add(frameExecute);
+			topRightTop.add(frameExecute);
 			frameExecute.addActionListener(this);
 
 //			top2top.add(top2top2);
 
-			topRight.add(BorderLayout.NORTH, top2top2);
+			topRight.add(BorderLayout.NORTH, topRightTop);
 
 			frameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -548,10 +539,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 	@Override
 	public void itemStateChanged(ItemEvent ie) {
-		Object o = ie.getSource();
+//		Object o = ie.getSource();
 		// CheckBox - Events
-		if (o == frameMoveRealTime) {
-			swingGui.send(boundServiceName, "frameMoveRealTime", frameMoveRealTime);
-		}
+//		if (o == frameMoveRealTime) {
+//			swingGui.send(boundServiceName, "frameMoveRealTime", frameMoveRealTime);
+//		}
 	}
 }
