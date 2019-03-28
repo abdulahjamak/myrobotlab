@@ -1031,7 +1031,7 @@ public class InMoovGestureCreator extends Service {
 				        @Override
 				        public void propertyChange(PropertyChangeEvent evt) {
 				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-							frame.setName(text);	
+							frame.setName(text);
 				        }
 				    };
 				    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
@@ -1056,6 +1056,7 @@ public class InMoovGestureCreator extends Service {
 				        public void propertyChange(PropertyChangeEvent evt) {
 				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
 							frame.setSleep(Integer.valueOf(text));	
+					    	frameListReload(frameList);
 				        }
 				    };
 				    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
@@ -1074,6 +1075,7 @@ public class InMoovGestureCreator extends Service {
 				        public void propertyChange(PropertyChangeEvent evt) {
 				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
 							frame.setSpeech(text);	
+					    	frameListReload(frameList);
 				        }
 				    };
 				    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
