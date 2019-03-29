@@ -82,6 +82,7 @@ public class Frame implements Serializable {
 	final private Double[] headSpeeds = new Double[5];
 	final private Double[] torsoSpeeds = new Double[3];
 	// labels
+	final private static String[] SECTION_LABELS = {"Right Hand", "Right Arm", "Left Hand", "Left Arm", "Head", "Torso"};
 	final private static String[] HAND_LABELS = {"Thumb", "Index", "Maejure", "Ring", "Pinky", "Wrist"};
 	final private static String[] ARM_LABELS = {"Biceps", "Rotate", "Shoulder", "Omoplate"};
 	final private static String[] HEAD_LABELS = {"Neck", "Head", "EyeX", "EyeY", "Jaw"};
@@ -423,6 +424,26 @@ public class Frame implements Serializable {
 			return HEAD_LABELS[sectionIndex];
 		case TORSO:
 			return TORSO_LABELS[sectionIndex];
+		default:
+			return null;
+		}
+	}
+
+	public static String getSectionLabel(RobotSection robotSection) {
+		LOGGER.debug("getMoveValue robotSection: [{}]", robotSection);
+		switch (robotSection) {
+		case RIGHT_HAND:
+			return SECTION_LABELS[0];
+		case RIGHT_ARM:
+			return SECTION_LABELS[1];
+		case LEFT_HAND:
+			return SECTION_LABELS[2];
+		case LEFT_ARM:
+			return SECTION_LABELS[3];
+		case HEAD:
+			return SECTION_LABELS[4];
+		case TORSO:
+			return SECTION_LABELS[5];
 		default:
 			return null;
 		}
