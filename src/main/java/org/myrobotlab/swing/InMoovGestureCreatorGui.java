@@ -29,12 +29,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -59,7 +62,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat
 			.getNumberInstance(Locale.getDefault());
 
-	private final JFormattedTextField gestureName = new JFormattedTextField("Gesture Name");
+	private final JTextField gestureName = new JTextField("Gesture Name");
 
 	private final JButton controlConnect = new JButton("Connect");
 	private final JButton loadScriptFolder = new JButton("Open Folder");
@@ -67,9 +70,9 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	private final JButton controlSaveScript = new JButton("Save");
 	private final JButton controlNewGesture = new JButton("New");
 	private final JButton controlExecuteGesture = new JButton("Execute");
-	private final JFormattedTextField frameNameTextField = new JFormattedTextField();
 	private final JFormattedTextField frameSleepTextField = new JFormattedTextField(decimalFormat);
-	private final JFormattedTextField frameSpeechTextField = new JFormattedTextField();
+	private final JTextField frameNameTextField = new JTextField();
+	private final JTextField frameSpeechTextField = new JTextField();
 	
 	private final JButton frameNew = new JButton("New");
 	private final JButton frameRemove = new JButton("Remove");
@@ -169,14 +172,21 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JLabel gestureNameLabel = new JLabel("Gesture name");
 			topRightTop.add(gestureNameLabel);
 			
-			PropertyChangeListener gestureNameTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateGestureName", text);	
-		        }
-		    };
-		    gestureName.addPropertyChangeListener("value", gestureNameTextListener);
+		    gestureName.getDocument().addDocumentListener(new DocumentListener() {
+		    	  public void changedUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void removeUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void insertUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+
+		    	  public void updateFrameSpeech() {
+	                myService.send(boundServiceName, "updateGestureName", gestureName.getText());	
+		    	  }
+		    	});
 			topRightTop.add(gestureName);
 
 			topRightTop.add(frameNew);
@@ -272,26 +282,40 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JLabel frameNameLabel = new JLabel("Frame Name");
 			bottomTop.add(frameNameLabel);			
 
-			PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateFrameName", frameList, text);	
-		        }
-		    };
-		    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
+		    frameNameTextField.getDocument().addDocumentListener(new DocumentListener() {
+		    	  public void changedUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void removeUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void insertUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+
+		    	  public void updateFrameSpeech() {
+                	myService.send(boundServiceName, "updateFrameName", frameList, frameListModel, frameNameTextField.getText());	
+		    	  }
+		    });
 			bottomTop.add(frameNameTextField);
 			JLabel speechLabel = new JLabel("Speech");
 			bottomTop.add(speechLabel);	
 
-			PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateFrameSpeech", frameList, frameListModel, text);	
-		        }
-		    };
-		    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);	
+		    frameSpeechTextField.getDocument().addDocumentListener(new DocumentListener() {
+		    	  public void changedUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void removeUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+		    	  public void insertUpdate(DocumentEvent e) {
+		    	    updateFrameSpeech();
+		    	  }
+
+		    	  public void updateFrameSpeech() {
+                	myService.send(boundServiceName, "updateFrameSpeech", frameList, frameListModel, frameSpeechTextField.getText());	
+		    	  }
+		    });
 			bottomTop.add(frameSpeechTextField);
 
 			JLabel sleepLabel = new JLabel("Sleep (s)");
@@ -407,7 +431,14 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		checkbox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-            	myService.send(boundServiceName, "updateFrameBooleans", frameList, frameListModel, robotSection, checkbox.isSelected(), move);	
+            	myService.send(boundServiceName, "updateFrameBooleans", 
+            			frameList, 
+            			frameListModel, 
+            			robotSectionMoveSliders.get(robotSection),
+            			robotSectionSpeedTextBoxes.get(robotSection),
+            			robotSection, 
+            			checkbox.isSelected(), 
+            			move);	
 			}
 		});
 		panel.add(checkbox);
@@ -435,7 +466,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		} else if (o == controlNewGesture) {
 			this.gestureName.setText("Gesture name here");
 			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
-					frameList,
+					frameListModel,
 					frameNameTextField,
 					frameSleepTextField,
 					frameSpeechTextField,
