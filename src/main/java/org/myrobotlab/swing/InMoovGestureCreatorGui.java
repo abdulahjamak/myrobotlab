@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
@@ -70,7 +71,6 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	private final JFormattedTextField frameSleepTextField = new JFormattedTextField(decimalFormat);
 	private final JFormattedTextField frameSpeechTextField = new JFormattedTextField();
 	
-
 	private final JButton frameNew = new JButton("New");
 	private final JButton frameRemove = new JButton("Remove");
 	private final JButton frameCopy = new JButton("Copy");
@@ -81,17 +81,14 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 	private static final String[] GESTURE_LIST_PLACEHOLDER = { "Load folder with scripts" };
 	private static final String[] FRAME_LIST_PLACEHOLDER = {"Load a script to see frames..."}; 
+	
+	private final DefaultListModel<String> frameListModel = new DefaultListModel<String>();
 
 	private final JList<String> gestureList = new JList<String>(GESTURE_LIST_PLACEHOLDER);
-	private final JList<String> frameList = new JList<String>(FRAME_LIST_PLACEHOLDER);
+	private final JList<String> frameList = new JList<String>(frameListModel);
 	
 	private final JPanel bottomTop = new JPanel();
 	private final JPanel top = new JPanel();
-  
-  	private final Map<RobotSection, JPanel> robotSectionMovePanels = new HashMap<RobotSection, JPanel>();
-  	private final Map<RobotSection, JPanel> robotSectionSlidersPanels = new HashMap<RobotSection, JPanel>();
-  	private final Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
-  	private final Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
 
   	private final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes = new HashMap<RobotSection, JCheckBox>();
   	private final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes = new HashMap<RobotSection, JCheckBox>();
@@ -103,6 +100,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		LOGGER.info("InMoovGestureCreatorGui constructor [START]");
 		try {
 			decimalFormat.setGroupingUsed(false);
+			frameListModel.addElement(FRAME_LIST_PLACEHOLDER[0]);
 
 			// display:
 			// |--------------------|
@@ -214,6 +212,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	                if (!arg0.getValueIsAdjusting()) {
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
 	                			frameList,
+	                			frameListModel,
+	    						frameNameTextField,
+	    						frameSleepTextField,
+	    						frameSpeechTextField,
 	                			robotSectionMoveSetCheckboxes,
 	                			robotSectionSpeedSetCheckboxes,
 	                			robotSectionMoveSliders,
@@ -230,11 +232,6 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			bottomTop.setMinimumSize(maximumSize);
 			bottomTop.setLayout(new BoxLayout(bottomTop, BoxLayout.X_AXIS));	
 			bottomTop.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
-
-			robotSectionMovePanels.clear();
-			robotSectionSpeedPanels.clear();
-			robotSectionSlidersPanels.clear();
-			robotSectionSpeedNumberBoxesPanels.clear();
 			
 			JPanel bottomBottom = new JPanel();
 			bottomBottom.setLayout(new BoxLayout(bottomBottom, BoxLayout.X_AXIS));
@@ -245,52 +242,23 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 				sectionPanel.add(BorderLayout.NORTH, new JLabel(Frame.getSectionLabel(robotSection)));
 				sectionPanel.setBorder(BorderFactory.createLineBorder(Color.black, 1)); 
 				bottomBottom.add(sectionPanel);
-				final JPanel sectionMovePanel = new JPanel();
-				sectionMovePanel.setLayout(new BoxLayout(sectionMovePanel, BoxLayout.Y_AXIS));
-				robotSectionMovePanels.put(robotSection, sectionMovePanel);
-				final JPanel sectionSlidersPanel = new JPanel();
-				sectionSlidersPanel.setLayout(new BoxLayout(sectionSlidersPanel, BoxLayout.X_AXIS));
-				robotSectionSlidersPanels.put(robotSection, sectionSlidersPanel);
-				final JPanel sectionSpeedPanel = new JPanel();
-				sectionSpeedPanel.setLayout(new BoxLayout(sectionSpeedPanel, BoxLayout.Y_AXIS));
-				sectionPanel.add(BorderLayout.CENTER, sectionMovePanel);
-				sectionPanel.add(BorderLayout.SOUTH, sectionSpeedPanel);
-				robotSectionSpeedPanels.put(robotSection, sectionSpeedPanel);
-				final JPanel sectionSpeedNumberBoxesPanel = new JPanel();
-				sectionSpeedNumberBoxesPanel.setLayout(new BoxLayout(sectionSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
-				robotSectionSpeedNumberBoxesPanels.put(robotSection, sectionSpeedNumberBoxesPanel);
+				final JPanel robotSectionMovePanel = new JPanel();
+				robotSectionMovePanel.setLayout(new BoxLayout(robotSectionMovePanel, BoxLayout.Y_AXIS));
+				addEnableCheckBoxesToSectionPane(myService, robotSectionMovePanel, "Move?", robotSection, true);
+				final JPanel robotSectionSlidersPanel = new JPanel();
+				robotSectionSlidersPanel.setLayout(new BoxLayout(robotSectionSlidersPanel, BoxLayout.X_AXIS));
+				addMoveSlidersToSectionPane(myService, robotSectionSlidersPanel, robotSection);
+				robotSectionMovePanel.add(robotSectionSlidersPanel);
+				final JPanel robotSectionSpeedPanel = new JPanel();
+				robotSectionSpeedPanel.setLayout(new BoxLayout(robotSectionSpeedPanel, BoxLayout.Y_AXIS));
+				sectionPanel.add(BorderLayout.CENTER, robotSectionMovePanel);
+				sectionPanel.add(BorderLayout.SOUTH, robotSectionSpeedPanel);
+				addEnableCheckBoxesToSectionPane(myService, robotSectionSpeedPanel, "Set Speed?", robotSection, false);
+				final JPanel robotSectionSpeedNumberBoxesPanel = new JPanel();
+				robotSectionSpeedNumberBoxesPanel.setLayout(new BoxLayout(robotSectionSpeedNumberBoxesPanel, BoxLayout.X_AXIS));
+				addSpeedTextToSectionPane(myService, robotSectionSpeedNumberBoxesPanel, robotSection);
+				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
 			}
-			
-			addBottomTopPane(myService);
-			
-			bottom.add(bottomTop);
-			bottom.add(bottomBottom);
-
-			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
-			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
-			// splitpanebottom1bottom2.setDividerLocation(200);
-
-			top.add(splitPaneTopLeftTopRight);
-
-			JSplitPane splitPaneTopBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
-			splitPaneTopBottom.setOneTouchExpandable(true);
-			// splitpanetopbottom.setDividerLocation(300);
-
-			display.add(splitPaneTopBottom);
-		} catch (Exception e) {
-			LOGGER.warn("Exception occured", e);
-		}
-
-		LOGGER.info("InMoovGestureCreatorGui constructor [END]");
-	}
-
-	public void addBottomTopPane(final SwingGui myService) {
-		LOGGER.trace("addBottomTopPane [START]");
-		try {
-			bottomTop.removeAll();
-			
-			JLabel frameNameLabel = new JLabel("Frame Name");
-			bottomTop.add(frameNameLabel);			
 			
 			frameMoveRealTime.addChangeListener(new ChangeListener() {
 	            @Override
@@ -299,7 +267,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	            }
 	        });
 			frameMoveRealTime.setSelected(false);
-			bottomTop.add(frameMoveRealTime);			
+			bottomTop.add(frameMoveRealTime);
+			
+			JLabel frameNameLabel = new JLabel("Frame Name");
+			bottomTop.add(frameNameLabel);			
 
 			PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
 		        @Override
@@ -317,7 +288,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		        @Override
 		        public void propertyChange(PropertyChangeEvent evt) {
 		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateFrameSpeech", frameList, text);	
+                	myService.send(boundServiceName, "updateFrameSpeech", frameList, frameListModel, text);	
 		        }
 		    };
 		    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);	
@@ -330,35 +301,47 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		        @Override
 		        public void propertyChange(PropertyChangeEvent evt) {
 		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateFrameSleep", frameList, Integer.valueOf(text));	
+                	myService.send(boundServiceName, "updateFrameSleep", frameList, frameListModel, Integer.valueOf(text));	
 		        }
 		    };
 		    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);			
 			frameSleepTextField.setColumns(3);
 			bottomTop.add(frameSleepTextField);
+			
+			bottom.add(bottomTop);
+			bottom.add(bottomBottom);
 
-			// add elements and listeners, and make panel hierarchy
-			for (RobotSection robotSection : RobotSection.values()) {
-				LOGGER.trace("robotSection: \"" + robotSection + "\"");
-				// cleanup
-				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
-				JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
-				robotSectionMovePanel.removeAll();
-				robotSectionSlidersPanel.removeAll();
-				// adding MOVE elements
-				addEnableCheckBoxesToSectionPane(myService, robotSectionMovePanel, "Move?", robotSection, true);
-				addMoveSlidersToSectionPane(myService, robotSectionSlidersPanel, robotSection);
-				robotSectionMovePanel.add(robotSectionSlidersPanel);
-				// cleanup
-				JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
-				JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
-				robotSectionSpeedPanel.removeAll();
-				robotSectionSpeedNumberBoxesPanel.removeAll();
-				// adding SPEED elements
-				addEnableCheckBoxesToSectionPane(myService, robotSectionSpeedPanel, "Set Speed?", robotSection, false);
-				addSpeedTextToSectionPane(myService, robotSectionSpeedNumberBoxesPanel, robotSection);
-				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
-			}
+			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
+			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
+			// splitpanebottom1bottom2.setDividerLocation(200);
+
+			top.add(splitPaneTopLeftTopRight);
+
+			JSplitPane splitPaneTopBottom = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+			splitPaneTopBottom.setOneTouchExpandable(true);
+			// splitpanetopbottom.setDividerLocation(300);
+
+			display.add(splitPaneTopBottom);
+			// initilaize with a blank FRAME
+			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
+					frameListModel,
+					frameNameTextField,
+					frameSleepTextField,
+					frameSpeechTextField,
+        			robotSectionMoveSetCheckboxes,
+        			robotSectionSpeedSetCheckboxes,
+        			robotSectionMoveSliders,
+        			robotSectionSpeedTextBoxes);
+		} catch (Exception e) {
+			LOGGER.warn("Exception occured", e);
+		}
+
+		LOGGER.info("InMoovGestureCreatorGui constructor [END]");
+	}
+
+	public void addBottomTopPane(final SwingGui myService) {
+		LOGGER.trace("addBottomTopPane [START]");
+		try {
 		} catch (Exception e) {
 			LOGGER.warn("addBottomTopPane error: ", e);
 		}
@@ -384,7 +367,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			slider.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent ce) {
-                	myService.send(boundServiceName, "updateFrameSliders", frameList, robotSection, sectionIndex, slider.getValue(), slider.getValueIsAdjusting());
+                	myService.send(boundServiceName, "updateFrameSliders", frameList, frameListModel, robotSection, sectionIndex, slider.getValue(), slider.getValueIsAdjusting());
 				}
 			});
 			final JPanel sliderLabelContainer = new JPanel();
@@ -408,7 +391,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		        @Override
 		        public void propertyChange(PropertyChangeEvent evt) {
 		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-                	myService.send(boundServiceName, "updateFrameSpeed", frameList, robotSection, sectionIndex, Double.valueOf(text));	
+                	myService.send(boundServiceName, "updateFrameSpeed", frameList, frameListModel, robotSection, sectionIndex, Double.valueOf(text));	
 		        }
 		    };
 		    frameSpeed.addPropertyChangeListener("value", l);
@@ -424,7 +407,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		checkbox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-            	myService.send(boundServiceName, "updateFrameBooleans", frameList, robotSection, checkbox.isSelected(), move);	
+            	myService.send(boundServiceName, "updateFrameBooleans", frameList, frameListModel, robotSection, checkbox.isSelected(), move);	
 			}
 		});
 		panel.add(checkbox);
@@ -446,28 +429,32 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		} else if (o == loadScriptFolder) {
 			swingGui.send(boundServiceName, "loadScriptFolder", gestureList);
 		} else if (o == loadGestureScript) {
-			swingGui.send(boundServiceName, "loadGestureScript", gestureList, frameList, gestureName);
+			swingGui.send(boundServiceName, "loadGestureScript", gestureList, frameListModel, gestureName);
 		} else if (o == controlSaveScript) {
 			swingGui.send(boundServiceName, "controlSaveScript");
 		} else if (o == controlNewGesture) {
+			this.gestureName.setText("Gesture name here");
 			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
 					frameList,
+					frameNameTextField,
+					frameSleepTextField,
+					frameSpeechTextField,
         			robotSectionMoveSetCheckboxes,
         			robotSectionSpeedSetCheckboxes,
         			robotSectionMoveSliders,
         			robotSectionSpeedTextBoxes);
 		} else if (o == controlExecuteGesture) {
-			swingGui.send(boundServiceName, "controlExecuteGesture");
+			swingGui.send(boundServiceName, "gestureExecute", frameList);
 		} else if (o == frameNew) {
-			swingGui.send(boundServiceName, "frameNew", frameList);
+			swingGui.send(boundServiceName, "frameNew", frameList, frameListModel);
 		} else if (o == frameRemove) {
-			swingGui.send(boundServiceName, "frameRemove", frameList);
+			swingGui.send(boundServiceName, "frameRemove", frameList, frameListModel);
 		} else if (o == frameCopy) {
-			swingGui.send(boundServiceName, "frameCopy", frameList);
+			swingGui.send(boundServiceName, "frameCopy", frameList, frameListModel);
 		} else if (o == frameUp) {
-			swingGui.send(boundServiceName, "frameUp", frameList);
+			swingGui.send(boundServiceName, "frameUp", frameList, frameListModel);
 		} else if (o == frameDown) {
-			swingGui.send(boundServiceName, "frameDown", frameList);
+			swingGui.send(boundServiceName, "frameDown", frameList, frameListModel);
 		} else if (o == frameExecute) {
 			swingGui.send(boundServiceName, "frameExecute", frameList);
 		}
