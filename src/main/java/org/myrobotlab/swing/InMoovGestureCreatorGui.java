@@ -9,7 +9,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -21,10 +26,14 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -46,6 +55,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 	static final long serialVersionUID = 1L;
 	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreatorGui.class);
+	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat
+			.getNumberInstance(Locale.getDefault());
 
 	private final JFormattedTextField gestureName = new JFormattedTextField("Gesture Name");
 
@@ -55,9 +66,10 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	private final JButton controlSaveScript = new JButton("Save");
 	private final JButton controlNewGesture = new JButton("New");
 	private final JButton controlExecuteGesture = new JButton("Execute");
-	private JFormattedTextField frameNameTextField;
-	private JFormattedTextField frameSleepTextField;
-	private JFormattedTextField frameSpeechTextField;
+	private final JFormattedTextField frameNameTextField = new JFormattedTextField();
+	private final JFormattedTextField frameSleepTextField = new JFormattedTextField(decimalFormat);
+	private final JFormattedTextField frameSpeechTextField = new JFormattedTextField();
+	
 
 	private final JButton frameNew = new JButton("New");
 	private final JButton frameRemove = new JButton("Remove");
@@ -81,10 +93,16 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
   	private final Map<RobotSection, JPanel> robotSectionSpeedPanels = new HashMap<RobotSection, JPanel>();
   	private final Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels = new HashMap<RobotSection, JPanel>();
 
+  	private final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes = new HashMap<RobotSection, JCheckBox>();
+  	private final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes = new HashMap<RobotSection, JCheckBox>();
+  	private final Map<RobotSection, List<JSlider>> robotSectionMoveSliders = new HashMap<RobotSection, List<JSlider>>();
+  	private final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes = new HashMap<RobotSection, List<JFormattedTextField>>();
+
   	public InMoovGestureCreatorGui(final String boundServiceName, final SwingGui myService) {
   		super(boundServiceName, myService);
 		LOGGER.info("InMoovGestureCreatorGui constructor [START]");
 		try {
+			decimalFormat.setGroupingUsed(false);
 
 			// display:
 			// |--------------------|
@@ -98,33 +116,9 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 			// top:
 			// |--------------------|
-			// |top#| ##top   2#####|
+			// |top#| ## top 2 #####|
 			// |# 1#| ##############|
 			// |--------------------|
-			// ######/\
-			// splitpanetop1top2
-
-			// top1:
-			// |----------|
-			// |top1top| <- JTextField's: gestname, funcname & JButton: connect
-			// |----------|
-			// |##########| <- JList: gestureList & JButton's: loadscript,
-			// savescript, loadgest, addgest, updategest, removegest, testgest
-			// |##########|
-			// |----------|
-
-			// top2:
-			// |----------|
-			// |   top2top| <- JButton's & JTextField's: [frame_] add, addspeed,
-			// addsleep, addspeech
-			// |##########| <- JButton's: [frame_] importminresmax, remove, load,
-			// update, copy, up, down, test & JCheckBox: Move Real Time
-			// |----------|
-			// |##########|
-			// |##########| <- JList: framelist
-			// |##########|
-			// |----------|
-
 
 			JPanel topLeft = new JPanel();
 			topLeft.setLayout(new BorderLayout());
@@ -218,20 +212,12 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	            @Override
 	            public void valueChanged(ListSelectionEvent arg0) {
 	                if (!arg0.getValueIsAdjusting()) {
-	                	myService.send(boundServiceName, "addBottomTopPane", 
-	                			bottomTop,
-	                			frameNameTextField,
-	                			frameSleepTextField, 
-	                			frameSpeechTextField, 
-	                			frameMoveRealTime,
-	                			frameList);			
 	                	myService.send(boundServiceName, "frameSelectionChanged", 
-	                			top,
-	                			robotSectionMovePanels, 
-	                			robotSectionSlidersPanels,
-	                			robotSectionSpeedPanels,
-	                			robotSectionSpeedNumberBoxesPanels, 
-	                			frameList);
+	                			frameList,
+	                			robotSectionMoveSetCheckboxes,
+	                			robotSectionSpeedSetCheckboxes,
+	                			robotSectionMoveSliders,
+	                			robotSectionSpeedTextBoxes);	
 	                }
 	            }
 	        });
@@ -275,6 +261,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 				robotSectionSpeedNumberBoxesPanels.put(robotSection, sectionSpeedNumberBoxesPanel);
 			}
 			
+			addBottomTopPane(myService);
+			
 			bottom.add(bottomTop);
 			bottom.add(bottomBottom);
 
@@ -295,6 +283,158 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 
 		LOGGER.info("InMoovGestureCreatorGui constructor [END]");
 	}
+
+	public void addBottomTopPane(final SwingGui myService) {
+		LOGGER.trace("addBottomTopPane [START]");
+		try {
+			bottomTop.removeAll();
+			
+			JLabel frameNameLabel = new JLabel("Frame Name");
+			bottomTop.add(frameNameLabel);			
+			
+			frameMoveRealTime.addChangeListener(new ChangeListener() {
+	            @Override
+	            public void stateChanged(ChangeEvent e) {
+                	myService.send(boundServiceName, "updateMoveRealTime", frameMoveRealTime.isSelected());	
+	            }
+	        });
+			frameMoveRealTime.setSelected(false);
+			bottomTop.add(frameMoveRealTime);			
+
+			PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+                	myService.send(boundServiceName, "updateFrameName", frameList, text);	
+		        }
+		    };
+		    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
+			bottomTop.add(frameNameTextField);
+			JLabel speechLabel = new JLabel("Speech");
+			bottomTop.add(speechLabel);	
+
+			PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+                	myService.send(boundServiceName, "updateFrameSpeech", frameList, text);	
+		        }
+		    };
+		    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);	
+			bottomTop.add(frameSpeechTextField);
+
+			JLabel sleepLabel = new JLabel("Sleep (s)");
+			bottomTop.add(sleepLabel);
+
+			PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+                	myService.send(boundServiceName, "updateFrameSleep", frameList, Integer.valueOf(text));	
+		        }
+		    };
+		    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);			
+			frameSleepTextField.setColumns(3);
+			bottomTop.add(frameSleepTextField);
+
+			// add elements and listeners, and make panel hierarchy
+			for (RobotSection robotSection : RobotSection.values()) {
+				LOGGER.trace("robotSection: \"" + robotSection + "\"");
+				// cleanup
+				JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
+				JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
+				robotSectionMovePanel.removeAll();
+				robotSectionSlidersPanel.removeAll();
+				// adding MOVE elements
+				addEnableCheckBoxesToSectionPane(myService, robotSectionMovePanel, "Move?", robotSection, true);
+				addMoveSlidersToSectionPane(myService, robotSectionSlidersPanel, robotSection);
+				robotSectionMovePanel.add(robotSectionSlidersPanel);
+				// cleanup
+				JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
+				JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
+				robotSectionSpeedPanel.removeAll();
+				robotSectionSpeedNumberBoxesPanel.removeAll();
+				// adding SPEED elements
+				addEnableCheckBoxesToSectionPane(myService, robotSectionSpeedPanel, "Set Speed?", robotSection, false);
+				addSpeedTextToSectionPane(myService, robotSectionSpeedNumberBoxesPanel, robotSection);
+				robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
+			}
+		} catch (Exception e) {
+			LOGGER.warn("addBottomTopPane error: ", e);
+		}
+		LOGGER.trace("addBottomTopPane [END]");
+	}
+
+	private void addMoveSlidersToSectionPane(final SwingGui myService, final JPanel panel, final RobotSection robotSection) {
+		LOGGER.trace("addMoveSlidersToSectionPane for \"" + robotSection + "\"");
+		List<JSlider> sliders = new ArrayList<JSlider>();
+		for(int i = 0; i < Frame.getSubSectionSize(robotSection); i++) {
+			// preset the slider			
+			final int sectionIndex = i;
+			final JLabel sliderLabel = new JLabel(Frame.getSectionLabel(robotSection, sectionIndex));
+			final JSlider slider = new JSlider();
+			slider.setOrientation(SwingConstants.VERTICAL);
+			slider.setMinimum(0);
+			slider.setMaximum(180);
+			slider.setMajorTickSpacing(20);
+			slider.setMinorTickSpacing(1);
+			slider.createStandardLabels(1);
+			slider.setPaintTicks(true);
+			slider.setPaintLabels(true);
+			slider.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent ce) {
+                	myService.send(boundServiceName, "updateFrameSliders", frameList, robotSection, sectionIndex, slider.getValue(), slider.getValueIsAdjusting());
+				}
+			});
+			final JPanel sliderLabelContainer = new JPanel();
+			sliderLabelContainer.setLayout(new BoxLayout(sliderLabelContainer, BoxLayout.Y_AXIS));
+			sliderLabelContainer.add(sliderLabel);
+			sliderLabelContainer.add(slider);
+			panel.add(sliderLabelContainer);
+			sliders.add(slider);
+		}		
+		robotSectionMoveSliders.put(robotSection, sliders);
+	}
+	
+	private void addSpeedTextToSectionPane(final SwingGui myService, final JPanel panel, final RobotSection robotSection) {
+		LOGGER.trace("addSpeedTextToSectionPane for \"" + robotSection +  "\"");
+		List<JFormattedTextField> fields = new ArrayList<JFormattedTextField>();
+		for(int i = 0; i < Frame.getSubSectionSize(robotSection); i++) {
+			final JFormattedTextField frameSpeed = new JFormattedTextField(decimalFormat);
+			frameSpeed.setColumns(3);
+			final int sectionIndex = i;
+			PropertyChangeListener l = new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent evt) {
+		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
+                	myService.send(boundServiceName, "updateFrameSpeed", frameList, robotSection, sectionIndex, Double.valueOf(text));	
+		        }
+		    };
+		    frameSpeed.addPropertyChangeListener("value", l);
+			panel.add(frameSpeed);
+			fields.add(frameSpeed);
+		}
+		robotSectionSpeedTextBoxes.put(robotSection, fields);
+	}
+
+	private void addEnableCheckBoxesToSectionPane(final SwingGui myService, final JPanel panel, final String title, 
+			final RobotSection robotSection, final boolean move) {
+		final JCheckBox checkbox = new JCheckBox(title);
+		checkbox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+            	myService.send(boundServiceName, "updateFrameBooleans", frameList, robotSection, checkbox.isSelected(), move);	
+			}
+		});
+		panel.add(checkbox);
+
+		if (move) {
+			robotSectionMoveSetCheckboxes.put(robotSection, checkbox);
+		} else {
+			robotSectionSpeedSetCheckboxes.put(robotSection, checkbox);
+		}
+	}
 	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
@@ -311,12 +451,11 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			swingGui.send(boundServiceName, "controlSaveScript");
 		} else if (o == controlNewGesture) {
 			swingGui.send(boundServiceName, "clearGestureAndSelectedFrame", 
-					frameList, bottomTop, top,
-					gestureName,
-        			robotSectionMovePanels, 
-        			robotSectionSlidersPanels,
-        			robotSectionSpeedPanels,
-        			robotSectionSpeedNumberBoxesPanels);
+					frameList,
+        			robotSectionMoveSetCheckboxes,
+        			robotSectionSpeedSetCheckboxes,
+        			robotSectionMoveSliders,
+        			robotSectionSpeedTextBoxes);
 		} else if (o == controlExecuteGesture) {
 			swingGui.send(boundServiceName, "controlExecuteGesture");
 		} else if (o == frameNew) {

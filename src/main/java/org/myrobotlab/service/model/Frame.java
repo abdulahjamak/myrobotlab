@@ -392,7 +392,7 @@ public class Frame implements Serializable {
 		this.name = null;
 	}
 
-	public int getSubSectionSize(RobotSection robotSection) {
+	public static int getSubSectionSize(RobotSection robotSection) {
 		switch (robotSection) {
 		case RIGHT_HAND:
 			return 6;

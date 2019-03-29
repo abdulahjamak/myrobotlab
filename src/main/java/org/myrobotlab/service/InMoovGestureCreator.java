@@ -1,36 +1,22 @@
 package org.myrobotlab.service;
 
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -55,8 +41,6 @@ public class InMoovGestureCreator extends Service {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
 
-	private static final DecimalFormat decimalFormat = (DecimalFormat) NumberFormat
-			.getNumberInstance(Locale.getDefault());
 
 	private final Gesture gesture = new Gesture();
 	private final List<Frame> frames = gesture.getFrames();
@@ -64,15 +48,11 @@ public class InMoovGestureCreator extends Service {
 	private final List<File> scriptFiles = new ArrayList<File>();
 	
 	private InMoov i01;
-	private boolean moveRealTime = false;
+	private Boolean moveRealTime = false;
 	private String referencename;
 
 	public InMoovGestureCreator(String n) {
 		super(n);
-		// intializing variables
-//		servoitemholder = new ServoItemHolder[6][];
-//		pythonitemholder = new ArrayList<PythonItemHolder>();
-		decimalFormat.setGroupingUsed(false);
 	}
 
 	/**
@@ -88,37 +68,6 @@ public class InMoovGestureCreator extends Service {
 		meta.addDescription("an easier way to create gestures for InMoov");
 		meta.addCategory("robot");
 		return meta;
-	}
-	
-	public void clearGestureAndSelectedFrame(JList<String> frameList, 
-			JPanel bottomTop, 
-			JPanel top, 
-			JTextField gestureName,
-			Map<RobotSection, JPanel> robotSectionMovePanels, 
-			Map<RobotSection, JPanel> robotSectionSlidersPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
-		this.gesture.setGestureName(null);
-		this.gesture.setGestureFile(null);
-		gestureName.setText("Gesture name here");
-		this.frames.clear();
-		frameListReload(frameList);
-		clearSelectedFrame(bottomTop, top, robotSectionMovePanels, 
-				robotSectionSlidersPanels, robotSectionSpeedPanels, 
-				robotSectionSpeedNumberBoxesPanels);
-	}
-
-	public void clearSelectedFrame(
-			JPanel bottomTop, 
-			JPanel top, 
-			Map<RobotSection, JPanel> robotSectionMovePanels, 
-			Map<RobotSection, JPanel> robotSectionSlidersPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels) {
-		addBottomTopPane(bottomTop, null, null, null, null, null);
-		frameSelectionChanged(top, robotSectionMovePanels, 
-				robotSectionSlidersPanels, robotSectionSpeedPanels, 
-				robotSectionSpeedNumberBoxesPanels, null);
 	}
 
 	public void controlSaveScript() {
@@ -863,245 +812,10 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
 	}
-
-	private void addMoveSlidersToSectionPane(JPanel panel, 
-			final Frame frame, 
-			RobotSection robotSection,
-			JList<String> frameList) {
-		LOGGER.trace("addMoveSlidersToSectionPane for \"" + robotSection +
-					"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
-		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
-			// preset the slider			
-			final int sectionIndex = i;
-			JLabel sliderLabel = new JLabel(Frame.getSectionLabel(robotSection, sectionIndex));
-			JSlider slider = new JSlider();
-			slider.setOrientation(SwingConstants.VERTICAL);
-			slider.setMinimum(0);
-			slider.setMaximum(180);
-			slider.setMajorTickSpacing(20);
-			slider.setMinorTickSpacing(1);
-			slider.createStandardLabels(1);
-			slider.setPaintTicks(true);
-			slider.setPaintLabels(true);
-			slider.setValue(frame.getMoveValue(robotSection, i));
-
-			slider.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent ce) {
-					frame.setMoveValue(robotSection, sectionIndex, slider.getValue());
-					if (moveRealTime) {
-						moveRobotAsSliderChangesRealTime(robotSection, frame);
-					}
-				    if (!slider.getValueIsAdjusting()) {
-				    	// sliding stopped
-				    	frameListReload(frameList);
-				    }
-				}
-			});
-			final JPanel sliderLabelContainer = new JPanel();
-			sliderLabelContainer.setLayout(new BoxLayout(sliderLabelContainer, BoxLayout.Y_AXIS));
-			sliderLabelContainer.add(sliderLabel);
-			sliderLabelContainer.add(slider);
-			panel.add(sliderLabelContainer);
-		}
-	}
-	
-	private void addSpeedTextToSectionPane(JPanel panel, Frame frame, RobotSection robotSection) {
-		LOGGER.trace("addSpeedTextToSectionPane for \"" + robotSection + 
-				"\" subSectionSize: \"" + frame.getSubSectionSize(robotSection) + "\"");
-		for(int i = 0; i < frame.getSubSectionSize(robotSection); i++) {
-			JFormattedTextField speed = new JFormattedTextField(decimalFormat);
-			speed.setColumns(3);
-			final int sectionIndex = i;
-			PropertyChangeListener l = new PropertyChangeListener() {
-		        @Override
-		        public void propertyChange(PropertyChangeEvent evt) {
-		            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-					frame.setSpeedValue(robotSection, sectionIndex, Double.valueOf(text));	
-		        }
-		    };
-			speed.setValue(frame.getSpeedValue(robotSection, i));
-		    speed.addPropertyChangeListener("value", l);
-			panel.add(speed);
-		}
-	}
-
-	private void addEnableCheckBoxesToSectionPane(JPanel panel, Frame frame, String title, 
-			RobotSection robotSection, boolean move) {
-		final JCheckBox checkbox = new JCheckBox(title);
-		if (move) {
-			checkbox.setSelected(frame.getMoveSet(robotSection));
-		} else {
-			checkbox.setSelected(frame.getSpeedSet(robotSection));
-		}
-		checkbox.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (move) {
-					frame.setMoveSet(robotSection, checkbox.isSelected());
-				} else {
-					frame.setSpeedSet(robotSection, checkbox.isSelected());
-				}
-			}
-		});
-		panel.add(checkbox);
-	}
-
-	private void setPanelEnabled(JPanel panel, Boolean isEnabled) {
-		try {
-			panel.setEnabled(isEnabled);
-			Component[] components = panel.getComponents();
-			for (Component component : components) {
-				if (component instanceof JPanel) {
-					setPanelEnabled((JPanel) component, isEnabled);
-				}
-				component.setEnabled(isEnabled);
-			}
-		} catch (Exception e) {
-			LOGGER.warn("setPanelEnabled", e);
-		}
-	}
 	
 	public void updateGestureName(String newName) {
 		LOGGER.info("updateGestureName newName: [{}]", newName);
 		this.gesture.setGestureName(newName);
-	}
-
-	public void addBottomTopPane(
-			JPanel bottomTop, 
-			JFormattedTextField frameNameTextField, 
-			JFormattedTextField frameSleepTextField, 
-			JFormattedTextField frameSpeechTextField, 
-			JCheckBox frameMoveRealTime,
-			JList<String> frameList) {
-		LOGGER.trace("addBottomTopPane [START]");
-		try {
-			bottomTop.removeAll();
-			if(frameList != null) {
-				int frameIndex = frameList.getSelectedIndex();
-				if(frameIndex >= 0) {
-					Frame frame = frames.get(frameIndex);
-		
-					frameMoveRealTime.setSelected(false);
-					bottomTop.add(frameMoveRealTime);
-					
-					JLabel frameNameLabel = new JLabel("Frame Name");
-					bottomTop.add(frameNameLabel);
-					frameMoveRealTime.addChangeListener(new ChangeListener() {
-			            @Override
-			            public void stateChanged(ChangeEvent e) {
-			        		moveRealTime = frameMoveRealTime.isSelected();
-			            }
-			        });
-					
-					frameNameTextField = new JFormattedTextField(frame.getName());
-					bottomTop.add(frameNameTextField);
-		
-					PropertyChangeListener frameNameTextListener = new PropertyChangeListener() {
-				        @Override
-				        public void propertyChange(PropertyChangeEvent evt) {
-				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-							frame.setName(text);
-				        }
-				    };
-				    frameNameTextField.addPropertyChangeListener("value", frameNameTextListener);
-		
-					JLabel sleepLabel = new JLabel("Sleep (s)");
-					bottomTop.add(sleepLabel);
-					frameSleepTextField = new JFormattedTextField(decimalFormat);
-					frameSleepTextField.setColumns(3);
-					frameSleepTextField.setValue(frame.getSleep());
-					bottomTop.add(frameSleepTextField);
-		
-					PropertyChangeListener frameSleepTextListener = new PropertyChangeListener() {
-				        @Override
-				        public void propertyChange(PropertyChangeEvent evt) {
-				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-							frame.setSleep(Integer.valueOf(text));	
-					    	frameListReload(frameList);
-				        }
-				    };
-				    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);
-		
-					JLabel speechLabel = new JLabel("Speech");
-					bottomTop.add(speechLabel);			
-					frameSpeechTextField = new JFormattedTextField(frame.getSpeech());
-					bottomTop.add(frameSpeechTextField);
-		
-					PropertyChangeListener frameSpeechTextListener = new PropertyChangeListener() {
-				        @Override
-				        public void propertyChange(PropertyChangeEvent evt) {
-				            String text = evt.getNewValue() != null ? evt.getNewValue().toString() : "";
-							frame.setSpeech(text);	
-					    	frameListReload(frameList);
-				        }
-				    };
-				    frameSpeechTextField.addPropertyChangeListener("value", frameSpeechTextListener);
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.warn("addBottomTopPane error: ", e);
-		}
-		LOGGER.trace("addBottomTopPane [END]");
-	}
-
-	public void frameSelectionChanged(JPanel top, 
-			Map<RobotSection, JPanel> robotSectionMovePanels, 
-			Map<RobotSection, JPanel> robotSectionSlidersPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedPanels,
-			Map<RobotSection, JPanel> robotSectionSpeedNumberBoxesPanels,
-			JList<String> frameList) {
-		LOGGER.trace("frameSelectionChanged [START]");
-		try {
-			if(frameList != null) {
-				int frameIndex = frameList.getSelectedIndex();
-				if(frameIndex >= 0) {
-					Frame frame = frames.get(frameIndex);
-					// add elements and listeners, and make panel hierarchy
-					for (RobotSection robotSection : RobotSection.values()) {
-						LOGGER.trace("robotSection: \"" + robotSection + "\"");
-						// cleanup
-						JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
-						JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
-						robotSectionMovePanel.removeAll();
-						robotSectionSlidersPanel.removeAll();
-						// adding MOVE elements
-						addEnableCheckBoxesToSectionPane(robotSectionMovePanel, frame, "Move?", robotSection, true);
-						addMoveSlidersToSectionPane(robotSectionSlidersPanel, frame, robotSection, frameList);
-						robotSectionMovePanel.add(robotSectionSlidersPanel);
-						setPanelEnabled(robotSectionSlidersPanel, frame.getMoveSet(robotSection));
-						// cleanup
-						JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
-						JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
-						robotSectionSpeedPanel.removeAll();
-						robotSectionSpeedNumberBoxesPanel.removeAll();
-						// adding SPEED elements
-						addEnableCheckBoxesToSectionPane(robotSectionSpeedPanel, frame, "Set Speed?", robotSection, false);
-						addSpeedTextToSectionPane(robotSectionSpeedNumberBoxesPanel, frame, robotSection);
-						robotSectionSpeedPanel.add(robotSectionSpeedNumberBoxesPanel);
-						setPanelEnabled(robotSectionSpeedNumberBoxesPanel, frame.getSpeedSet(robotSection));
-					}
-				}
-			} else {
-				for (RobotSection robotSection : RobotSection.values()) {
-					LOGGER.trace("robotSection: \"" + robotSection + "\"");
-					JPanel robotSectionMovePanel = robotSectionMovePanels.get(robotSection);
-					JPanel robotSectionSlidersPanel = robotSectionSlidersPanels.get(robotSection);
-					robotSectionMovePanel.removeAll();
-					robotSectionSlidersPanel.removeAll();
-					JPanel robotSectionSpeedPanel = robotSectionSpeedPanels.get(robotSection);
-					JPanel robotSectionSpeedNumberBoxesPanel = robotSectionSpeedNumberBoxesPanels.get(robotSection);
-					robotSectionSpeedPanel.removeAll();
-					robotSectionSpeedNumberBoxesPanel.removeAll();
-				}
-			}
-			top.revalidate();
-			top.repaint();
-
-		} catch (Exception e) {
-			LOGGER.warn("frameSelectionChanged error: ", e);
-		}
-		LOGGER.trace("frameSelectionChanged [END]");
 	}
 	
 	public void moveRobotAsSliderChangesRealTime(RobotSection robotSection, Frame frame) {
@@ -1134,5 +848,218 @@ public class InMoovGestureCreator extends Service {
 				i01.moveTorso(frame.getTopStomMove(), frame.getMidStomMove(), frame.getLowStomMove());
 			}
 		}
+	}
+	
+	public void clearGestureAndSelectedFrame(JList<String> frameList,
+			final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
+			final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes,
+			final Map<RobotSection, List<JSlider>> robotSectionMoveSliders,
+			final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes) {
+		this.gesture.setGestureName(null);
+		this.gesture.setGestureFile(null);
+		this.frames.clear();
+//		gestureName.setText("Gesture name here");
+		frameListReload(frameList);
+		frameSelectionChanged(frameList,
+				robotSectionMoveSetCheckboxes,
+				robotSectionSpeedSetCheckboxes,
+				robotSectionMoveSliders,
+				robotSectionSpeedTextBoxes);
+	}
+
+	public void frameSelectionChanged(JList<String> frameList,
+			final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
+			final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes,
+			final Map<RobotSection, List<JSlider>> robotSectionMoveSliders,
+			final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes) {
+		LOGGER.trace("frameSelectionChanged [START]");
+		try {
+			int frameIndex = frameList.getSelectedIndex();
+			if(frameIndex >= 0) {
+				// frame is selected
+				Frame frame = frames.get(frameIndex);
+				for (RobotSection robotSection : RobotSection.values()) {
+					// move
+					boolean moveSectionEnabled = frame.getMoveSet(robotSection);
+					JCheckBox moveCheckBox = robotSectionMoveSetCheckboxes.get(robotSection);
+					moveCheckBox.setSelected(moveSectionEnabled);
+					List<JSlider> sliders = robotSectionMoveSliders.get(robotSection);
+					int sectionIndex = 0;
+					for (JSlider slider : sliders) {
+						if(moveSectionEnabled) {
+							slider.setEnabled(true);
+						} else {
+							slider.setEnabled(false);
+						}
+						sectionIndex++;
+					}
+					// speed
+					boolean speedSectionEnabled = frame.getSpeedSet(robotSection);
+					JCheckBox speedCheckBox = robotSectionSpeedSetCheckboxes.get(robotSection);
+					speedCheckBox.setSelected(speedSectionEnabled);
+					List<JFormattedTextField> speedTextBoxes = robotSectionSpeedTextBoxes.get(robotSection);
+					sectionIndex = 0;
+					for (JFormattedTextField speedTextBox : speedTextBoxes) {
+						if(speedSectionEnabled) {
+							speedTextBox.setEnabled(true);
+							speedTextBox.setValue(frame.getSpeedValue(robotSection, sectionIndex));
+						} else {
+							speedTextBox.setEnabled(false);
+						}
+						sectionIndex++;
+					}
+				}
+			} else {
+				// no FRAME selected, disable all elements
+				for (RobotSection robotSection : RobotSection.values()) {
+					// move
+					JCheckBox moveCheckBox = robotSectionMoveSetCheckboxes.get(robotSection);
+					moveCheckBox.setEnabled(false);
+					List<JSlider> sliders = robotSectionMoveSliders.get(robotSection);
+					for (JSlider slider : sliders) {
+						slider.setEnabled(false);
+					}
+					// speed
+					JCheckBox speedCheckBox = robotSectionSpeedSetCheckboxes.get(robotSection);
+					speedCheckBox.setEnabled(false);
+					List<JFormattedTextField> speedTextBoxes = robotSectionSpeedTextBoxes.get(robotSection);
+					for (JFormattedTextField speedTextBox : speedTextBoxes) {
+						speedTextBox.setEnabled(false);
+					}
+				}
+			}
+//			top.revalidate();
+//			top.repaint();
+		} catch (Exception e) {
+			LOGGER.warn("frameSelectionChanged error: ", e);
+		}
+		LOGGER.trace("frameSelectionChanged [END]");
+	}
+
+//	public void setPanelEnabled(final JPanel panel, final Boolean isEnabled) {
+//		try {
+//			panel.setEnabled(isEnabled);
+//			Component[] components = panel.getComponents();
+//			for (Component component : components) {
+//				if (component instanceof JPanel) {
+//					setPanelEnabled((JPanel) component, isEnabled);
+//				}
+//				component.setEnabled(isEnabled);
+//			}
+//		} catch (Exception e) {
+//			LOGGER.warn("setPanelEnabled", e);
+//		}
+//	}
+
+	public void updateFrameSliders(final JList<String> frameList, final RobotSection robotSection, 
+			final Integer sectionIndex, final Integer sliderValue, final Boolean sliderIsAdjusting) {
+		LOGGER.trace("updateFrameSpeech [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);	
+					frame.setMoveValue(robotSection, sectionIndex, sliderValue);
+					if (moveRealTime) {
+						moveRobotAsSliderChangesRealTime(robotSection, frame);
+					}
+				    if (!sliderIsAdjusting) {
+				    	// sliding stopped
+				    	frameListReload(frameList);
+				    }
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameSpeech error: ", e);
+		}
+		LOGGER.trace("updateFrameSpeech [END]");
+	}
+	public void updateFrameBooleans(final JList<String> frameList, final RobotSection robotSection, 
+			final Boolean value, final boolean move) {
+		LOGGER.trace("updateFrameSpeech [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					if (move) {
+						frame.setMoveSet(robotSection, value);
+					} else {
+						frame.setSpeedSet(robotSection, value);
+					}
+			    	frameListReload(frameList);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameSpeech error: ", e);
+		}
+		LOGGER.trace("updateFrameSpeech [END]");
+	}
+	public void updateFrameSpeed(final JList<String> frameList, final RobotSection robotSection, 
+			final Integer sectionIndex, final Double speed) {
+		LOGGER.trace("updateFrameSpeech [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					frame.setSpeedValue(robotSection, sectionIndex, speed);	
+			    	frameListReload(frameList);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameSpeech error: ", e);
+		}
+		LOGGER.trace("updateFrameSpeech [END]");
+	}
+	public void updateFrameSpeech(final JList<String> frameList, final String frameSpeech) {
+		LOGGER.trace("updateFrameSpeech [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					frame.setSpeech(frameSpeech);	
+			    	frameListReload(frameList);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameSpeech error: ", e);
+		}
+		LOGGER.trace("updateFrameSpeech [END]");
+	}
+	public void updateFrameName(final JList<String> frameList, final String frameName) {
+		LOGGER.trace("updateFrameName [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					frame.setName(frameName);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameName error: ", e);
+		}
+		LOGGER.trace("updateFrameName [END]");
+	}
+	public void updateFrameSleep(final JList<String> frameList, final Integer frameSleep) {
+		LOGGER.trace("updateFrameSleep [START]");
+		try {
+			if(frameList != null) {
+				int frameIndex = frameList.getSelectedIndex();
+				if(frameIndex >= 0) {
+					Frame frame = frames.get(frameIndex);
+					frame.setSleep(frameSleep);	
+			    	frameListReload(frameList);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("updateFrameSleep error: ", e);
+		}
+		LOGGER.trace("updateFrameSleep [END]");
+	}
+	public void updateMoveRealTime(final Boolean selected) {
+		this.moveRealTime = selected;
 	}
 }
