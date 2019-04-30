@@ -380,12 +380,12 @@ public class Frame implements Serializable {
 		Arrays.fill(headMoves, 90);
 		Arrays.fill(torsoMoves, 90);
 		
-		Arrays.fill(rightHandSpeeds, 0d);
-		Arrays.fill(rightArmSpeeds, 0d);
-		Arrays.fill(leftHandSpeeds, 0d);
-		Arrays.fill(leftArmSpeeds, 0d);
-		Arrays.fill(headSpeeds, 0d);
-		Arrays.fill(torsoSpeeds, 0d);
+		Arrays.fill(rightHandSpeeds, -1.0);
+		Arrays.fill(rightArmSpeeds, -1.0);
+		Arrays.fill(leftHandSpeeds, -1.0);
+		Arrays.fill(leftArmSpeeds, -1.0);
+		Arrays.fill(headSpeeds, -1.0);
+		Arrays.fill(torsoSpeeds, -1.0);
 		
 		this.sleep = -1;
 		this.speech = null;

@@ -29,6 +29,8 @@ import org.myrobotlab.service.model.Frame.RobotSection;
 import org.myrobotlab.service.model.Gesture;
 import org.slf4j.Logger;
 
+import akka.util.Collections;
+
 /**
  * InMoovGestureCreator - This is a helper service to create gestures for the
  * InMoov It has a swing based gui that allows you to set servo angles on the
@@ -42,12 +44,12 @@ public class InMoovGestureCreator extends Service {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(InMoovGestureCreator.class);
 
-
 	private final Gesture gesture = new Gesture();
 	private final List<Frame> frames = gesture.getFrames();
 
 	private final List<File> scriptFiles = new ArrayList<File>();
-	
+	private final List<File> scriptFilesBackUp = new ArrayList<File>();
+
 	private InMoov i01;
 	private Boolean moveRealTime = false;
 	private String referencename;
@@ -74,19 +76,19 @@ public class InMoovGestureCreator extends Service {
 	public void controlSaveScript() {
 		FileWriter fileWriter = null;
 		try {
-			if(gesture.getGestureFile() != null) {
+			if (gesture.getGestureFile() != null) {
 				// overwrite the existing file
-				int dialogResult = JOptionPane.showConfirmDialog (null, 
-						"Do you want to overwrite the existing file \""+gesture.getGestureFile()+"\"?",
-						"Warning",JOptionPane.YES_NO_CANCEL_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION) {
+				int dialogResult = JOptionPane.showConfirmDialog(null,
+						"Do you want to overwrite the existing file \"" + gesture.getGestureFile() + "\"?", "Warning",
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if (dialogResult == JOptionPane.YES_OPTION) {
 					// overwrite
 					fileWriter = new FileWriter(gesture.getGestureFile());
 					fileWriter.write(gesture.toPythonGesture());
-					JOptionPane.showMessageDialog(null, 
-							"File \""+gesture.getGestureFile().getAbsolutePath()+"\" succesfully saved!", 
-							"Info", JOptionPane.INFORMATION_MESSAGE);
-				} else if(dialogResult == JOptionPane.NO_OPTION) {
+					JOptionPane.showMessageDialog(null,
+							"File \"" + gesture.getGestureFile().getAbsolutePath() + "\" succesfully saved!", "Info",
+							JOptionPane.INFORMATION_MESSAGE);
+				} else if (dialogResult == JOptionPane.NO_OPTION) {
 					// open file dialog
 					JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 					jfc.setDialogTitle("Gesture file name");
@@ -95,16 +97,15 @@ public class InMoovGestureCreator extends Service {
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						File selectedFile = jfc.getSelectedFile();
 						gesture.setGestureFile(selectedFile);
-						LOGGER.info("Saving to \""+selectedFile.getAbsolutePath()+"\"");
+						LOGGER.info("Saving to \"" + selectedFile.getAbsolutePath() + "\"");
 						fileWriter = new FileWriter(gesture.getGestureFile());
 						fileWriter.write(gesture.toPythonGesture());
-						JOptionPane.showMessageDialog(null, 
-								"File \""+selectedFile.getAbsolutePath()+"\" succesfully saved!", 
-								"Info", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"File \"" + selectedFile.getAbsolutePath() + "\" succesfully saved!", "Info",
+								JOptionPane.INFORMATION_MESSAGE);
 					} else {
 						// user did not choose a file to save
-						JOptionPane.showMessageDialog(null, 
-								"No file selected,nothing saved!", "Info", 
+						JOptionPane.showMessageDialog(null, "No file selected,nothing saved!", "Info",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
 				} else {
@@ -120,21 +121,22 @@ public class InMoovGestureCreator extends Service {
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = jfc.getSelectedFile();
 					gesture.setGestureFile(selectedFile);
-					LOGGER.info("Saving to \""+selectedFile.getAbsolutePath()+"\"");
+					LOGGER.info("Saving to \"" + selectedFile.getAbsolutePath() + "\"");
 					fileWriter = new FileWriter(gesture.getGestureFile());
 					fileWriter.write(gesture.toPythonGesture());
-					JOptionPane.showMessageDialog(null, 
-							"File \""+selectedFile.getAbsolutePath()+"\" succesfully saved!", 
-							"Info", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"File \"" + selectedFile.getAbsolutePath() + "\" succesfully saved!", "Info",
+							JOptionPane.INFORMATION_MESSAGE);
 				} else {
 					// user did not choose a file to save
-					JOptionPane.showMessageDialog(null, "No file selected,nothing saved!", "Info", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "No file selected,nothing saved!", "Info",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		} catch (IOException e) {
 			LOGGER.warn("Could not save script.", e);
 		} finally {
-			if(fileWriter != null) {
+			if (fileWriter != null) {
 				try {
 					fileWriter.close();
 				} catch (IOException e) {
@@ -142,7 +144,7 @@ public class InMoovGestureCreator extends Service {
 			}
 		}
 	}
-		
+
 	public void controlConnect(final JButton controlConnect) {
 		// Connect / Disconnect to / from the InMoov service (button top-left)
 		LOGGER.info("controlConnect start...");
@@ -154,7 +156,7 @@ public class InMoovGestureCreator extends Service {
 				i01 = (InMoov) Runtime.getService(referencename);
 				LOGGER.info("i01.enable() start...");
 				i01.enable();
-				LOGGER.info("i01.enable() end");
+				LOGGER.info("i01.enable() end, i01 is " + i01 == null ? "null" : " initialised");
 				if (i01 != null) {
 					controlConnect.setText("Disconnect");
 				} else {
@@ -184,7 +186,7 @@ public class InMoovGestureCreator extends Service {
 				executeFrameOnRobot(frame);
 				frameIndex++;
 			}
-			 robotRelax();
+			robotRelax();
 		} else {
 			LOGGER.info("No frames to execute.");
 		}
@@ -215,27 +217,21 @@ public class InMoovGestureCreator extends Service {
 			frames.add(SerializationUtils.clone(frame));
 			frameListReload(frameListModel);
 		} else {
-			JOptionPane.showMessageDialog(null, 
-					"No frame selected to remove", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "No frame selected to remove", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
 	public void frameDown(final JList<String> frameList, DefaultListModel<String> frameListModel) {
 		LOGGER.info("frameDown frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
 		int selectedFrameIndex = frameList.getSelectedIndex();
-		if (selectedFrameIndex >= 0 && selectedFrameIndex < frames.size()-1) {
+		if (selectedFrameIndex >= 0 && selectedFrameIndex < frames.size() - 1) {
 			Frame frame = frames.remove(selectedFrameIndex);
 			frames.add(selectedFrameIndex + 1, frame);
 			frameListReload(frameListModel);
-		} else if (selectedFrameIndex == frames.size()-1) {
-			JOptionPane.showMessageDialog(null, 
-					"Alreay at the bottom", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+		} else if (selectedFrameIndex == frames.size() - 1) {
+			JOptionPane.showMessageDialog(null, "Alreay at the bottom", "Info", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			JOptionPane.showMessageDialog(null, 
-					"No frame selected to remove", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "No frame selected to remove", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -247,20 +243,16 @@ public class InMoovGestureCreator extends Service {
 			frames.add(selectedFrameIndex - 1, frame);
 			frameListReload(frameListModel);
 		} else if (selectedFrameIndex == 0) {
-			JOptionPane.showMessageDialog(null, 
-					"Alreay at the top", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Alreay at the top", "Info", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			JOptionPane.showMessageDialog(null, 
-					"No frame selected to remove", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "No frame selected to remove", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
 	public void frameNew(final JList<String> frameList, DefaultListModel<String> frameListModel) {
 		LOGGER.info("frameNew frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
 		int frameIndex = frameList.getSelectedIndex();
-		if(frameIndex >= 0) {
+		if (frameIndex >= 0) {
 			frames.add(frameIndex, new Frame());
 		} else {
 			frames.add(new Frame());
@@ -268,7 +260,7 @@ public class InMoovGestureCreator extends Service {
 		frameListReload(frameListModel);
 		frameList.setSelectedIndex(frameIndex);
 	}
-	
+
 	public void frameRemove(final JList<String> frameList, DefaultListModel<String> frameListModel) {
 		LOGGER.info("frameRemove frameList.getSelectedIndex(): [{}]", frameList.getSelectedIndex());
 		int frameIndex = frameList.getSelectedIndex();
@@ -276,9 +268,7 @@ public class InMoovGestureCreator extends Service {
 			frames.remove(frameIndex);
 			frameListReload(frameListModel);
 		} else {
-			JOptionPane.showMessageDialog(null, 
-					"No frame selected to remove", 
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "No frame selected to remove", "Info", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -290,10 +280,10 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("Relax error", e);
 		}
 	}
-		
+
 	private void executeFrameOnRobot(final Frame frame) {
 		LOGGER.info("Executing frame: \"" + frame.getName() + "\"...");
-		// speech 
+		// speech
 		try {
 			LOGGER.info("Running [SPEECH] with text: \"" + frame.getSpeech() + "\"...");
 			if (frame.getSpeechSet()) {
@@ -302,7 +292,7 @@ public class InMoovGestureCreator extends Service {
 		} catch (Exception e) {
 			LOGGER.warn("[SPEECH] execution error", e);
 		}
-		// speed 
+		// speed
 		try {
 			LOGGER.info("Running [SPEED]...");
 			if (frame.getRightHandSpeedSet()) {
@@ -333,7 +323,7 @@ public class InMoovGestureCreator extends Service {
 		} catch (Exception e) {
 			LOGGER.warn("[SPEED] execution error", e);
 		}
-		// move 
+		// move
 		try {
 			LOGGER.info("Running [MOVE]...");
 			if (frame.getRightHandMoveSet()) {
@@ -342,8 +332,8 @@ public class InMoovGestureCreator extends Service {
 						frame.getRightPinkyFingerMove(), (double) frame.getRightWristMove());
 			}
 			if (frame.getRightArmMoveSet()) {
-				i01.moveArm("right", frame.getRightBicepsMove(), frame.getRightRotateMove(), frame.getRightShoulderMove(),
-						frame.getRightOmoplateMove());
+				i01.moveArm("right", frame.getRightBicepsMove(), frame.getRightRotateMove(),
+						frame.getRightShoulderMove(), frame.getRightOmoplateMove());
 			}
 			if (frame.getLeftHandMoveSet()) {
 				i01.moveHand("left", frame.getLeftThumbFingerMove(), frame.getLeftIndexFingerMove(),
@@ -366,7 +356,7 @@ public class InMoovGestureCreator extends Service {
 		}
 		LOGGER.info("Running [SLEEP] for \"" + frame.getSleep() + "\" seconds...");
 		// sleep is in mili seconds
-		sleep(frame.getSleep()*1000);
+		sleep(frame.getSleep() * 1000);
 		LOGGER.info("Finished frame execution.");
 	}
 
@@ -389,6 +379,7 @@ public class InMoovGestureCreator extends Service {
 						// list only ".py" files in the folder
 						scriptFileNames.add(listOfFiles[i].getName());
 						scriptFiles.add(listOfFiles[i]);
+						scriptFilesBackUp.add(listOfFiles[i]);
 					}
 				}
 				if (scriptFileNames != null && scriptFileNames.size() > 0) {
@@ -398,10 +389,30 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	public void loadGestureScript(
-			JList<String> gestureList, 
-			DefaultListModel<String> frameListModel,
-			JTextField gestureName) {
+	public void scriptFolderSearch(JList gestureList, String matchText) {
+		matchText = matchText.toUpperCase();
+		List<String> newScriptList = new ArrayList<String>();
+		scriptFiles.clear();
+		scriptFiles.addAll(scriptFilesBackUp);
+		for(int  i = 0; i < scriptFiles.size(); i++) {
+			if(i == -1) {
+				i = 0;
+			}
+			if (scriptFiles.get(i).getName().toUpperCase().contains(matchText)) {
+				newScriptList.add(scriptFiles.get(i).getName());
+			} else {
+				scriptFiles.remove(i);
+				i--;
+			}
+		} 
+		if (newScriptList != null) {
+			gestureList.setListData(newScriptList.toArray());
+		}
+
+	}
+
+	public void loadGestureScript(JList<String> gestureList, DefaultListModel<String> frameListModel,
+		JTextField gestureName) {
 		List<String> scriptLines = new ArrayList<String>();
 		FileReader fileReader = null;
 		BufferedReader bufferedReader = null;
@@ -438,7 +449,8 @@ public class InMoovGestureCreator extends Service {
 			gesture.setGestureFile(selectedFile);
 			parseScriptToGesture(scriptLines);
 			gestureName.setText(gesture.getGestureName());
-			LOGGER.info("Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
+			LOGGER.info(
+					"Parsed \"" + gesture.getGestureName() + "\" GESTURE with FRAME count \"" + frames.size() + "\"");
 			// loading parsed frames into GUI list
 			frameListReload(frameListModel);
 			LOGGER.trace("Reload GUI finished");
@@ -448,9 +460,10 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	private void frameListItemReload(DefaultListModel<String> frameListModel, Frame frame, int listSelection) {
-		LOGGER.trace("frameListItemReload listSelection: [{}] frameListModel.size(): [{}]", listSelection, frameListModel.size());
+		LOGGER.trace("frameListItemReload listSelection: [{}] frameListModel.size(): [{}]", listSelection,
+				frameListModel.size());
 		try {
-			if(frameListModel.size() > 0 && listSelection >= 0 && listSelection < frameListModel.size()) {
+			if (frameListModel.size() > 0 && listSelection >= 0 && listSelection < frameListModel.size()) {
 				LOGGER.trace("frameListItemReload changing frame: [{}]", frame.toString());
 				frameListModel.setElementAt(frame.toString(), listSelection);
 			}
@@ -458,6 +471,7 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("frameListItemReload error: ", e);
 		}
 	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void frameListReload(DefaultListModel frameListModel) {
 		LOGGER.trace("frameListReload frameListModel: [{}]", frameListModel);
@@ -510,7 +524,7 @@ public class InMoovGestureCreator extends Service {
 						&& !singleScriptLine.contains("setArmSpeed") && !singleScriptLine.contains("setHandSpeed")
 						&& !singleScriptLine.contains("setTorsoSpeed") && !singleScriptLine.contains("moveHead")
 						&& !singleScriptLine.contains("moveArm") && !singleScriptLine.contains("moveHand")
-						&& !singleScriptLine.contains("moveTorso")  && !singleScriptLine.contains("speak")
+						&& !singleScriptLine.contains("moveTorso") && !singleScriptLine.contains("speak")
 						&& !singleScriptLine.contains("sleep") // end frame
 						&& !singleScriptLine.contains("finishedGesture")) { // end gesture
 					continue;
@@ -552,8 +566,7 @@ public class InMoovGestureCreator extends Service {
 		}
 	}
 
-	private void parseScriptFragmentIntoSingleFrame(List<String> frameLines, Frame frame)
-			throws Exception {
+	private void parseScriptFragmentIntoSingleFrame(List<String> frameLines, Frame frame) throws Exception {
 		try {
 			for (String singleScriptLine : frameLines) {
 				try {
@@ -809,7 +822,7 @@ public class InMoovGestureCreator extends Service {
 	}
 
 	private void parseScriptSpeechLineToFrame(String speechLine, Frame frame) {
-	    // i01.mouth.speak("Some speech")
+		// i01.mouth.speak("Some speech")
 		try {
 			LOGGER.trace("speechLine: \"" + speechLine + "\"");
 			if (speechLine != null) {
@@ -822,7 +835,7 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("Speak line parsing error", e);
 		}
 	}
-	
+
 	private void parseScriptSleepLineToFrame(String sleepLine, Frame frame) {
 		try {
 			// sleep line: sleep(3)
@@ -833,24 +846,24 @@ public class InMoovGestureCreator extends Service {
 			LOGGER.warn("Sleep line parsing error", e);
 		}
 	}
-	
+
 	public void updateGestureName(String newName) {
 		LOGGER.info("updateGestureName newName: [{}]", newName);
 		this.gesture.setGestureName(newName);
 	}
-	
+
 	public void moveRobotAsSliderChangesRealTime(RobotSection robotSection, Frame frame) {
 		// slider move in progress
 		if (moveRealTime && i01 != null) {
 			// Move the Servos in "Real-Time"
 			if (robotSection == RobotSection.RIGHT_HAND && frame.getRightHandMoveSet()) {
 				i01.moveHand("right", frame.getRightThumbFingerMove(), frame.getRightIndexFingerMove(),
-						frame.getRightMajeureFingerMove(), frame.getRightRingFingerMove(), frame.getRightPinkyFingerMove(),
-						(double) frame.getRightWristMove());
+						frame.getRightMajeureFingerMove(), frame.getRightRingFingerMove(),
+						frame.getRightPinkyFingerMove(), (double) frame.getRightWristMove());
 			}
 			if (robotSection == RobotSection.RIGHT_ARM && frame.getRightArmMoveSet()) {
-				i01.moveArm("right", frame.getRightBicepsMove(), frame.getRightRotateMove(), frame.getRightShoulderMove(),
-						frame.getRightOmoplateMove());
+				i01.moveArm("right", frame.getRightBicepsMove(), frame.getRightRotateMove(),
+						frame.getRightShoulderMove(), frame.getRightOmoplateMove());
 			}
 			if (robotSection == RobotSection.LEFT_HAND && frame.getLeftHandMoveSet()) {
 				i01.moveHand("left", frame.getLeftThumbFingerMove(), frame.getLeftIndexFingerMove(),
@@ -870,12 +883,10 @@ public class InMoovGestureCreator extends Service {
 			}
 		}
 	}
-	
+
 	public void clearGestureAndSelectedFrame(final DefaultListModel<String> frameListModel,
-			final JTextField frameNameTextField,
-			final JFormattedTextField frameSleepTextField,
-			final JTextField frameSpeechTextField,
-			final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
+			final JTextField frameNameTextField, final JFormattedTextField frameSleepTextField,
+			final JTextField frameSpeechTextField, final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
 			final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes,
 			final Map<RobotSection, List<JSlider>> robotSectionMoveSliders,
 			final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes) {
@@ -887,25 +898,17 @@ public class InMoovGestureCreator extends Service {
 			this.frames.clear();
 			frameListModel.removeAllElements();
 			// then panel
-			clearFramePanel(
-					frameNameTextField,
-					frameSleepTextField,
-					frameSpeechTextField,
-					robotSectionMoveSetCheckboxes,
-					robotSectionSpeedSetCheckboxes,
-					robotSectionMoveSliders,
+			clearFramePanel(frameNameTextField, frameSleepTextField, frameSpeechTextField,
+					robotSectionMoveSetCheckboxes, robotSectionSpeedSetCheckboxes, robotSectionMoveSliders,
 					robotSectionSpeedTextBoxes);
 		} catch (Exception e) {
 			LOGGER.warn("clearGestureAndSelectedFrame error: ", e);
 		}
 		LOGGER.trace("clearGestureAndSelectedFrame [END]");
 	}
-	
-	public void clearFramePanel(
-			final JTextField frameNameTextField,
-			final JFormattedTextField frameSleepTextField,
-			final JTextField frameSpeechTextField,
-			final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
+
+	public void clearFramePanel(final JTextField frameNameTextField, final JFormattedTextField frameSleepTextField,
+			final JTextField frameSpeechTextField, final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
 			final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes,
 			final Map<RobotSection, List<JSlider>> robotSectionMoveSliders,
 			final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes) {
@@ -936,23 +939,20 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.trace("clearFramePanel [END]");
 	}
 
-	public void frameSelectionChanged(final JList<String> frameList,
-			final DefaultListModel<String> frameListModel,
-			final JTextField frameNameTextField,
-			final JFormattedTextField frameSleepTextField,
-			final JTextField frameSpeechTextField,
-			final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
+	public void frameSelectionChanged(final JList<String> frameList, final DefaultListModel<String> frameListModel,
+			final JTextField frameNameTextField, final JFormattedTextField frameSleepTextField,
+			final JTextField frameSpeechTextField, final Map<RobotSection, JCheckBox> robotSectionMoveSetCheckboxes,
 			final Map<RobotSection, JCheckBox> robotSectionSpeedSetCheckboxes,
 			final Map<RobotSection, List<JSlider>> robotSectionMoveSliders,
 			final Map<RobotSection, List<JFormattedTextField>> robotSectionSpeedTextBoxes) {
 		LOGGER.trace("frameSelectionChanged [START]");
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0 && frameIndex < frameListModel.size()) {
+			if (frameIndex >= 0 && frameIndex < frameListModel.size()) {
 				// frame is selected
 				Frame frame = frames.get(frameIndex);
 				frameNameTextField.setText(frame.getName());
-				frameSleepTextField.setText(""+frame.getSleep());
+				frameSleepTextField.setText("" + frame.getSleep());
 				frameSpeechTextField.setText(frame.getSpeech());
 				for (RobotSection robotSection : RobotSection.values()) {
 					// move
@@ -965,7 +965,7 @@ public class InMoovGestureCreator extends Service {
 					int sectionIndex = 0;
 					for (JSlider slider : sliders) {
 						slider.setEnabled(moveSectionEnabled);
-						if(moveSectionEnabled) {
+						if (moveSectionEnabled) {
 							slider.setValue(frame.getMoveValue(robotSection, sectionIndex));
 						}
 						sectionIndex++;
@@ -980,7 +980,7 @@ public class InMoovGestureCreator extends Service {
 					sectionIndex = 0;
 					for (JFormattedTextField speedTextBox : speedTextBoxes) {
 						speedTextBox.setEnabled(speedSectionEnabled);
-						if(speedSectionEnabled) {
+						if (speedSectionEnabled) {
 							speedTextBox.setValue(frame.getSpeedValue(robotSection, sectionIndex));
 						}
 						sectionIndex++;
@@ -988,13 +988,8 @@ public class InMoovGestureCreator extends Service {
 				}
 			} else {
 				// no FRAME selected, disable all elements
-				clearFramePanel(
-						frameNameTextField,
-						frameSleepTextField,
-						frameSpeechTextField,
-						robotSectionMoveSetCheckboxes,
-						robotSectionSpeedSetCheckboxes,
-						robotSectionMoveSliders,
+				clearFramePanel(frameNameTextField, frameSleepTextField, frameSpeechTextField,
+						robotSectionMoveSetCheckboxes, robotSectionSpeedSetCheckboxes, robotSectionMoveSliders,
 						robotSectionSpeedTextBoxes);
 			}
 		} catch (Exception e) {
@@ -1003,39 +998,36 @@ public class InMoovGestureCreator extends Service {
 		LOGGER.trace("frameSelectionChanged [END]");
 	}
 
-	public void updateFrameSliders(final JList<String> frameList, 
-			final DefaultListModel<String> frameListModel,
-			final RobotSection robotSection, final Integer sectionIndex, 
-			final Integer sliderValue, final Boolean sliderIsAdjusting) {
+	public void updateFrameSliders(final JList<String> frameList, final DefaultListModel<String> frameListModel,
+			final RobotSection robotSection, final Integer sectionIndex, final Integer sliderValue,
+			final Boolean sliderIsAdjusting) {
 		LOGGER.trace("updateFrameSliders sectionIndex: [{}]", sectionIndex);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
-				Frame frame = frames.get(frameIndex);	
+			if (frameIndex >= 0) {
+				Frame frame = frames.get(frameIndex);
 				frame.setMoveValue(robotSection, sectionIndex, sliderValue);
 				if (moveRealTime) {
 					moveRobotAsSliderChangesRealTime(robotSection, frame);
 				}
-			    if (!sliderIsAdjusting) {
-			    	// sliding stopped
-			    	frameListItemReload(frameListModel, frame, frameIndex);
-			    }
+				if (!sliderIsAdjusting) {
+					// sliding stopped
+					frameListItemReload(frameListModel, frame, frameIndex);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameSliders error: ", e);
 		}
 		LOGGER.trace("updateFrameSliders [END]");
 	}
-	public void updateFrameBooleans(final JList<String> frameList, 
-			final DefaultListModel<String> frameListModel, 
-			final List<JSlider> moveSliders,
-			final List<JFormattedTextField> speedTextBoxes,
-			final RobotSection robotSection, 
-			final Boolean enabled, final boolean move) {
+
+	public void updateFrameBooleans(final JList<String> frameList, final DefaultListModel<String> frameListModel,
+			final List<JSlider> moveSliders, final List<JFormattedTextField> speedTextBoxes,
+			final RobotSection robotSection, final Boolean enabled, final boolean move) {
 		LOGGER.trace("updateFrameBooleans robotSection: [{}]", robotSection);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
+			if (frameIndex >= 0) {
 				Frame frame = frames.get(frameIndex);
 				if (move) {
 					frame.setMoveSet(robotSection, enabled);
@@ -1048,81 +1040,83 @@ public class InMoovGestureCreator extends Service {
 						speedTextBox.setEnabled(enabled);
 					}
 				}
-		    	frameListItemReload(frameListModel, frame, frameIndex);
+				frameListItemReload(frameListModel, frame, frameIndex);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameBooleans error: ", e);
 		}
 		LOGGER.trace("updateFrameBooleans [END]");
 	}
-	public void updateFrameSpeed(final JList<String> frameList, 
-			final DefaultListModel<String> frameListModel, 
-			final RobotSection robotSection, 
-			final Integer sectionIndex, final Double speed) {
+
+	public void updateFrameSpeed(final JList<String> frameList, final DefaultListModel<String> frameListModel,
+			final RobotSection robotSection, final Integer sectionIndex, final Double speed) {
 		LOGGER.trace("updateFrameSpeed sectionIndex: [{}]", sectionIndex);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
+			if (frameIndex >= 0) {
 				Frame frame = frames.get(frameIndex);
-				frame.setSpeedValue(robotSection, sectionIndex, speed);	
-		    	frameListItemReload(frameListModel, frame, frameIndex);
+				frame.setSpeedValue(robotSection, sectionIndex, speed);
+				frameListItemReload(frameListModel, frame, frameIndex);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameSpeed error: ", e);
 		}
 		LOGGER.trace("updateFrameSpeed [END]");
 	}
-	public void updateFrameSpeech(final JList<String> frameList, 
-			final DefaultListModel<String> frameListModel, 
+
+	public void updateFrameSpeech(final JList<String> frameList, final DefaultListModel<String> frameListModel,
 			final String frameSpeech) {
 		LOGGER.trace("updateFrameSpeech frameSpeech: [{}]", frameSpeech);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
+			if (frameIndex >= 0) {
 				Frame frame = frames.get(frameIndex);
 				frame.setSpeech(frameSpeech);
-				if(frameSpeech != null && !frameSpeech.isEmpty()) {
+				if (frameSpeech != null && !frameSpeech.isEmpty()) {
 					frame.setSpeechSet(true);
 				} else {
 					frame.setSpeechSet(false);
-				}					
-		    	frameListItemReload(frameListModel, frame, frameIndex);
+				}
+				frameListItemReload(frameListModel, frame, frameIndex);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameSpeech error: ", e);
 		}
 		LOGGER.trace("updateFrameSpeech [END]");
 	}
-	public void updateFrameName(final JList<String> frameList, final DefaultListModel<String> frameListModel, final String frameName) {
+
+	public void updateFrameName(final JList<String> frameList, final DefaultListModel<String> frameListModel,
+			final String frameName) {
 		LOGGER.trace("updateFrameName frameName: [{}]", frameName);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
+			if (frameIndex >= 0) {
 				Frame frame = frames.get(frameIndex);
 				frame.setName(frameName);
-		    	frameListItemReload(frameListModel, frame, frameIndex);
+				frameListItemReload(frameListModel, frame, frameIndex);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameName error: ", e);
 		}
 		LOGGER.trace("updateFrameName [END]");
 	}
-	public void updateFrameSleep(final JList<String> frameList, 
-			final DefaultListModel<String> frameListModel, 
+
+	public void updateFrameSleep(final JList<String> frameList, final DefaultListModel<String> frameListModel,
 			final Integer frameSleep) {
 		LOGGER.trace("updateFrameSleep frameSleep: [{}]", frameSleep);
 		try {
 			int frameIndex = frameList.getSelectedIndex();
-			if(frameIndex >= 0) {
+			if (frameIndex >= 0) {
 				Frame frame = frames.get(frameIndex);
-				frame.setSleep(frameSleep);	
-		    	frameListItemReload(frameListModel, frame, frameIndex);
+				frame.setSleep(frameSleep);
+				frameListItemReload(frameListModel, frame, frameIndex);
 			}
 		} catch (Exception e) {
 			LOGGER.warn("updateFrameSleep error: ", e);
 		}
 		LOGGER.trace("updateFrameSleep [END]");
 	}
+
 	public void updateMoveRealTime(final Boolean selected) {
 		this.moveRealTime = selected;
 	}

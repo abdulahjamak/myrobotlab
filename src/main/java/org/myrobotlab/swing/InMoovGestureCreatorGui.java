@@ -63,7 +63,8 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			.getNumberInstance(Locale.getDefault());
 
 	private final JTextField gestureName = new JTextField("Gesture Name");
-
+	private final JTextField scriptFolderSearch = new JTextField();
+	
 	private final JButton controlConnect = new JButton("Connect");
 	private final JButton loadScriptFolder = new JButton("Open Folder");
 	private final JButton loadGestureScript = new JButton("Load");
@@ -81,7 +82,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 	private final JButton frameDown = new JButton("Down");
 	private final JButton frameExecute = new JButton("Execute");
 	private final JCheckBox frameMoveRealTime = new JCheckBox("Move Real Time");
-
+	
 	private static final String[] GESTURE_LIST_PLACEHOLDER = { "Load folder with scripts" };
 	private static final String[] FRAME_LIST_PLACEHOLDER = {"Load a script to see frames..."}; 
 	
@@ -127,9 +128,25 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			JPanel topLeftTop = new JPanel();
 			topLeftTop.setLayout(new BoxLayout(topLeftTop, BoxLayout.X_AXIS));
 
-			JLabel gesturePanelLabel = new JLabel("Gestures");
-			topLeftTop.add(gesturePanelLabel);
+			/*JLabel gesturePanelLabel = new JLabel("Gestures");
+			topLeftTop.add(gesturePanelLabel);*/
 			
+			topLeftTop.add(scriptFolderSearch);
+//			scriptFolderSearch.addActionListener(this);
+			scriptFolderSearch.getDocument().addDocumentListener(new DocumentListener() {
+			      public void changedUpdate(DocumentEvent documentEvent) {
+			    	  updateSearch();
+			        }
+			        public void insertUpdate(DocumentEvent documentEvent) {
+			        	updateSearch();
+			        }
+			        public void removeUpdate(DocumentEvent documentEvent) {
+			        	updateSearch();
+			        }
+			        public void updateSearch() {
+			        	swingGui.send(boundServiceName, "scriptFolderSearch", gestureList, scriptFolderSearch.getText());
+			        }
+			      });
 			topLeftTop.add(controlConnect);
 			controlConnect.addActionListener(this);
 
@@ -331,9 +348,13 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		    frameSleepTextField.addPropertyChangeListener("value", frameSleepTextListener);			
 			frameSleepTextField.setColumns(3);
 			bottomTop.add(frameSleepTextField);
+
+			JScrollPane scrollableBtootomBottom = new JScrollPane(bottomBottom);
+			gestureListScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			
 			bottom.add(bottomTop);
-			bottom.add(bottomBottom);
+			bottom.add(scrollableBtootomBottom);
+//			bottom.add(bottomBottom);
 
 			JSplitPane splitPaneTopLeftTopRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, topLeft, topRight);
 			splitPaneTopLeftTopRight.setOneTouchExpandable(true);
@@ -457,7 +478,9 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 		// Button - Events
 		if (o == controlConnect) {
 			swingGui.send(boundServiceName, "controlConnect", controlConnect);
-		} else if (o == loadScriptFolder) {
+		}/* else if (o == scriptFolderSearch) {
+			swingGui.send(boundServiceName, "scriptFolderSearch", gestureList, scriptFolderSearch.getText());
+		}*/ else if (o == loadScriptFolder) {
 			swingGui.send(boundServiceName, "loadScriptFolder", gestureList);
 		} else if (o == loadGestureScript) {
 			swingGui.send(boundServiceName, "loadGestureScript", gestureList, frameListModel, gestureName);
@@ -488,7 +511,7 @@ public class InMoovGestureCreatorGui extends ServiceGui implements ActionListene
 			swingGui.send(boundServiceName, "frameDown", frameList, frameListModel);
 		} else if (o == frameExecute) {
 			swingGui.send(boundServiceName, "frameExecute", frameList);
-		}
+		}  
 		swingGui.send(boundServiceName, "publishState");
 	}
 
